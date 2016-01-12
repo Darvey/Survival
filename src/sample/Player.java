@@ -13,4 +13,7 @@ public class Player {
 
     }
 
+    public getLife(){
+    	return tihs.life;
+    }
 }
