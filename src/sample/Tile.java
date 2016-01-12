@@ -44,7 +44,7 @@ public class Tile {
                 break;
             default:;
         }
-
+        image.setImage(imagePath);
         image.setVisible(true);
     }
 
