@@ -14,6 +14,11 @@ public class Player {
     }
 
     public getLife(){
-    	return tihs.life;
+    	return this.life;
     }
+
+    /*
+    test test test*push ?
+
+     */
 }
