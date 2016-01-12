@@ -12,20 +12,22 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        //Cretation de la tile
-        Tile T = new Tile(64,64,100,100,1,2);
-
         //creation du groupe
         Group root = new Group();
 
-        //ajout de la tile à la scene
-        root.getChildren().add(T.getImage());
+        Level L = new Level(3,4);
+        for(int i=0;i < 3;i++){
+            for(int j =0;j< 4;j++){
+                root.getChildren().add(L.getTile(i,j).getImage());
+            }
+        }
 
         // Init primaryStage
         Scene home = new Scene(root,600,400);
         primaryStage.setTitle("Survival");
         primaryStage.setScene(home);
         primaryStage.show();
+
 
     }
 
