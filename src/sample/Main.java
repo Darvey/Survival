@@ -23,7 +23,7 @@ public class Main extends Application {
         }
 
         // Init primaryStage
-        Scene home = new Scene(root,600,400);
+        Scene home = new Scene(root, 600, 400, true);
         primaryStage.setTitle("Survival");
         primaryStage.setScene(home);
         primaryStage.show();

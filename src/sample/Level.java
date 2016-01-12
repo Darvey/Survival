@@ -30,18 +30,15 @@ public class Level {
             }
         }
 
-        // t
         // Creation des Tiles avec la matrice de Int
 
         tilesMap = new Tile[x][y];
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
-                tilesMap[i][j] = new Tile(64, 64, 64 * x, 64 * y, 1, defInt[i][j]);
+                tilesMap[i][j] = new Tile(64, 64, 64 * i, 64 * j, 1, defInt[i][j]);
             }
         }
-
-
     }
 
     public int getH() {
