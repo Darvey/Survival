@@ -23,6 +23,7 @@ public class Tile {
         @param x position en x
         @param y position en y
         @param z position en z
+        @param id identifiant de la tile
      */
     public Tile(int w, int h, int x, int y, int z, int id) {
         this.width = w;
