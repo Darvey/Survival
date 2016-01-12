@@ -37,7 +37,7 @@ public class Tile {
 
         switch (id) {
             case 1:
-                imagePath = new Image(Main.class.getResourceAsStream("/img/ground.png"));
+                imagePath = new Image(Main.class.getResourceAsStream("../img/ground.png"));
                 break;
             case 2:
                 imagePath = new Image(Main.class.getResourceAsStream("../img/grass.png"));
