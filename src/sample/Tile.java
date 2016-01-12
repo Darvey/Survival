@@ -5,7 +5,6 @@ import javafx.scene.image.ImageView;
 
 /*
     Description de la classe :
-
  */
 public class Tile {
 
@@ -25,7 +24,7 @@ public class Tile {
         @param y position en y
         @param z position en z
      */
-    public Tile(int w,int h,int x,int y, int z, int id){
+    public Tile(int w, int h, int x, int y, int z, int id) {
         this.width = w;
         this.height = h;
         this.posX = x;
@@ -33,13 +32,20 @@ public class Tile {
         this.posZ = z;
 
         image = new ImageView();
-        switch(id){
-            case 1 : imagePath = new Image(Main.class.getResourceAsStream("/img/ground.jpg"));
+        image.setTranslateX(posX);
+        image.setTranslateY(posY);
+
+        switch (id) {
+            case 1:
+                imagePath = new Image(Main.class.getResourceAsStream("/img/ground.png"));
                 break;
-            case 2 : imagePath = new Image(Main.class.getResourceAsStream("/img/grass.jpg"));
+            case 2:
+                imagePath = new Image(Main.class.getResourceAsStream("../img/grass.png"));
                 break;
             default:;
         }
+
+        image.setVisible(true);
     }
 
     /*
@@ -62,6 +68,10 @@ public class Tile {
     }
 
     public int getPosZ() {
-        return posY;
+        return posZ;
+    }
+
+    public ImageView getImage() {
+        return image;
     }
 }
