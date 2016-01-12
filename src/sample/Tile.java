@@ -13,6 +13,7 @@ public class Tile {
     protected int height; // hauteur de l'image
     protected int posX; // position en x
     protected int posY; // position en y
+    protected int posZ; // position en z
     protected ImageView image;
     protected Image imagePath;
 
@@ -22,16 +23,20 @@ public class Tile {
         @param h hauteur de l'imgae
         @param x position en x
         @param y position en y
+        @param z position en z
      */
-    public Tile(int w,int h,int x,int y,int id){
+    public Tile(int w,int h,int x,int y, int z, int id){
         this.width = w;
         this.height = h;
         this.posX = x;
         this.posY = y;
+        this.posZ = z;
 
         image = new ImageView();
         switch(id){
             case 1 : imagePath = new Image(Main.class.getResourceAsStream("/img/ground.jpg"));
+                break;
+            case 2 : imagePath = new Image(Main.class.getResourceAsStream("/img/grass.jpg"));
                 break;
             default:;
         }
@@ -53,6 +58,10 @@ public class Tile {
     }
 
     public int getPosY() {
+        return posY;
+    }
+
+    public int getPosZ() {
         return posY;
     }
 }
