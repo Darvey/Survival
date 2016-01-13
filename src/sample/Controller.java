@@ -48,6 +48,8 @@ public class Controller {
                     System.out.println("D");
                     player.move(1);
                     break;
+                case I :
+                    player.displayInventory();
                 default:
                     return;
             }

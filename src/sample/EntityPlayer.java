@@ -23,7 +23,7 @@ public class EntityPlayer extends Entity{
     protected int dexterity;
     protected int intelect;
 
-    protected Inventory iv;
+    protected Inventory inv;
 
     // player position on map
     protected int posX;
@@ -57,7 +57,7 @@ public class EntityPlayer extends Entity{
         this.valueCompFire = 0;
         this.valueCompGun = 0;
 
-        this.iv = new Inventory();
+        this.inv = new Inventory();
 
         image = new ImageView();
         Image imagePath = new Image(Main.class.getResourceAsStream("../img/shroom.png"));
@@ -68,6 +68,13 @@ public class EntityPlayer extends Entity{
 
         image.setTranslateY(posY);
         image.setTranslateX(posX);
+
+
+        // Debut test pour inventaire
+        Item gk = new Item("goldKey_s");
+        this.inv.addItem(gk);
+        // Fin test pour inventaire
+
     }
     /*
         Default Constructor
@@ -122,8 +129,12 @@ public class EntityPlayer extends Entity{
         }
     }
 
+    public void displayInventory(){
+        this.inv.display();
+    }
+
     public Inventory getIv() {
-        return iv;
+        return inv;
     }
 
     public int getAgility() {

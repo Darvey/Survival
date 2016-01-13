@@ -14,10 +14,21 @@ public class Item {
 
     // On poura peut être ajouter ici une imgae pour la miniature dans l'inventaire.
 
+    public Item(String name){
+        this.name = name;
+        this.description = "";
+
+        image = new ImageView();
+        Image imagePath = new Image(Main.class.getResourceAsStream("../img/"+name+".png"));
+        image.setImage(imagePath);
+    }
+
+    /*
+        Default Constructor
+     */
     public Item(){
 
     }
-
 
     /*
         Getters
@@ -25,7 +36,6 @@ public class Item {
     public String getName() {
         return name;
     }
-
     public String getDescription() {
         return description;
     }

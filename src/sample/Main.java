@@ -24,17 +24,6 @@ public class Main extends Application {
             }
         }
 
-        ImageView img = new ImageView();
-        Image imagePath = new Image(Main.class.getResourceAsStream("../img/shroom.png"));
-        img.setImage(imagePath);
-
-        img.setVisible(true);
-        img.setTranslateY(64);
-        img.setTranslateX(64);
-
-        root.getChildren().add(img);
-        img.setTranslateZ(0);
-
         // Init primaryStage //
         Scene home = new Scene(root, 600, 400, true);
 
