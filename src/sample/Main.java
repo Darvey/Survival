@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -17,15 +18,15 @@ public class Main extends Application {
         //creation du groupe
         Group root = new Group();
 
-        Level L = new Level(3,4);
-        for(int i=0;i < 3;i++){
-            for(int j =0;j< 4;j++){
+        Level L = new Level(15, 10);
+        for(int i = 0; i < 15; i++){
+            for(int j = 0; j < 10; j++){
                 root.getChildren().add(L.getTile(i,j).getImage());
             }
         }
 
         // Init primaryStage //
-        Scene home = new Scene(root, 600, 400, true);
+        Scene home = new Scene(root, 960, 640, true);
 
         // Creation joueur
         EntityPlayer p = new EntityPlayer("Bernard",0,0,0,0,0);
@@ -39,6 +40,8 @@ public class Main extends Application {
         primaryStage.setTitle("Survival");
         primaryStage.setScene(home);
         primaryStage.show();
+
+
     }
 
     public static void main(String[] args) {

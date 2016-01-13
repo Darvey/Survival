@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
@@ -15,13 +16,16 @@ public class Controller {
         this.player = p;
         Scene home = h;
         System.out.println("enterControllerClass");
-        home.setOnKeyPressed(keyListener); //clavier
+        home.setOnKeyPressed(keyPressedListener); //clavier pressed
+        home.setOnKeyReleased(keyReleasedListener); //clavier released
         //home.setOnKeyReleased(keyListener);
         home.setOnMousePressed(mouseListener); //souris
         home.setOnScroll(scrollListener); //molette souris (wheel)
+
+
     }
 
-    final EventHandler<KeyEvent> keyListener = new EventHandler<KeyEvent>() {
+    final EventHandler<KeyEvent> keyPressedListener = new EventHandler<KeyEvent>() {
 
         public void handle(KeyEvent e){
             /*
@@ -33,23 +37,56 @@ public class Controller {
              */
             switch(e.getCode()) {
                 case Z :
-                    System.out.println("Z");
+                    //System.out.println("Z");
                     player.move(0);
                     break;
-                case Q :
-                    System.out.println("Q");
-                    player.move(3);
-                    break;
                 case S :
-                    System.out.println("S");
+                    //System.out.println("S");
+                    player.move(1);
+                    break;
+                case Q :
+                    //System.out.println("Q");
                     player.move(2);
                     break;
                 case D :
-                    System.out.println("D");
-                    player.move(1);
+                    //System.out.println("D");
+                    player.move(3);
                     break;
                 case I :
                     player.displayInventory();
+                default:
+                    return;
+            }
+        }
+    };
+
+    final EventHandler<KeyEvent> keyReleasedListener = new EventHandler<KeyEvent>() {
+
+        public void handle(KeyEvent e){
+            /*
+            en jeu :
+            Z = déplacer player vers le haut
+            Q = déplacer player vers la gauche
+            S = déplacer player vers le bas
+            D = déplacer player vers la droite
+             */
+            switch(e.getCode()) {
+                case Z :
+                    //System.out.println("rZ");
+                    player.move(4);
+                    break;
+                case S :
+                    //System.out.println("rS");
+                    player.move(5);
+                    break;
+                case Q :
+                    //System.out.println("rQ");
+                    player.move(6);
+                    break;
+                case D :
+                    //System.out.println("rD");
+                    player.move(7);
+                    break;
                 default:
                     return;
             }

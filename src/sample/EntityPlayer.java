@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.animation.AnimationTimer;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -26,12 +27,28 @@ public class EntityPlayer extends Entity{
     protected Inventory inv;
 
     // player position on map
-    protected int posX;
-    protected int posY;
+    protected float posX;
+    protected float posY;
 
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
     protected ImageView image;
     protected Image imagePath;
+
+    //-----move-----
+    protected float acc;
+    protected float accX;
+    protected float accY;
+    protected boolean pressedUp;
+    protected boolean pressedDown;
+    protected boolean pressedLeft;
+    protected boolean pressedRight;
+
+
+
+    //constantes
+    protected int accLimit;
+    protected float friction;
+    //--------------
 
     /*
         Player Constructor.
@@ -60,20 +77,38 @@ public class EntityPlayer extends Entity{
         this.inv = new Inventory();
 
         image = new ImageView();
-        Image imagePath = new Image(Main.class.getResourceAsStream("../img/shroom.png"));
+        Image imagePath = new Image(Main.class.getResourceAsStream("../img/bernard.png"));
         image.setImage(imagePath);
 
-        posX = 0;
-        posY = 0;
+        posX = 0f;
+        posY = 0f;
 
         image.setTranslateY(posY);
         image.setTranslateX(posX);
+
+        //move
+        this.acc = 0.4f;
+        this.accX = 0f;
+        this.accY = 0f;
+
+        this.pressedDown = false;
+        this.pressedLeft = false;
+        this.pressedRight = false;
+        this.pressedUp = false;
+        this.accLimit = 2;
+        this.friction = 0.9f;
 
 
         // Debut test pour inventaire
         Item gk = new Item("goldKey_s");
         this.inv.addItem(gk);
         // Fin test pour inventaire
+
+        new AnimationTimer(){
+            public void handle(long arg0){
+                moveto();
+            }
+        }.start();
 
     }
     /*
@@ -82,6 +117,8 @@ public class EntityPlayer extends Entity{
     public EntityPlayer(){
 
     }
+
+
 
     /*
         create a backup of the player
@@ -108,25 +145,85 @@ public class EntityPlayer extends Entity{
         move the character in the direction given by parameter
      */
     public void move(int dir){
+
         switch(dir){
-            case 0:
-                this.posY -= 10;
-                this.image.setTranslateY(posY);
+
+            case 0 :
+                this.pressedUp = true;
                 break;
-            case 1:
-                this.posX +=10;
-                this.image.setTranslateX(posX);
+            case 1 :
+                this.pressedDown = true;
                 break;
-            case 2:
-                this.posY +=10;
-                this.image.setTranslateY(posY);
+            case 2 :
+                this.pressedLeft = true;
                 break;
-            case 3:
-                this.posX -=10;
-                this.image.setTranslateX(posX);
+            case 3 :
+                this.pressedRight = true;
                 break;
-            default:;
+            case 4 :
+                this.pressedUp = false;
+                break;
+            case 5 :
+                this.pressedDown = false;
+                break;
+            case 6 :
+                this.pressedLeft = false;
+                break;
+            case 7 :
+                this.pressedRight = false;
+                break;
+            default :
+                return;
         }
+
+    }
+
+    public void moveto() {
+        System.out.println("accX : "+ this.accX + "/ accY :" + this.accY);
+        if (this.pressedUp) {
+            this.accY -= this.acc;
+        }
+        if (this.pressedDown) {
+            this.accY += this.acc;
+        }
+        if (this.pressedLeft) {
+            this.accX -= this.acc;
+        }
+        if (this.pressedRight) {
+            this.accX += this.acc;
+        }
+
+        accX *= friction;
+        accY *= friction;
+
+        if (this.accX > this.accLimit)
+            this.accX = this.accLimit;
+        if (this.accX < -this.accLimit)
+            this.accX = -this.accLimit;
+        if (this.accY > this.accLimit)
+            this.accY = this.accLimit;
+        if (this.accY < -this.accLimit)
+            this.accY = -this.accLimit;
+
+        accX = approximatelyZero(accX);
+        accY = approximatelyZero(accY);
+
+        this.posX += accX;
+        this.image.setTranslateX(posX);
+
+        this.posY += accY;
+        this.image.setTranslateY(posY);
+    }
+
+    private float approximatelyZero(float f){
+
+        float rF = f;
+        if(rF > 0f && rF < 0.1f)
+            rF = 0f;
+        if(rF < 0f && rF > -0.1f)
+            rF = 0f;
+
+        return rF;
     }
 
     public void displayInventory(){
