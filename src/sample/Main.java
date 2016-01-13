@@ -1,10 +1,11 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 
@@ -23,20 +24,26 @@ public class Main extends Application {
             }
         }
 
+        ImageView img = new ImageView();
+        Image imagePath = new Image(Main.class.getResourceAsStream("../img/grass.png"));
+        img.setImage(imagePath);
+
+        img.setVisible(true);
+        img.setTranslateY(64);
+        img.setTranslateX(64);
+
+        root.getChildren().add(img);
+        img.setTranslateZ(0);
+
         // Init primaryStage
         Scene home = new Scene(root, 600, 400, true);
 
         // init controles du joueur
         Controller cont = new Controller(home);
 
-
         primaryStage.setTitle("Survival");
         primaryStage.setScene(home);
         primaryStage.show();
-
-
-
-
     }
 
     public static void main(String[] args) {

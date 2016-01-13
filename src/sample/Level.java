@@ -39,14 +39,17 @@ public class Level {
                 tilesMap[i][j] = new Tile(64, 64, 64 * i, 64 * j, 1, defInt[i][j]);
             }
         }
+
     }
 
     public int getH() {
         return h;
     }
+
     public int getL() {
         return l;
     }
+
     public Tile getTile(int x,int y){
         return tilesMap[x][y];
     }

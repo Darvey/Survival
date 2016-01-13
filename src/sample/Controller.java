@@ -6,7 +6,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
-
 public class Controller {
 
     public Controller(Scene h){
@@ -43,7 +42,6 @@ public class Controller {
                     break;
                 default:
                     return;
-
             }
         }
     };

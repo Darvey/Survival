@@ -36,6 +36,7 @@ public class Tile {
         image.setTranslateX(posX);
         image.setTranslateY(posY);
         image.setTranslateZ(posZ);
+        image.setTranslateZ(1);
 
         switch (id) {
             case 1:
