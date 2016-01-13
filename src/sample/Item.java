@@ -12,6 +12,8 @@ public class Item {
     protected ImageView image;
     protected Image imagePath;
 
+    // On poura peut être ajouter ici une imgae pour la miniature dans l'inventaire.
+
     public Item(){
 
     }

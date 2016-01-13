@@ -8,7 +8,11 @@ import javafx.scene.input.ScrollEvent;
 
 public class Controller {
 
-    public Controller(Scene h){
+    Player player;
+
+    public Controller(Scene h,Player p){
+
+        this.player = p;
         Scene home = h;
         System.out.println("enterControllerClass");
         home.setOnKeyPressed(keyListener); //clavier
@@ -30,15 +34,19 @@ public class Controller {
             switch(e.getCode()) {
                 case Z :
                     System.out.println("Z");
+                    player.move(0);
                     break;
                 case Q :
                     System.out.println("Q");
+                    player.move(3);
                     break;
                 case S :
                     System.out.println("S");
+                    player.move(2);
                     break;
                 case D :
                     System.out.println("D");
+                    player.move(1);
                     break;
                 default:
                     return;

@@ -1,5 +1,8 @@
 package sample;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 import java.io.*;
 
 public class Player {
@@ -26,6 +29,14 @@ public class Player {
 
     private Inventory iv;
 
+    // player position on map
+    private int posX;
+    private int posY;
+
+    // pour tester ( plus tard on utilisera des tableaux pour les animations... )
+    protected ImageView image;
+    protected Image imagePath;
+
     /*
         Player Constructor.
         @param name nom du joueur
@@ -49,6 +60,18 @@ public class Player {
         this.valueCompCut = 0;
         this.valueCompFire = 0;
         this.valueCompGun = 0;
+
+        this.iv = new Inventory();
+
+        image = new ImageView();
+        Image imagePath = new Image(Main.class.getResourceAsStream("../img/shroom.png"));
+        image.setImage(imagePath);
+
+        posX = 0;
+        posY = 0;
+
+        image.setTranslateY(posY);
+        image.setTranslateX(posX);
     }
 
     /*
@@ -69,6 +92,31 @@ public class Player {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /*
+        move the character in the direction given by parameter
+     */
+    public void move(int dir){
+        switch(dir){
+            case 0:
+                this.posY -= 10;
+                this.image.setTranslateY(posY);
+                break;
+            case 1:
+                this.posX +=10;
+                this.image.setTranslateX(posX);
+                break;
+            case 2:
+                this.posY +=10;
+                this.image.setTranslateY(posY);
+                break;
+            case 3:
+                this.posX -=10;
+                this.image.setTranslateX(posX);
+                break;
+            default:;
         }
     }
 
@@ -102,5 +150,9 @@ public class Player {
 
     public int getStrength() {
         return strength;
+    }
+
+    public ImageView getImage() {
+        return image;
     }
 }

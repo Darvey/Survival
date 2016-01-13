@@ -25,7 +25,7 @@ public class Main extends Application {
         }
 
         ImageView img = new ImageView();
-        Image imagePath = new Image(Main.class.getResourceAsStream("../img/grass.png"));
+        Image imagePath = new Image(Main.class.getResourceAsStream("../img/shroom.png"));
         img.setImage(imagePath);
 
         img.setVisible(true);
@@ -38,8 +38,14 @@ public class Main extends Application {
         // Init primaryStage
         Scene home = new Scene(root, 600, 400, true);
 
+        // Creation joueur
+        Player p = new Player("Bernard",0,0,0,0,0);
+
+        // Ajout joueur au group
+        root.getChildren().add(p.getImage());
+
         // init controles du joueur
-        Controller cont = new Controller(home);
+        Controller cont = new Controller(home,p);
 
         primaryStage.setTitle("Survival");
         primaryStage.setScene(home);
