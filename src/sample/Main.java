@@ -35,7 +35,7 @@ public class Main extends Application {
         root.getChildren().add(img);
         img.setTranslateZ(0);
 
-        // Init primaryStage
+        // Init primaryStage //
         Scene home = new Scene(root, 600, 400, true);
 
         // Creation joueur
