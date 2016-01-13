@@ -8,9 +8,9 @@ import javafx.scene.input.ScrollEvent;
 
 public class Controller {
 
-    Player player;
+    EntityPlayer player;
 
-    public Controller(Scene h,Player p){
+    public Controller(Scene h,EntityPlayer p){
 
         this.player = p;
         Scene home = h;

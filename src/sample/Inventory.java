@@ -37,6 +37,7 @@ public class Inventory {
 
     /*
         returns the quantity of an item included in the inventory
+     */
     public int getQuantity(Item item){
         return itemList.get(item.getName()).size();
     }

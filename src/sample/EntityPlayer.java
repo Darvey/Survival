@@ -5,14 +5,10 @@ import javafx.scene.image.ImageView;
 
 import java.io.*;
 
-public class Player {
+public class EntityPlayer {
 
 
     private String name;
-
-    // Stats
-    private int pv;
-    private int speed;
 
     // Skills
     private int valueCompFire;
@@ -46,7 +42,7 @@ public class Player {
         @param d exterity value
         @param i intelect value
      */
-    public Player(String name, int a, int s, int c, int d, int i) {
+    public EntityPlayer(String name, int a, int s, int c, int d, int i) {
 
         this.name = name;
 
@@ -118,14 +114,6 @@ public class Player {
                 break;
             default:;
         }
-    }
-
-    public int getPv() {
-        return pv;
-    }
-
-    public int getSpeed() {
-        return speed;
     }
 
     public Inventory getIv() {
