@@ -1,5 +1,7 @@
 package sample;
 
+import java.io.*;
+
 public class Player {
 
 
@@ -37,6 +39,27 @@ public class Player {
         this.constitution = c;
         this.dexterity = d;
         this.intelect = i;
+    }
+
+    /*
+        create a backup of the player
+        @param f file name to use for backup
+     */
+    public void save(String f){
+        try {
+            ObjectOutputStream oos;
+            oos = new ObjectOutputStream(
+                    new BufferedOutputStream(
+                            new FileOutputStream(
+                                    new File(f + ".psave"))));
+
+            oos.writeObject(this); // objet à sauvegarder : this
+            oos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

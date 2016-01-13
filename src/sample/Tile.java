@@ -18,14 +18,14 @@ public class Tile {
 
     /*
         Constructeur de la classe.
-        @param w largeur de l'image
-        @param h hauteur de l'imgae
-        @param x position en x
-        @param y position en y
-        @param z position en z
-        @param id identifiant de la tile
+        @param h Tile height
+        @param w Tile width
+        @param x X position
+        @param y Y position
+        @param z Z position
+        @param id Tile id
      */
-    public Tile(int w, int h, int x, int y, int z, int id) {
+    public Tile(int h, int w, int x, int y, int z, int id) {
         this.width = w;
         this.height = h;
         this.posX = x;
@@ -36,7 +36,6 @@ public class Tile {
         image.setTranslateX(posX);
         image.setTranslateY(posY);
         image.setTranslateZ(posZ);
-        image.setTranslateZ(1);
 
         switch (id) {
             case 1:
