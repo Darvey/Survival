@@ -1,0 +1,52 @@
+-----classes abstraites-----
+
+je sais pas si ça se voit trop dans le DDC mais les classes abstraites sont :
+-Item
+-UsableItem
+-GraphicElement
+
++ les interfaces
++ les encapsulations
+
+-----Item-----
+
+représente tout ce qui peut être contenu dans l'inventaire :
+-junk : item qui n'est là que pour sa valeur (rubis) ou pour le craft (un morceau de lin). Ne peut être utilisé directement depuis l'inventaire
+-UsableItem : item utilisable depuis l'inventaire
+	-consumable : item qui est consommé après son utilisation (une baie, des bandages...). Certains de ses items ont une quantité > 1 dans le cas d'une boite de pillule par exemple.
+	-tool : item qui n'est pas consommé après son utilisation sauf usure (marteau, hache...)
+	-weapon : item (arme) qui peut être équipé
+
+-----ConsumableEffect-----
+
+il y a deux "description" et deux "name" pour qu'en fonction de "intelligenceNeeded" l'objet soit reconnu ou non.
+
+En imaginant que "intelligenceNeeded" soit capé à 48 pour une baie qu'il vient de ramasser sur un arbre, le mec qui a 12 en INT verra donc :
+
+"Petite baie bleue - C'est mou et ça sent le pipi"
+
+et le mec qui a 92 en INT verra :
+
+"Pototus molle - L'ingestion augmente les capacités physiques et soigne la Moudugenouliose"
+
+Pour dépasser le cap on pourrait ajouter une compétence d'herboristerie par exemple (chaque item étant associé à un domaine).
+
+Domaines possibles :
+-herboristerie (baies, champignons, herbes...)
+-géologie (roche à réduire en poudre, argile...)
+-alchimie (potions)
+-zoologie (grenouilles, insectes...)
+-pharmacologie (médicaments)
+...
+
+Lors de l'utilisation du consommable, le process serait :
+-récupération du domaine de l'item
+-récupération du niveau de la compétence associée 
+-comparaison de INT + niveau comp <> intNeeded
+-affichage de description/name 1 ou 2
+
+Et une petite note sur les baies :
+-si deux baies ont les mêmes images, mêmes descriptions , mêmes noms et ont été trouvé sur le même arbre, ce sont les mêmes baies (pour le joueur et au niveau de l'identifiant) et ont et auront toujours le même effet
+-au contraire si il y a une seule différence (un petit détail sur l'image par exemple), ce ne sont pas les mêmes baies et donc les effets seront différents (1 : augmente de façon permanente la force / 2 : mort instantanée)
+
+L'idée derrière ça (au-delà de la difficulté) est de forcer le joueur à tester des trucs, à s'en souvenir pour sa prochaine partie et à créer une intelligence collective. Un joueur experimenté ne se plantera plus de baie (qu'il reconnaitra même sans intelligence du coup) et pourra partager son savoir (ahah).

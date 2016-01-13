@@ -26,7 +26,7 @@ public class Level {
         //matrice de Int
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
-                defInt[i][j] = i % 2;
+                defInt[i][j] = i % 2 + 1;
             }
         }
 
