@@ -5,29 +5,29 @@ import javafx.scene.image.ImageView;
 
 import java.io.*;
 
-public class EntityPlayer {
+public class EntityPlayer extends Entity{
 
 
-    private String name;
+    protected String name;
 
     // Skills
-    private int valueCompFire;
-    private int valueCompBow;
-    private int valueCompGun;
-    private int valueCompCut;
+    protected int valueCompFire;
+    protected int valueCompBow;
+    protected int valueCompGun;
+    protected int valueCompCut;
 
     // Specs
-    private int agility;
-    private int strength;
-    private int constitution;
-    private int dexterity;
-    private int intelect;
+    protected int agility;
+    protected int strength;
+    protected int constitution;
+    protected int dexterity;
+    protected int intelect;
 
-    private Inventory iv;
+    protected Inventory iv;
 
     // player position on map
-    private int posX;
-    private int posY;
+    protected int posX;
+    protected int posY;
 
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
     protected ImageView image;
@@ -68,6 +68,12 @@ public class EntityPlayer {
 
         image.setTranslateY(posY);
         image.setTranslateX(posX);
+    }
+    /*
+        Default Constructor
+     */
+    public EntityPlayer(){
+
     }
 
     /*
