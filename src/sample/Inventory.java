@@ -30,4 +30,15 @@ public class Inventory {
         }
     }
 
+    public void deleteItem(Item item){
+        List<Item> l = itemList.get(item.getName());
+        l.remove(item);
+    }
+
+    /*
+        returns the quantity of an item included in the inventory
+    public int getQuantity(Item item){
+        return itemList.get(item.getName()).size();
+    }
+
 }
