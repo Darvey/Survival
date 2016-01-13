@@ -1,5 +1,4 @@
 package sample;
-
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -13,6 +12,9 @@ public class Tile {
     protected int posX; // position en x
     protected int posY; // position en y
     protected int posZ; // position en z
+
+    protected boolean solid;
+
     protected ImageView image;
     protected Image imagePath;
 
@@ -40,9 +42,11 @@ public class Tile {
         switch (id) {
             case 1:
                 imagePath = new Image(Main.class.getResourceAsStream("../img/ground.png"));
+                this.solid = false;
                 break;
             case 2:
                 imagePath = new Image(Main.class.getResourceAsStream("../img/grass.png"));
+                this.solid = false;
                 break;
             default:;
         }

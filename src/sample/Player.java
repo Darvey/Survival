@@ -34,11 +34,19 @@ public class Player {
         @param i intelect value
      */
     public Player(String name, int a, int s, int c, int d, int i) {
+
+        this.name = name;
+
         this.agility = a;
         this.strength = s;
         this.constitution = c;
         this.dexterity = d;
         this.intelect = i;
+
+        this.valueCompBow = 0;
+        this.valueCompCut = 0;
+        this.valueCompFire = 0;
+        this.valueCompGun = 0;
     }
 
     /*
@@ -62,5 +70,31 @@ public class Player {
         }
     }
 
+    public int getPv() {
+        return pv;
+    }
 
+    public int getSpeed() {
+        return speed;
+    }
+
+    public int getAgility() {
+        return agility;
+    }
+
+    public int getConstitution() {
+        return constitution;
+    }
+
+    public int getDexterity() {
+        return dexterity;
+    }
+
+    public int getIntelect() {
+        return intelect;
+    }
+
+    public int getStrength() {
+        return strength;
+    }
 }
