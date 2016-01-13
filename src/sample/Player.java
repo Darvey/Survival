@@ -24,6 +24,8 @@ public class Player {
     private int dexterity;
     private int intelect;
 
+    private Inventory iv;
+
     /*
         Player Constructor.
         @param name nom du joueur
@@ -76,6 +78,10 @@ public class Player {
 
     public int getSpeed() {
         return speed;
+    }
+
+    public Inventory getIv() {
+        return iv;
     }
 
     public int getAgility() {

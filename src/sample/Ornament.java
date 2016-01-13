@@ -28,7 +28,6 @@ public class Ornament {
         imagePath = new Image(Main.class.getResourceAsStream("../img/"+path+".png"));
     }
 
-
     /*
         Getters
     */
