@@ -11,22 +11,45 @@ public class EntityPlayer extends Entity{
 
     protected String name;
 
-    // Skills
+    // Compétences
     protected int valueCompFire;
     protected int valueCompBow;
     protected int valueCompGun;
     protected int valueCompCut;
 
-    // Specs
+    // Caractéristiques principales
     protected int agility;
     protected int strength;
     protected int constitution;
     protected int dexterity;
-    protected int intelect;
+    protected int intelligence;
+
+    //Caractéristiques secondaires
+    protected int health;
+    protected float moveSpeed;
+    protected int dodge;
+    protected int stealth;
+    protected int endurance;
+    protected int modAttackSpeedCacS;
+    protected int modAttackSpeedCacB;
+    protected int modAttackSpeedRange;
+    protected int modDamageCacS;
+    protected int modDamageCacB;
+    protected int modDamageRange;
+    protected int modPrecisionCacS;
+    protected int modPrecisionCacB;
+    protected int modPrecisionRange;
+    protected int modPrecisionGun;
+    protected int resistanceDisease;
+    protected int resistancePoison;
+    protected int resistanceTiredness;
+    protected int resistancePsy;
+    protected int identify;
+    protected int learn;
 
     protected Inventory inv;
 
-    // player position on map
+    // position du joueur sur la carte
     protected float posX;
     protected float posY;
 
@@ -34,7 +57,7 @@ public class EntityPlayer extends Entity{
     protected ImageView image;
     protected Image imagePath;
 
-    //-----move-----
+    //var de mouvements
     protected float acc;
     protected float accX;
     protected float accY;
@@ -42,10 +65,7 @@ public class EntityPlayer extends Entity{
     protected boolean pressedDown;
     protected boolean pressedLeft;
     protected boolean pressedRight;
-
-
-
-    //constantes
+    //constantes de mouvement
     protected int accLimit;
     protected float friction;
     //--------------
@@ -63,12 +83,17 @@ public class EntityPlayer extends Entity{
 
         this.name = name;
 
+        //caractéristiques principales
         this.agility = a;
         this.strength = s;
         this.constitution = c;
         this.dexterity = d;
-        this.intelect = i;
+        this.intelligence = i;
 
+        //caractéristiques secondaires
+        calculateSecondarySpecs();
+
+        //compétences
         this.valueCompBow = 0;
         this.valueCompCut = 0;
         this.valueCompFire = 0;
@@ -90,14 +115,12 @@ public class EntityPlayer extends Entity{
         this.acc = 0.4f;
         this.accX = 0f;
         this.accY = 0f;
-
         this.pressedDown = false;
         this.pressedLeft = false;
         this.pressedRight = false;
         this.pressedUp = false;
         this.accLimit = 2;
         this.friction = 0.9f;
-
 
         // Debut test pour inventaire
         Item gk = new Item("goldKey_s");
@@ -145,9 +168,9 @@ public class EntityPlayer extends Entity{
         move the character in the direction given by parameter
      */
     public void move(int dir){
-
+        //récupération des touches appuyées et relachées
+        //0, 1, 2, 3 : touche appuyées / 4, 5, 6, 7 : touche relachées
         switch(dir){
-
             case 0 :
                 this.pressedUp = true;
                 break;
@@ -173,13 +196,14 @@ public class EntityPlayer extends Entity{
                 this.pressedRight = false;
                 break;
             default :
-                return;
+                break;
         }
 
     }
 
     public void moveto() {
         System.out.println("accX : "+ this.accX + "/ accY :" + this.accY);
+        //application des accélerations en fonction des touches appuyées
         if (this.pressedUp) {
             this.accY -= this.acc;
         }
@@ -193,9 +217,11 @@ public class EntityPlayer extends Entity{
             this.accX += this.acc;
         }
 
+        //application de la friction (ex : 0.9 sur terre, 0.3 sur de la glace)
         accX *= friction;
         accY *= friction;
 
+        //cap de l'accéleration
         if (this.accX > this.accLimit)
             this.accX = this.accLimit;
         if (this.accX < -this.accLimit)
@@ -205,12 +231,13 @@ public class EntityPlayer extends Entity{
         if (this.accY < -this.accLimit)
             this.accY = -this.accLimit;
 
+        //arrondi à zero quand la valeur est très petite (ex : 0.000658 = 0)
         accX = approximatelyZero(accX);
         accY = approximatelyZero(accY);
 
+        //déplacement du personnage en fonction de son accéleration
         this.posX += accX;
         this.image.setTranslateX(posX);
-
         this.posY += accY;
         this.image.setTranslateY(posY);
     }
@@ -225,6 +252,61 @@ public class EntityPlayer extends Entity{
 
         return rF;
     }
+
+    private void calculateSecondarySpecs(){
+        //str = force physique
+        //agi = agilité du corps
+        //dextérité = agilité des doigts, manipulation
+        //con = endurance / resistance du corps
+        //int = intelligence innée / force mental
+
+        //-----déplacement-----
+        //vitesse de déplacement (0.3 => 1.3 (si con et agi à 100))doit jouer sur acc et accLimit
+        this.moveSpeed = 0.3f + ((this.constitution + 1) / 500) + ((this.agility + 1) / 125);
+        //furtivité du personnage
+        this.stealth = Math.round(10 + ((this.agility + 1)/ 2));
+        //endurance
+        this.endurance = Math.round(10 + ((this.constitution + 1)/ 2));
+
+        //-----modificateur de défenses-----
+        //vie
+        this.health = 100 + this.constitution + 1;
+        //esquive
+        this.dodge = Math.round(5 + ((this.agility + 1) / 5));
+
+        //-----modificateur d'attaque-----
+        //vitesse d'attaque avec arme au corps à corps (dague)
+        this.modAttackSpeedCacS = Math.round((this.agility + 1) / 5);
+        //vitesse d'attaque avec arme au corps à corps (masse)
+        this.modAttackSpeedCacB = Math.round((this.agility + this.strength + 1) / 9);
+        //vitesse d'attaque avec arme à distance (arc, fronde)
+        this.modAttackSpeedRange = Math.round((this.dexterity + this.agility + 1) / 10);
+        //dégats avec les armes (sauf gun)
+        this.modDamageCacS = Math.round((this.dexterity + 1) / 6);
+        this.modDamageCacB = Math.round((this.strength + 1) / 6);
+        this.modDamageRange = Math.round((this.strength + 1) / 8);
+        //précision des armes
+        this.modPrecisionCacS = Math.round((this.dexterity + this.agility + 1) / 11);
+        this.modPrecisionCacB = Math.round((this.agility + 1) / 9);
+        this.modPrecisionRange = Math.round((this.dexterity + 1) / 8);
+        this.modPrecisionGun = Math.round((this.dexterity + 1) / 8);
+
+        //-----resistances-----
+        //resistance à la maladie
+        this.resistanceDisease = Math.round(15 + ((this.constitution + 1) / 4));
+        //resistance au maladie
+        this.resistancePoison = Math.round(5 + ((this.constitution + 1) / 6));
+        //resistance à la fatigue
+        this.resistanceTiredness = Math.round(20 + ((this.constitution + 1) / 4));
+        //resistance mentale
+        this.resistancePsy = Math.round(10 + (this.intelligence + 1) / 3);
+
+        //-----autre-----
+        this.learn = Math.round(this.intelligence / 2);
+        this.identify = Math.round(this.intelligence);
+    }
+
+
 
     public void displayInventory(){
         this.inv.display();
@@ -247,7 +329,7 @@ public class EntityPlayer extends Entity{
     }
 
     public int getIntelect() {
-        return intelect;
+        return intelligence;
     }
 
     public int getStrength() {
