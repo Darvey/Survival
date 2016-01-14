@@ -64,7 +64,7 @@ public class EntityPlayer extends Entity{
     protected boolean pressedLeft;
     protected boolean pressedRight;
     //constantes de mouvement
-    protected int accLimit;
+    protected float accLimit;
     protected float friction;
     //--------------
 
@@ -94,8 +94,11 @@ public class EntityPlayer extends Entity{
         this.valueCompFire = 0;
         this.valueCompGun = 0;
 
+
+        //inventaire
         this.inv = new Inventory();
 
+        //image
         image = new ImageView();
         Image imagePath = new Image(Main.class.getResourceAsStream("../img/bernard.png"));
         image.setImage(imagePath);
@@ -107,15 +110,20 @@ public class EntityPlayer extends Entity{
         image.setTranslateX(posX);
 
         //move
-        this.accLimit = 5;
-        this.friction = 0.9f;
-        this.acc = 0.22f; //0.22 (A et C = 0) => 0.55 (A et C = 100)
+        this.accLimit = 6;
+        this.friction = 0.5f;
+        this.acc = 3f; //3 (A et C = 0) => 0.55 (A et C = 100)
         this.accX = 0f;
         this.accY = 0f;
         this.pressedDown = false;
         this.pressedLeft = false;
         this.pressedRight = false;
         this.pressedUp = false;
+
+        /*
+        0.22 * 0.9 * 10 = ~2 / moveSpeed = 0.22 => accLimit = 2
+        0.55 * 0.9 * 10 = ~5 / moveSpeed = 0.55 => accLimit = 5
+         */
 
         //caractéristiques secondaires
         calculateSecondarySpecs();
@@ -217,9 +225,10 @@ public class EntityPlayer extends Entity{
         }
 
         //application de la friction (ex : 0.9 sur terre, 0.3 sur de la glace)
-        accX *= friction;
-        accY *= friction;
+        accX *= this.friction;
+        accY *= this.friction;
 
+        this.accLimit = (float)(this.moveSpeed * this.friction * 10);
         //cap de l'accéleration
         if (this.accX > this.accLimit)
             this.accX = this.accLimit;
@@ -229,6 +238,8 @@ public class EntityPlayer extends Entity{
             this.accY = this.accLimit;
         if (this.accY < -this.accLimit)
             this.accY = -this.accLimit;
+
+        System.out.println("accX : "+this.accX+" / accLimit : "+this.accLimit+" / moveSpeed : "+this.moveSpeed);
 
         //arrondi à zero quand la valeur est très petite (ex : 0.000658 = 0)
         accX = approximatelyZero(accX);
@@ -261,9 +272,12 @@ public class EntityPlayer extends Entity{
         int = intelligence innée / force mental
         */
 
+        
+
         //-----déplacement-----
         //vitesse de déplacement (0.22 => 0.55 (si con et agi à 100))
-        this.moveSpeed = this.acc + ((float)this.constitution / 1500) + ((float)this.agility / 375);
+        this.moveSpeed = this.acc + ((float)this.constitution / 250) + (float)((float)this.agility / 62.5);
+
         //furtivité du personnage
         this.stealth = Math.round(10 + ((this.agility + 1)/ 2));
         //endurance

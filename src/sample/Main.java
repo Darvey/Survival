@@ -29,7 +29,7 @@ public class Main extends Application {
         Scene home = new Scene(root, 960, 640, true);
 
         // Creation joueur
-        EntityPlayer p = new EntityPlayer("Bernard",16,34,55,12,12); //s a d c i
+        EntityPlayer p = new EntityPlayer("Bernard",16,100,55,100,12); //s a d c i
 
         // Ajout joueur au group
         root.getChildren().add(p.getImage());
