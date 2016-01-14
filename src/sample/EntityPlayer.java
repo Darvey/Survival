@@ -25,10 +25,10 @@ public class EntityPlayer extends Entity{
     protected int intelligence;
 
     //Caractéristiques secondaires
-    protected int health;
-    protected float moveSpeed;
-    protected int dodge;
-    protected int stealth;
+    //protected int health;
+    //protected float moveSpeed;
+    //protected int dodge;
+    //protected int stealth;
     protected int endurance;
     protected int modAttackSpeedCacS;
     protected int modAttackSpeedCacB;
@@ -49,9 +49,7 @@ public class EntityPlayer extends Entity{
 
     protected Inventory inv;
 
-    // position du joueur sur la carte
-    protected float posX;
-    protected float posY;
+
 
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
     protected ImageView image;
@@ -73,11 +71,11 @@ public class EntityPlayer extends Entity{
     /*
         Player Constructor.
         @param name nom du joueur
-        @param a agility value
         @param s strength value
+        @param a agility value
+        @param d dexterity value
         @param c constitution value
-        @param d exterity value
-        @param i intelect value
+        @param i intelligence value
      */
     public EntityPlayer(String name, int s, int a, int d, int c, int i) {
 

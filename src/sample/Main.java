@@ -37,6 +37,13 @@ public class Main extends Application {
         // init controles du joueur
         Controller cont = new Controller(home,p);
 
+        //création d'un monstre
+        Monster monster1 = new Monster();
+
+        // Ajout monstre au group
+        root.getChildren().add(monster1.getImage());
+
+
         primaryStage.setTitle("Survival");
         primaryStage.setScene(home);
         primaryStage.show();

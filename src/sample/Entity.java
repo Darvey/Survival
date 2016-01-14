@@ -2,9 +2,14 @@ package sample;
 
 public class Entity {
 
-    protected int hp;
-    protected int moveSpeed;
-    protected int flee;
+    protected int health;
+    protected float moveSpeed;
+    protected int dodge;
+    protected int stealth;
+
+    // position du joueur sur la carte
+    protected float posX;
+    protected float posY;
 
     public Entity(){
 
@@ -14,11 +19,19 @@ public class Entity {
     /*
         Getters
      */
-    public int getPv() {
-        return hp;
+    public int getHealth() {
+        return health;
     }
 
-    public int getSpeed() {
+    public float getMoveSpeed() {
         return moveSpeed;
+    }
+
+    public int getDodge() {
+        return dodge;
+    }
+
+    public int getStealth() {
+        return stealth;
     }
 }
