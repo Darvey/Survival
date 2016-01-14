@@ -79,19 +79,16 @@ public class EntityPlayer extends Entity{
         @param d exterity value
         @param i intelect value
      */
-    public EntityPlayer(String name, int a, int s, int c, int d, int i) {
+    public EntityPlayer(String name, int s, int a, int d, int c, int i) {
 
         this.name = name;
 
         //caractéristiques principales
-        this.agility = a;
         this.strength = s;
-        this.constitution = c;
+        this.agility = a;
         this.dexterity = d;
+        this.constitution = c;
         this.intelligence = i;
-
-        //caractéristiques secondaires
-        calculateSecondarySpecs();
 
         //compétences
         this.valueCompBow = 0;
@@ -112,15 +109,18 @@ public class EntityPlayer extends Entity{
         image.setTranslateX(posX);
 
         //move
-        this.acc = 0.4f;
+        this.accLimit = 5;
+        this.friction = 0.9f;
+        this.acc = 0.22f; //0.22 (A et C = 0) => 0.55 (A et C = 100)
         this.accX = 0f;
         this.accY = 0f;
         this.pressedDown = false;
         this.pressedLeft = false;
         this.pressedRight = false;
         this.pressedUp = false;
-        this.accLimit = 2;
-        this.friction = 0.9f;
+
+        //caractéristiques secondaires
+        calculateSecondarySpecs();
 
         // Debut test pour inventaire
         Item gk = new Item("goldKey_s");
@@ -202,19 +202,20 @@ public class EntityPlayer extends Entity{
     }
 
     public void moveto() {
-        System.out.println("accX : "+ this.accX + "/ accY :" + this.accY);
+        //System.out.println("moveSpeed : "+this.moveSpeed+" / accX : "+ this.accX + " / accY :" + this.accY);
+
         //application des accélerations en fonction des touches appuyées
         if (this.pressedUp) {
-            this.accY -= this.acc;
+            this.accY -= this.moveSpeed;
         }
         if (this.pressedDown) {
-            this.accY += this.acc;
+            this.accY += this.moveSpeed;
         }
         if (this.pressedLeft) {
-            this.accX -= this.acc;
+            this.accX -= this.moveSpeed;
         }
         if (this.pressedRight) {
-            this.accX += this.acc;
+            this.accX += this.moveSpeed;
         }
 
         //application de la friction (ex : 0.9 sur terre, 0.3 sur de la glace)
@@ -235,7 +236,7 @@ public class EntityPlayer extends Entity{
         accX = approximatelyZero(accX);
         accY = approximatelyZero(accY);
 
-        //déplacement du personnage en fonction de son accéleration
+        //déplacement du personnage en fonction de son accéleration (moveSpeed)
         this.posX += accX;
         this.image.setTranslateX(posX);
         this.posY += accY;
@@ -254,15 +255,17 @@ public class EntityPlayer extends Entity{
     }
 
     private void calculateSecondarySpecs(){
-        //str = force physique
-        //agi = agilité du corps
-        //dextérité = agilité des doigts, manipulation
-        //con = endurance / resistance du corps
-        //int = intelligence innée / force mental
+        /*
+        str = force physique
+        agi = agilité du corps
+        dextérité = agilité des doigts, manipulation
+        con = endurance / resistance du corps
+        int = intelligence innée / force mental
+        */
 
         //-----déplacement-----
-        //vitesse de déplacement (0.3 => 1.3 (si con et agi à 100))doit jouer sur acc et accLimit
-        this.moveSpeed = 0.3f + ((this.constitution + 1) / 500) + ((this.agility + 1) / 125);
+        //vitesse de déplacement (0.22 => 0.55 (si con et agi à 100))
+        this.moveSpeed = this.acc + ((float)this.constitution / 1500) + ((float)this.agility / 375);
         //furtivité du personnage
         this.stealth = Math.round(10 + ((this.agility + 1)/ 2));
         //endurance
@@ -270,36 +273,36 @@ public class EntityPlayer extends Entity{
 
         //-----modificateur de défenses-----
         //vie
-        this.health = 100 + this.constitution + 1;
+        this.health = 100 + this.constitution;
         //esquive
-        this.dodge = Math.round(5 + ((this.agility + 1) / 5));
+        this.dodge = Math.round(5 + (this.agility / 5));
 
         //-----modificateur d'attaque-----
         //vitesse d'attaque avec arme au corps à corps (dague)
-        this.modAttackSpeedCacS = Math.round((this.agility + 1) / 5);
+        this.modAttackSpeedCacS = Math.round(this.agility / 5);
         //vitesse d'attaque avec arme au corps à corps (masse)
-        this.modAttackSpeedCacB = Math.round((this.agility + this.strength + 1) / 9);
+        this.modAttackSpeedCacB = Math.round((this.agility + this.strength) / 9);
         //vitesse d'attaque avec arme à distance (arc, fronde)
-        this.modAttackSpeedRange = Math.round((this.dexterity + this.agility + 1) / 10);
+        this.modAttackSpeedRange = Math.round((this.dexterity + this.agility) / 10);
         //dégats avec les armes (sauf gun)
-        this.modDamageCacS = Math.round((this.dexterity + 1) / 6);
-        this.modDamageCacB = Math.round((this.strength + 1) / 6);
-        this.modDamageRange = Math.round((this.strength + 1) / 8);
+        this.modDamageCacS = Math.round(this.dexterity / 6);
+        this.modDamageCacB = Math.round(this.strength / 6);
+        this.modDamageRange = Math.round(this.strength / 8);
         //précision des armes
-        this.modPrecisionCacS = Math.round((this.dexterity + this.agility + 1) / 11);
-        this.modPrecisionCacB = Math.round((this.agility + 1) / 9);
-        this.modPrecisionRange = Math.round((this.dexterity + 1) / 8);
-        this.modPrecisionGun = Math.round((this.dexterity + 1) / 8);
+        this.modPrecisionCacS = Math.round((this.dexterity + this.agility) / 11);
+        this.modPrecisionCacB = Math.round(this.agility / 9);
+        this.modPrecisionRange = Math.round(this.dexterity / 8);
+        this.modPrecisionGun = Math.round(this.dexterity / 8);
 
         //-----resistances-----
         //resistance à la maladie
-        this.resistanceDisease = Math.round(15 + ((this.constitution + 1) / 4));
+        this.resistanceDisease = Math.round(15 + (this.constitution / 4));
         //resistance au maladie
-        this.resistancePoison = Math.round(5 + ((this.constitution + 1) / 6));
+        this.resistancePoison = Math.round(5 + (this.constitution / 6));
         //resistance à la fatigue
-        this.resistanceTiredness = Math.round(20 + ((this.constitution + 1) / 4));
+        this.resistanceTiredness = Math.round(20 + (this.constitution / 4));
         //resistance mentale
-        this.resistancePsy = Math.round(10 + (this.intelligence + 1) / 3);
+        this.resistancePsy = Math.round(10 + (this.intelligence / 3));
 
         //-----autre-----
         this.learn = Math.round(this.intelligence / 2);
