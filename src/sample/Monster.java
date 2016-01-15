@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 
-public class Monster extends Entity {
+public class Monster extends Entity implements MoveListener {
 
     /*
     entity :
@@ -14,8 +14,9 @@ public class Monster extends Entity {
     stealth
     moveSpeed
     */
-    private int reach;
-    private int aggressivity; //0 : fuyard, 1 : se défend, 2 : agressif
+    protected String name;
+    protected int reach;
+    protected int aggressivity; //0 : fuyard, 1 : se défend, 2 : agressif
 
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
     protected ImageView image;
@@ -23,14 +24,15 @@ public class Monster extends Entity {
 
     protected int timer;
 
-    public Monster() {
+    public Monster(String pName, float pPosX, float pPosY) {
 
         image = new ImageView();
         Image imagePath = new Image(Main.class.getResourceAsStream("../img/mothaBlue.png"));
         image.setImage(imagePath);
 
-        posX = 200f;
-        posY = 200f;
+        this.name = pName;
+        this.posX = pPosX;
+        this.posY = pPosY;
 
         image.setTranslateY(posY);
         image.setTranslateX(posX);
@@ -42,6 +44,11 @@ public class Monster extends Entity {
                 behaviourMove();
             }
         }.start();
+    }
+
+    public void playerIsMoving(float pPosX, float pPosY){
+
+        System.out.println("Grrr ! Moi "+this.name+" vois un joueur situé en :"+pPosX+"/"+pPosY);
     }
 
     public void behaviourMove(){

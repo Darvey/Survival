@@ -38,11 +38,16 @@ public class Main extends Application {
         Controller cont = new Controller(home,p);
 
         //création d'un monstre
-        Monster monster1 = new Monster();
+        Monster monster1 = new Monster("Albert la mouche", 200, 200);
+        Monster monster2 = new Monster("Hector à babord", 400, 400);
 
         // Ajout monstre au group
         root.getChildren().add(monster1.getImage());
+        root.getChildren().add(monster2.getImage());
 
+        //les monstres écoutent le joueur
+        p.addListener(monster1);
+        p.addListener(monster2);
 
         primaryStage.setTitle("Survival");
         primaryStage.setScene(home);

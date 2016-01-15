@@ -5,6 +5,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntityPlayer extends Entity{
 
@@ -148,6 +150,13 @@ public class EntityPlayer extends Entity{
     }
 
 
+    //liste des écouteurs du déplacement du joueur
+    private List<MoveListener> listeners = new ArrayList<MoveListener>();
+
+    public void addListener(MoveListener toAdd) {
+        listeners.add(toAdd);
+    }
+
 
     /*
         create a backup of the player
@@ -176,6 +185,10 @@ public class EntityPlayer extends Entity{
     public void move(int dir){
         //récupération des touches appuyées et relachées
         //0, 1, 2, 3 : touche appuyées / 4, 5, 6, 7 : touche relachées
+
+        for (MoveListener hl : listeners)
+            hl.playerIsMoving(this.posX, this.posY);
+
         switch(dir){
             case 0 :
                 this.pressedUp = true;
@@ -239,7 +252,7 @@ public class EntityPlayer extends Entity{
         if (this.accY < -this.accLimit)
             this.accY = -this.accLimit;
 
-        System.out.println("accX : "+this.accX+" / accLimit : "+this.accLimit+" / moveSpeed : "+this.moveSpeed);
+        //System.out.println("accX : "+this.accX+" / accLimit : "+this.accLimit+" / moveSpeed : "+this.moveSpeed);
 
         //arrondi à zero quand la valeur est très petite (ex : 0.000658 = 0)
         accX = approximatelyZero(accX);
@@ -272,7 +285,7 @@ public class EntityPlayer extends Entity{
         int = intelligence innée / force mental
         */
 
-        
+
 
         //-----déplacement-----
         //vitesse de déplacement (0.22 => 0.55 (si con et agi à 100))
