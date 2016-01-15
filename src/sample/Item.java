@@ -8,6 +8,7 @@ public class Item {
 
     protected String name;
     protected String description;
+    protected float weight;
 
     protected ImageView image;
     protected Image imagePath;
@@ -38,6 +39,10 @@ public class Item {
     }
     public String getDescription() {
         return description;
+    }
+
+    public float getWeight() {
+        return weight;
     }
 
     public ImageView getImage() {

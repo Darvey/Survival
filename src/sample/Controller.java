@@ -86,7 +86,7 @@ public class Controller {
                 case D :
                     //System.out.println("rD");
                     player.move(7);
-                    break;
+                break;
                 default:
                     return;
             }

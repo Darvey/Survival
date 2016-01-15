@@ -100,13 +100,15 @@ public class EntityPlayer extends Entity{
         //inventaire
         this.inv = new Inventory();
 
+
         //image
         image = new ImageView();
         Image imagePath = new Image(Main.class.getResourceAsStream("../img/bernard.png"));
         image.setImage(imagePath);
 
-        posX = 0f;
-        posY = 0f;
+
+        this.posX = 0f;
+        this.posY = 0f;
 
         image.setTranslateY(posY);
         image.setTranslateX(posX);
@@ -130,10 +132,24 @@ public class EntityPlayer extends Entity{
         //caractéristiques secondaires
         calculateSecondarySpecs();
 
+        // ----------------------------------------------------------------
         // Debut test pour inventaire
-        Item gk = new Item("goldKey_s");
-        this.inv.addItem(gk);
+
+        Item pO = new Item("pieceOr");
+        this.inv.addItem(pO);
+
+        Item pA = new Item("pieceBronze");
+        this.inv.addItem(pA);
+
+        Item pB = new Item("pieceArgent");
+        this.inv.addItem(pB);
+
+        Item kA = new Item("keySilver");
+        this.inv.addItem(kA);
+
+        // ----------------------------------------------------------------
         // Fin test pour inventaire
+
 
         new AnimationTimer(){
             public void handle(long arg0){
@@ -150,12 +166,14 @@ public class EntityPlayer extends Entity{
     }
 
 
+
     //liste des écouteurs du déplacement du joueur
     private List<MoveListener> listeners = new ArrayList<MoveListener>();
 
     public void addListener(MoveListener toAdd) {
         listeners.add(toAdd);
     }
+
 
 
     /*
