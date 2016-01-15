@@ -24,6 +24,9 @@ public class Monster extends Entity implements MoveListener {
 
     protected int timer;
 
+    protected float playerPosX;
+    protected float playerPosY;
+
     public Monster(String pName, float pPosX, float pPosY) {
 
         image = new ImageView();
@@ -33,6 +36,8 @@ public class Monster extends Entity implements MoveListener {
         this.name = pName;
         this.posX = pPosX;
         this.posY = pPosY;
+        this.playerPosX = -1000000;
+        this.playerPosY = -1000000;
 
         image.setTranslateY(posY);
         image.setTranslateX(posX);
@@ -48,7 +53,9 @@ public class Monster extends Entity implements MoveListener {
 
     public void playerIsMoving(float pPosX, float pPosY){
 
-        System.out.println("Grrr ! Moi "+this.name+" vois un joueur situé en :"+pPosX+"/"+pPosY);
+        //System.out.println("Grrr ! Moi "+this.name+" vois un joueur situé en :"+pPosX+"/"+pPosY);
+        this.playerPosX = pPosX;
+        this.playerPosY = pPosY;
     }
 
     public void behaviourMove(){
@@ -58,6 +65,14 @@ public class Monster extends Entity implements MoveListener {
         this.image.setTranslateX(posX);
         this.posY += Math.cos(timer/8) * 2;
         this.image.setTranslateY(posY);
+
+        float deltaX = this.posX - this.playerPosX;
+        float deltaY = this.posY - this.playerPosY;
+        float deltaPos = (float)Math.sqrt((float)Math.pow(deltaX, 2) + (float)Math.pow(deltaY, 2));
+        //System.out.println(deltaPos);
+
+        if(deltaPos < 200)
+            System.out.println("Grrr ! Moi "+this.name+" vois un joueur à "+Math.round(deltaPos)+" pixels de moi");
     }
 
     public ImageView getImage() {
