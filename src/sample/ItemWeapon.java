@@ -14,7 +14,7 @@ public class ItemWeapon extends Item{
     private int inteligenceNeeded;
 
     /**
-    * @param
+    * Constructor
     */
     public ItemWeapon(String name,
                       int precision,

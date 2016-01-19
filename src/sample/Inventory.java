@@ -31,43 +31,44 @@ public class Inventory {
 
     private boolean gridMat[][];                        // représente la présence d'un element sur la grille
     private GridPane grid;                              // gridPane pour le placement des items sur la scene
+    private BorderPane bp;
     private Scene scene;                                // scene pour contenir les differents node
     private Stage stage;                                // fenetre de l'inventaire
 
     protected ImageView closeView;                      // node du bouton de fermeture
     protected Image closeImage;                         // image du bouton de fermeture
-
-
+    
     /**
     * Constructor
     */
-    public Inventory() {
-
-        itemMap = new HashMap<String,Item>();
-        posMap = new HashMap<String,Position>();
+    public Inventory()
+    {
+        this.itemMap = new HashMap<String,Item>();
+        this.posMap = new HashMap<String,Position>();
 
         this.setMaxSize(20);
         this.initGrid();
 
-        BorderPane bp = new BorderPane();
-        bp.setPadding(new Insets(10,10,10,10));
+        this.bp = new BorderPane();
+        this.bp.setPadding(new Insets(10,10,10,10));
 
-        closeView = new ImageView();
-        closeImage = new Image(Main.class.getResourceAsStream("../img/button.png"));
-        closeView.setImage(closeImage);
-        bp.setTop(closeView);
-        bp.setCenter(grid);
+        this.closeView = new ImageView();
+        this.closeImage = new Image(Main.class.getResourceAsStream("../img/button.png"));
+        this.closeView.setImage(closeImage);
+        this.bp.setTop(closeView);
+        this.bp.setCenter(grid);
 
-        scene = new Scene(bp, 200, 200);
-        stage = new Stage();
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(scene);
+        this.scene = new Scene(bp, 200, 200);
+        this.stage = new Stage();
+        this.stage.initStyle(StageStyle.UNDECORATED);
+        this.stage.setScene(scene);
     }
 
     /**
      * Display the Inventory on screen
      */
-    public void display(){
+    public void display()
+    {
         stage.show();
     }
 
@@ -77,57 +78,62 @@ public class Inventory {
      */
     public void addItem(Item item) {
         // Si l'objet est déjà présent dans l'inventaire
-        if (itemMap.containsKey(item.getName())) {
+        if (this.itemMap.containsKey(item.getName()))
+        {
             // ajout du nombre d'item récupérés au nombre d'item déjà présent dans l'inventaire
-            itemMap.get(item.getName()).setNbr(
+            this.itemMap.get(item.getName()).setNbr(
                     itemMap.get(item.getName()).getNbr() + item.getNbr()
             );
             this.weight = this.weight + item.getWeight();
-        } else {
-            itemMap.put(item.name,item);
+        }
+        else
+        {
+            this.itemMap.put(item.name,item);
             // recherche une place dans l'inventaire
             Position p = searchFreeBox();
             // ajout dans le tableau d'association "item/Position"
-            posMap.put(item.getName(),p);
+            this;posMap.put(item.getName(),p);
             // ajout de l'item à la grille
-            grid.add(item.getImage(),p.getY(),p.getX());
+            this.grid.add(item.getImage(),p.getY(),p.getX());
             this.weight = this.weight + item.getWeight();
         }
     }
-
     /**
      *    delete an item of the inventory
      *    @param item to delete
      */
-    public void deleteItem(Item item) {
-        itemMap.remove(item.getName());
+    public void deleteItem(Item item)
+    {
+        this.itemMap.remove(item.getName());
     }
-
     /**
      *   @return the quantity of an item included in the inventory
      */
-    public int getItemQuantity(Item item) {
-        return itemMap.get(item.getName()).getNbr();
+    public int getItemQuantity(Item item)
+    {
+        return this.itemMap.get(item.getName()).getNbr();
     }
-
     /**
      *   set the maximum size of the inventory
      */
-    public void setMaxSize(int maxItem) {
+    public void setMaxSize(int maxItem)
+    {
         this.maxItem = maxItem;
     }
-
     /**
      *  @return postition de la première case libre dans l'inventaire
      */
-    public Position searchFreeBox() {
-
+    public Position searchFreeBox()
+    {
         Position p = null;
 
-        for (int i = 0; i < nbrBoxOnX; i++) {
-            for (int j = 0; j < nbrBoxOnY; j++) {
-                if (gridMat[i][j] == false) {
-                    gridMat[i][j] = true;
+        for (int i = 0; i < nbrBoxOnX; i++)
+        {
+            for (int j = 0; j < nbrBoxOnY; j++)
+            {
+                if (this.gridMat[i][j] == false)
+                {
+                    this.gridMat[i][j] = true;
                     return p = new Position(i,j);
                 }
             }
@@ -135,17 +141,19 @@ public class Inventory {
         return p;
     }
 
-    public void initGrid(){
+    public void initGrid()
+    {
+        this.grid = new GridPane();
+        this.grid.setPadding(new Insets(32, 32, 32, 32));
+        this.grid.setHgap(4);
+        this.grid.setVgap(4);
 
-        grid = new GridPane();
-        grid.setPadding(new Insets(32, 32, 32, 32));
-        grid.setHgap(4);
-        grid.setVgap(4);
-
-        gridMat = new boolean[nbrBoxOnX][nbrBoxOnY];
-        for (int i = 0; i < nbrBoxOnX; i++) {
-            for (int j = 0; j < nbrBoxOnY; j++) {
-                gridMat[i][j] = false;
+        this.gridMat = new boolean[nbrBoxOnX][nbrBoxOnY];
+        for (int i = 0; i < nbrBoxOnX; i++)
+        {
+            for (int j = 0; j < nbrBoxOnY; j++)
+            {
+                this.gridMat[i][j] = false;
             }
         }
     }
