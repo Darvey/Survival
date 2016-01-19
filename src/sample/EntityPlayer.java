@@ -51,8 +51,6 @@ public class EntityPlayer extends Entity{
 
     protected Inventory inv;
 
-
-
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
     protected ImageView image;
     protected Image imagePath;
@@ -72,12 +70,12 @@ public class EntityPlayer extends Entity{
 
     /*
         Player Constructor.
-        @param name nom du joueur
-        @param s strength value
-        @param a agility value
-        @param d dexterity value
-        @param c constitution value
-        @param i intelligence value
+        @param String name nom du joueur
+        @param int s strength value
+        @param int a agility value
+        @param itn d dexterity value
+        @param int c constitution value
+        @param int i intelligence value
      */
     public EntityPlayer(String name, int s, int a, int d, int c, int i) {
 
@@ -96,16 +94,13 @@ public class EntityPlayer extends Entity{
         this.valueCompFire = 0;
         this.valueCompGun = 0;
 
-
         //inventaire
         this.inv = new Inventory();
-
 
         //image
         image = new ImageView();
         Image imagePath = new Image(Main.class.getResourceAsStream("../img/bernard.png"));
         image.setImage(imagePath);
-
 
         this.posX = 0f;
         this.posY = 0f;
@@ -135,16 +130,16 @@ public class EntityPlayer extends Entity{
         // ----------------------------------------------------------------
         // Debut test pour inventaire
 
-        Item pO = new Item("pieceOr");
+        Item pO = new Item("pieceOr",0.2f);
         this.inv.addItem(pO);
 
-        Item pA = new Item("pieceBronze");
+        Item pA = new Item("pieceBronze",1.0f);
         this.inv.addItem(pA);
 
-        Item pB = new Item("pieceArgent");
+        Item pB = new Item("pieceArgent",0.9f);
         this.inv.addItem(pB);
 
-        Item kA = new Item("keySilver");
+        Item kA = new Item("keySilver",0.4F);
         this.inv.addItem(kA);
 
         // ----------------------------------------------------------------
@@ -165,9 +160,7 @@ public class EntityPlayer extends Entity{
 
     }
 
-
-
-    //liste des écouteurs du déplacement du joueur
+    // liste des écouteurs du déplacement du joueur
     private List<MoveListener> listeners = new ArrayList<MoveListener>();
 
     public void addListener(MoveListener toAdd) {
@@ -178,7 +171,7 @@ public class EntityPlayer extends Entity{
 
     /*
         create a backup of the player
-        @param f file name to use for backup
+        @param String f file name to use for backup
      */
     public void save(String f){
         try {

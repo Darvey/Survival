@@ -1,6 +1,5 @@
 package sample;
 
-
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.geometry.Insets;
@@ -13,39 +12,39 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
 public class Inventory {
 
-    /*
-        gridTab : martrice de boolean. true pour la présence d'un item
-        permet de placer les items sur la grille.
-     */
-    private int maxSize;
-    private int maxWeight;
-    private int weight;
+    private int maxItem;                                // nombre d'item maximum
+    private int maxWeight;                              // poid maximum supporté
+    private float weight;                               // poid total de l'inventaire
 
-    private int nbrBoxOnX = 4;
-    private int nbrBoxOnY = 2;
+    private int nbrBoxOnX = 4;                          // nombre de cases en X
+    private int nbrBoxOnY = 2;                          // nombre de cases en Y
 
-    private TreeMap<String,List<Item>> itemMap;
-    private TreeMap<String,Position> assocMap;
-    private boolean gridTab[][];
+    private HashMap<String,Item> itemMap;               // liste d'items
+    private HashMap<String,Position> posMap;            // lie un item avec une position dans l'inventaire
 
-    private Scene scene;
-    private Stage stage;
-    private GridPane grid;
+    private boolean gridMat[][];                        // représente la présence d'un element sur la grille
+    private GridPane grid;                              // gridPane pour le placement des items sur la scene
+    private Scene scene;                                // scene pour contenir les differents node
+    private Stage stage;                                // fenetre de l'inventaire
 
-    protected ImageView closeView;
-    protected Image closeImage;
+    protected ImageView closeView;                      // node du bouton de fermeture
+    protected Image closeImage;                         // image du bouton de fermeture
 
+
+    /**
+    * Constructor
+    */
     public Inventory() {
 
-        itemMap = new TreeMap<String,List<Item>>();
-        assocMap = new TreeMap<String,Position>();
+        itemMap = new HashMap<String,Item>();
+        posMap = new HashMap<String,Position>();
 
         this.setMaxSize(20);
         this.initGrid();
@@ -56,9 +55,7 @@ public class Inventory {
         closeView = new ImageView();
         closeImage = new Image(Main.class.getResourceAsStream("../img/button.png"));
         closeView.setImage(closeImage);
-
         bp.setTop(closeView);
-
         bp.setCenter(grid);
 
         scene = new Scene(bp, 200, 200);
@@ -67,60 +64,61 @@ public class Inventory {
         stage.setScene(scene);
     }
 
-    /*
-        Display the Inventory on screen
+    /**
+     * Display the Inventory on screen
      */
     public void display(){
         stage.show();
     }
 
-    /*
-        add an item into the inventory
-        @param item to add
+    /**
+     * add an item into the inventory
+     * @param item to add
      */
     public void addItem(Item item) {
         // Si l'objet est déjà présent dans l'inventaire
         if (itemMap.containsKey(item.getName())) {
-            List<Item> l = itemMap.get(item.getName());
-            l.add(item);
+            // ajout du nombre d'item récupérés au nombre d'item déjà présent dans l'inventaire
+            itemMap.get(item.getName()).setNbr(
+                    itemMap.get(item.getName()).getNbr() + item.getNbr()
+            );
+            this.weight = this.weight + item.getWeight();
         } else {
-            List<Item> l = new ArrayList<>();
-            l.add(item);
-            itemMap.put(item.name, l);
+            itemMap.put(item.name,item);
             // recherche une place dans l'inventaire
             Position p = searchFreeBox();
             // ajout dans le tableau d'association "item/Position"
-            assocMap.put(item.getName(),p);
+            posMap.put(item.getName(),p);
             // ajout de l'item à la grille
-            grid.add(l.get(0).getImage(),p.getY(),p.getX());
+            grid.add(item.getImage(),p.getY(),p.getX());
+            this.weight = this.weight + item.getWeight();
         }
     }
 
-    /*
-        delete an item of the inventory
-        @param item to delete
+    /**
+     *    delete an item of the inventory
+     *    @param item to delete
      */
     public void deleteItem(Item item) {
-        List<Item> l = itemMap.get(item.getName());
-        l.remove(item);
+        itemMap.remove(item.getName());
     }
-    /*
-        returns the quantity of an item included in the inventory
+
+    /**
+     *   @return the quantity of an item included in the inventory
      */
     public int getItemQuantity(Item item) {
-        return itemMap.get(item.getName()).size();
+        return itemMap.get(item.getName()).getNbr();
     }
 
-    /*
-        set the maximum size of the inventory
+    /**
+     *   set the maximum size of the inventory
      */
-    public void setMaxSize(int maxSize) {
-        this.maxSize = maxSize;
+    public void setMaxSize(int maxItem) {
+        this.maxItem = maxItem;
     }
 
-    /*
-        Fonction qui renvoit la Position de la première Case
-        de libre dans l'inventaire
+    /**
+     *  @return postition de la première case libre dans l'inventaire
      */
     public Position searchFreeBox() {
 
@@ -128,8 +126,8 @@ public class Inventory {
 
         for (int i = 0; i < nbrBoxOnX; i++) {
             for (int j = 0; j < nbrBoxOnY; j++) {
-                if (gridTab[i][j] == false) {
-                    gridTab[i][j] = true;
+                if (gridMat[i][j] == false) {
+                    gridMat[i][j] = true;
                     return p = new Position(i,j);
                 }
             }
@@ -144,11 +142,10 @@ public class Inventory {
         grid.setHgap(4);
         grid.setVgap(4);
 
-        gridTab = new boolean[nbrBoxOnX][nbrBoxOnY];
-
+        gridMat = new boolean[nbrBoxOnX][nbrBoxOnY];
         for (int i = 0; i < nbrBoxOnX; i++) {
             for (int j = 0; j < nbrBoxOnY; j++) {
-                gridTab[i][j] = false;
+                gridMat[i][j] = false;
             }
         }
     }
