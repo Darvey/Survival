@@ -22,6 +22,7 @@ import java.util.*;
 
 public class Inventory {
 
+    protected boolean isOpen = false;                   // est-ce que l'inventaire est ouvert ou non
     private int maxItem;                                // nombre d'item maximum
     private int maxWeight;                              // poid maximum supporté
     private float weight;                               // poid total de l'inventaire
@@ -108,10 +109,12 @@ public class Inventory {
         System.out.print(stage.isShowing());
         if(stage.isShowing())
         {
+            this.isOpen = false;
             stage.close();
             System.out.println("CLOSE INVENTAIRE");
         }else
         {
+            this.isOpen = true;
             System.out.println("OPEN INVENTAIRE");
             stage.show();
         }

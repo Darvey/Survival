@@ -107,7 +107,13 @@ public class Controller {
             //sur quel bouton de la souris on appuie ?
             switch(e.getButton()) {
                 case PRIMARY :
-                    System.out.println("Position clic gauche = (x :" + e.getSceneX() + ", y :" + e.getSceneY() + ")");
+                    if(e.getClickCount() == 2){
+                        if(player.inv.isOpen){
+                            System.out.println("Position double-clic gauche = (x :" + e.getSceneX() + ", y :" + e.getSceneY() + ")");
+                        }
+                    }else {
+                        System.out.println("Position clic gauche = (x :" + e.getSceneX() + ", y :" + e.getSceneY() + ")");
+                    }
                     break;
                 case SECONDARY :
                     System.out.println("Position clic droit = (x :" + e.getSceneX() + ", y :" + e.getSceneY() + ")");

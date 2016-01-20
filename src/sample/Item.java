@@ -1,7 +1,9 @@
 package sample;
 
+import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 
 /**
  * Un item
@@ -31,6 +33,7 @@ public class Item {
         this.image = new ImageView();
         this.imagePath = new Image(Main.class.getResourceAsStream("../img/"+name+".png"));
         this.image.setImage(imagePath);
+        this.image.setOnMouseClicked(mouseListener);
     }
 
     /**
@@ -66,5 +69,15 @@ public class Item {
     public ImageView getImage() {
         return image;
     }
+
+    // others
+
+    final EventHandler<MouseEvent> mouseListener = new EventHandler<MouseEvent>(){
+
+
+        public void handle(MouseEvent e) {
+
+        }
+    };
 
 }
