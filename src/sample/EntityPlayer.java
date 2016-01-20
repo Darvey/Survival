@@ -106,7 +106,7 @@ public class EntityPlayer extends Entity{
 
         //image
         image = new ImageView();
-        Image imagePath = new Image(Main.class.getResourceAsStream("../img/Player/gilbert.png"));
+        Image imagePath = new Image(Main.class.getResourceAsStream("../img/player/gilbert.png"));
         image.setImage(imagePath);
 
         this.posX = 0f;
