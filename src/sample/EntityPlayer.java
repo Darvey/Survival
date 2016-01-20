@@ -155,7 +155,8 @@ public class EntityPlayer extends Entity{
         Item kA = new Item("keySilver",0.4F);
         this.inv.addItem(kA);
 
-        this.inv.deleteItem(kA);
+        this.inv.setShortcut(1,pB3);
+
 
         // ----------------------------------------------------------------
         // Fin test pour inventaire

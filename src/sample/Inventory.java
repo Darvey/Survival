@@ -43,7 +43,7 @@ public class Inventory {
     protected Image closeImage;                         // image du bouton de fermeture
     protected final Font font;                          // pixel police
 
-    protected Item shortcuts[];              // tableau de racourcis
+    protected Item shortcuts[];                         // tableau de racourcis
 
     /**
     * Constructor
@@ -162,6 +162,7 @@ public class Inventory {
                 // supprime l'item
                 this.itemMap.remove(entry.getKey());
                 // supprime le label
+                this.labelMap.get(entry.getKey()).setVisible(false);
                 this.labelMap.remove(entry.getKey());
                 // libère la place sur la grille d'affichage
                 int x = posMap.get(entry.getKey()).getX();
@@ -240,5 +241,12 @@ public class Inventory {
      */
     public void setShortcut(int n,Item item){
         shortcuts[n] = itemMap.get(item.getName());
+        System.out.println(shortcuts[n].getName());
+    }
+
+    public void useShortcut(int n){
+        shortcuts[n].setNbr(shortcuts[n].getNbr()-1);
+        System.out.println("item "+itemMap.get(shortcuts[n].getName()).getName()+" =" +itemMap.get(shortcuts[n].getName()).getNbr());
+        refreshItemList();
     }
 }

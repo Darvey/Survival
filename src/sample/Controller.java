@@ -54,6 +54,9 @@ public class Controller {
                     break;
                 case I :
                     player.displayInventory();
+                    break;
+                case DIGIT1:
+                    player.inv.useShortcut(1);
                 default:
                     return;
             }
