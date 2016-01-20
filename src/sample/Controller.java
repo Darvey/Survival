@@ -10,10 +10,12 @@ import javafx.scene.input.ScrollEvent;
 public class Controller {
 
     EntityPlayer player;
+    Level level;
 
-    public Controller(Scene h,EntityPlayer p){
+    public Controller(Scene h,EntityPlayer p,Level level){
 
         this.player = p;
+        this.level = level;
         Scene home = h;
         System.out.println("enterControllerClass");
         home.setOnKeyPressed(keyPressedListener); //clavier pressed
@@ -21,7 +23,6 @@ public class Controller {
         //home.setOnKeyReleased(keyListener);
         home.setOnMousePressed(mouseListener); //souris
         home.setOnScroll(scrollListener); //molette souris (wheel)
-
 
     }
 
@@ -57,6 +58,10 @@ public class Controller {
                     break;
                 case DIGIT1:
                     player.inv.useShortcut(1);
+                    break;
+                case E :
+                    level.action(player);
+                    break;
                 default:
                     return;
             }

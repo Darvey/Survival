@@ -25,6 +25,8 @@ public class Main extends Application {
             }
         }
 
+        root.getChildren().add(L.getItem(3,3).getImage());
+
         // Init primaryStage //
         Scene home = new Scene(root, 960, 640, true);
 
@@ -35,7 +37,7 @@ public class Main extends Application {
         root.getChildren().add(p.getImage());
 
         // init controles du joueur
-        Controller cont = new Controller(home,p);
+        Controller cont = new Controller(home,p,L);
 
         //création d'un monstre
         Monster monster1 = new Monster("Albert la mouche", 200, 200);

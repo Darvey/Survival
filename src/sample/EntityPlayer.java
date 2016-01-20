@@ -378,6 +378,10 @@ public class EntityPlayer extends Entity{
         this.inv.display();
     }
 
+    public void addItem(Item item)
+    {
+        this.inv.addItem(item);
+    }
 
     // ----- GETTERS -----// 
 

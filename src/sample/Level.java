@@ -7,6 +7,7 @@ public class Level {
 
     private String name;
     private Tile[][] tilesMap;
+    private Item[][] itemMap;
     private int h;
     private int l;
 
@@ -22,6 +23,7 @@ public class Level {
         this.l=x;
 
         int defInt[][] = new int[x][y];
+        itemMap = new Item[x][y];
 
         //matrice de Int
         for (int i = 0; i < x; i++) {
@@ -40,6 +42,24 @@ public class Level {
             }
         }
 
+        // -------- DEBUT test interactiveOnrenemt ---------//
+
+        itemMap[3][3] = new Item("interactiveOrnement/shroom1",1.2f);
+        itemMap[3][3].getImage().setTranslateX(32*3+12);
+        itemMap[3][3].getImage().setTranslateY(32*3+10);
+
+        // -------- DEBUT test interactiveOnrenemt ---------//
+
+    }
+
+    public void action(EntityPlayer player)
+    {
+        int caseX = (int)player.getImage().getTranslateX()/32;
+        int caseY = (int)player.getImage().getTranslateY()/32;
+        System.out.println("posPlayer = "+caseX+" "+caseY);
+        if(caseX == 2 && caseY == 2){
+            player.addItem(itemMap[3][3]);
+        }
     }
 
     public int getH() {
@@ -52,6 +72,11 @@ public class Level {
 
     public Tile getTile(int x,int y){
         return tilesMap[x][y];
+    }
+
+    public Item getItem(int x,int y)
+    {
+        return itemMap[x][y];
     }
 
 }
