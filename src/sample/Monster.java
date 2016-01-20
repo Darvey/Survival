@@ -30,7 +30,7 @@ public class Monster extends Entity implements MoveListener {
     public Monster(String pName, float pPosX, float pPosY) {
 
         image = new ImageView();
-        Image imagePath = new Image(Main.class.getResourceAsStream("../img/mothaBlue.png"));
+        Image imagePath = new Image(Main.class.getResourceAsStream("../img/monster/mothaStatic.png"));
         image.setImage(imagePath);
 
         this.name = pName;
