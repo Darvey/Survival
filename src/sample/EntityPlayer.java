@@ -146,8 +146,16 @@ public class EntityPlayer extends Entity{
         Item pB = new Item("pieceArgent",0.9f);
         this.inv.addItem(pB);
 
+        Item pB2 = new Item("pieceArgent",0.9f);
+        this.inv.addItem(pB2);
+
+        Item pB3 = new Item("pieceArgent",0.9f);
+        this.inv.addItem(pB3);
+
         Item kA = new Item("keySilver",0.4F);
         this.inv.addItem(kA);
+
+        this.inv.deleteItem(kA);
 
         // ----------------------------------------------------------------
         // Fin test pour inventaire

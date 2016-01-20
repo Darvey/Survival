@@ -8,11 +8,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -29,6 +31,7 @@ public class Inventory {
 
     private HashMap<String,Item> itemMap;               // liste d'items
     private HashMap<String,Position> posMap;            // lie un item avec une position dans l'inventaire
+    private HashMap<String,Label> labelMap;             // liste des labels contenant le nombre de chaque item
 
     private boolean gridMat[][];                        // représente la présence d'un element sur la grille
     private GridPane grid;                              // gridPane pour le placement des items sur la scene
@@ -38,13 +41,21 @@ public class Inventory {
 
     protected ImageView closeView;                      // node du bouton de fermeture
     protected Image closeImage;                         // image du bouton de fermeture
+    protected final Font font;                          // pixel police
+
+    protected Item shortcuts[];              // tableau de racourcis
 
     /**
     * Constructor
     */
     public Inventory() {
+
+        font = Font.loadFont(Inventory.class.getResource("slkscr.ttf").toExternalForm(), 20);
+        shortcuts = new Item[10];
+
         this.itemMap = new HashMap<String, Item>();
         this.posMap = new HashMap<String, Position>();
+        this.labelMap = new HashMap<String,Label>();
 
         this.setMaxSize(20);
         this.initGrid();
@@ -64,6 +75,17 @@ public class Inventory {
         this.stage.setScene(scene);
 
         this.setBtnAction();
+
+        // ------- DEBUT test affichage nombre d'item ---------//
+
+        // final Font f = Font.loadFont(Inventory.class.getResource("slkscr.ttf").toExternalForm(), 20);
+        // this.labelMap.put("key",new Label("22"));
+        // this.labelMap.get("key").setFont(f);
+        // this.bp.setBottom(labelMap.get("key"));
+
+
+        // ------- FIN test affichage nombre d'item ---------//
+
 
     }
 
@@ -107,17 +129,24 @@ public class Inventory {
             this.itemMap.get(item.getName()).setNbr(
                     itemMap.get(item.getName()).getNbr() + item.getNbr()
             );
+            // modification label
+            this.labelMap.get(item.getName()).setText(Integer.toString(
+                    itemMap.get(item.getName()).getNbr()));
             this.weight = this.weight + item.getWeight();
         }
         else
         {
             this.itemMap.put(item.name,item);
+            // ajout label
+            this.labelMap.put(item.name,new Label(Integer.toString(item.getNbr())));
+            this.labelMap.get(item.getName()).setFont(font);
             // recherche une place dans l'inventaire
             Position p = searchFreeBox();
             // ajout dans le tableau d'association "item/Position"
             this.posMap.put(item.getName(),p);
             // ajout de l'item à la grille
-            this.grid.add(item.getImage(),p.getY(),p.getX());
+            this.grid.add(item.getImage(),p.getX(),p.getY());
+            this.grid.add(labelMap.get(item.getName()),p.getX(),p.getY());
             this.weight = this.weight + item.getWeight();
         }
     }
@@ -132,6 +161,8 @@ public class Inventory {
             {
                 // supprime l'item
                 this.itemMap.remove(entry.getKey());
+                // supprime le label
+                this.labelMap.remove(entry.getKey());
                 // libère la place sur la grille d'affichage
                 int x = posMap.get(entry.getKey()).getX();
                 int y = posMap.get(entry.getKey()).getY();
@@ -200,5 +231,14 @@ public class Inventory {
                 this.gridMat[i][j] = false;
             }
         }
+    }
+
+    /**
+     * Set a shortcut
+     * @param n represent the number of [0-9] of the shortcuts
+     * @param item the item for add on the shortcut
+     */
+    public void setShortcut(int n,Item item){
+        shortcuts[n] = itemMap.get(item.getName());
     }
 }
