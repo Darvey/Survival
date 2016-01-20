@@ -68,6 +68,13 @@ public class EntityPlayer extends Entity{
     protected float friction;
     //--------------
 
+    //pour le calcul de fps
+    protected final long ONE_SECOND = 1000000000;
+    protected long currentTime = 0;
+    protected long lastTime = 0;
+    protected long fps = 0;
+    protected long delta = 0;
+
     /*
         Player Constructor.
         @param String name nom du joueur
@@ -145,7 +152,7 @@ public class EntityPlayer extends Entity{
         // ----------------------------------------------------------------
         // Fin test pour inventaire
 
-
+        lastTime = System.nanoTime();
         new AnimationTimer(){
             public void handle(long arg0){
                 moveto();
@@ -232,7 +239,17 @@ public class EntityPlayer extends Entity{
     }
 
     public void moveto() {
-        //System.out.println("moveSpeed : "+this.moveSpeed+" / accX : "+ this.accX + " / accY :" + this.accY);
+
+        //calcul du fps
+        currentTime = System.nanoTime();
+        fps++;
+        delta += currentTime - lastTime;
+        if(delta > ONE_SECOND) {
+            System.out.println("FPS :"+ fps);
+            delta -= ONE_SECOND;
+            fps = 0;
+        }
+        lastTime = currentTime;
 
         //application des accélerations en fonction des touches appuyées
         if (this.pressedUp) {

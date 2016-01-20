@@ -92,7 +92,7 @@ public class Inventory {
             // recherche une place dans l'inventaire
             Position p = searchFreeBox();
             // ajout dans le tableau d'association "item/Position"
-            this;posMap.put(item.getName(),p);
+            this.posMap.put(item.getName(),p);
             // ajout de l'item à la grille
             this.grid.add(item.getImage(),p.getY(),p.getX());
             this.weight = this.weight + item.getWeight();
