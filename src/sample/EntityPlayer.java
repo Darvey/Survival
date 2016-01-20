@@ -118,7 +118,7 @@ public class EntityPlayer extends Entity{
         //move
         this.accLimit = 6;
         this.friction = 0.5f;
-        this.acc = 3f; //3 (A et C = 0) => 0.55 (A et C = 100)
+        this.acc = 3f;                              //3 (A et C = 0) => 0.55 (A et C = 100)
         this.accX = 0f;
         this.accY = 0f;
         this.pressedDown = false;
@@ -160,8 +160,8 @@ public class EntityPlayer extends Entity{
         }.start();
 
     }
-    /*
-        Default Constructor
+    /**
+     * Default Constructor
      */
     public EntityPlayer(){
 
@@ -176,9 +176,9 @@ public class EntityPlayer extends Entity{
 
 
 
-    /*
-        create a backup of the player
-        @param String f file name to use for backup
+    /**
+     * create a backup of the player
+     * @param String f file name to use for backup
      */
     public void save(String f){
         try {
@@ -197,8 +197,9 @@ public class EntityPlayer extends Entity{
         }
     }
 
-    /*
-        move the character in the direction given by parameter
+    /**
+     * move the character in the direction given by parameter
+     * @param dir the direction for the movement
      */
     public void move(int dir){
         //récupération des touches appuyées et relachées
@@ -367,6 +368,9 @@ public class EntityPlayer extends Entity{
     public void displayInventory(){
         this.inv.display();
     }
+
+
+    // ----- GETTERS -----// 
 
     public Inventory getIv() {
         return inv;
