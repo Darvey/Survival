@@ -26,7 +26,7 @@ public class Level {
         //matrice de Int
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
-                defInt[i][j] = i % 2 + 1;
+                defInt[i][j] = i % 3 + 1;
             }
         }
 
@@ -36,7 +36,7 @@ public class Level {
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
-                tilesMap[i][j] = new Tile(64, 64, 64 * i, 64 * j, 1, defInt[i][j]);
+                tilesMap[i][j] = new Tile(32, 32, 32 * i, 32 * j, 1, defInt[i][j]);
             }
         }
 
