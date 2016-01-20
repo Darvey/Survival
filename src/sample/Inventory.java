@@ -2,20 +2,21 @@ package sample;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeMap;
+
+import java.util.*;
 
 public class Inventory {
 
@@ -37,20 +38,19 @@ public class Inventory {
 
     protected ImageView closeView;                      // node du bouton de fermeture
     protected Image closeImage;                         // image du bouton de fermeture
-    
+
     /**
     * Constructor
     */
-    public Inventory()
-    {
-        this.itemMap = new HashMap<String,Item>();
-        this.posMap = new HashMap<String,Position>();
+    public Inventory() {
+        this.itemMap = new HashMap<String, Item>();
+        this.posMap = new HashMap<String, Position>();
 
         this.setMaxSize(20);
         this.initGrid();
 
         this.bp = new BorderPane();
-        this.bp.setPadding(new Insets(10,10,10,10));
+        this.bp.setPadding(new Insets(10, 10, 10, 10));
 
         this.closeView = new ImageView();
         this.closeImage = new Image(Main.class.getResourceAsStream("../img/button.png"));
@@ -62,14 +62,37 @@ public class Inventory {
         this.stage = new Stage();
         this.stage.initStyle(StageStyle.UNDECORATED);
         this.stage.setScene(scene);
+
+        this.setBtnAction();
+
     }
 
+    /**
+     *  Défini l'action sur les différents boutons de l'inventaire
+     */
+    public void setBtnAction(){
+        closeView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                display();
+            }
+        });
+    }
     /**
      * Display the Inventory on screen
      */
     public void display()
     {
-        stage.show();
+        System.out.print(stage.isShowing());
+        if(stage.isShowing())
+        {
+            stage.close();
+            System.out.println("CLOSE INVENTAIRE");
+        }else
+        {
+            System.out.println("OPEN INVENTAIRE");
+            stage.show();
+        }
     }
 
     /**
@@ -97,6 +120,27 @@ public class Inventory {
             this.grid.add(item.getImage(),p.getY(),p.getX());
             this.weight = this.weight + item.getWeight();
         }
+    }
+    /**
+     * Supprime de la liste les items dont l'attribut "nbr" est à 0
+     */
+    public void refreshItemList()
+    {
+        for(Map.Entry<String,Item> entry : itemMap.entrySet())
+        {
+            if(entry.getValue().getNbr() == 0)
+            {
+                // supprime l'item
+                this.itemMap.remove(entry.getKey());
+                // libère la place sur la grille d'affichage
+                int x = posMap.get(entry.getKey()).getX();
+                int y = posMap.get(entry.getKey()).getY();
+                this.gridMat[x][y] = false;
+                // supprime sa position
+                this.posMap.remove(entry.getKey());
+            }
+        }
+
     }
     /**
      *    delete an item of the inventory
