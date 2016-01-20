@@ -159,7 +159,8 @@ public class Inventory {
         {
             if(entry.getValue().getNbr() == 0)
             {
-                // supprime l'item
+                // supprime l'item de la liste
+                this.itemMap.get(entry.getKey()).getImage().setVisible(false);
                 this.itemMap.remove(entry.getKey());
                 // supprime le label
                 this.labelMap.get(entry.getKey()).setVisible(false);
@@ -170,6 +171,7 @@ public class Inventory {
                 this.gridMat[x][y] = false;
                 // supprime sa position
                 this.posMap.remove(entry.getKey());
+
             }
         }
 
@@ -246,7 +248,7 @@ public class Inventory {
 
     public void useShortcut(int n){
         shortcuts[n].setNbr(shortcuts[n].getNbr()-1);
-        System.out.println("item "+itemMap.get(shortcuts[n].getName()).getName()+" =" +itemMap.get(shortcuts[n].getName()).getNbr());
+        labelMap.get(shortcuts[n].getName()).setText(Integer.toString(shortcuts[n].getNbr()));
         refreshItemList();
     }
 }
