@@ -61,19 +61,29 @@ public class Monster extends Entity implements MoveListener {
     public void behaviourMove(){
 
         timer += 1;
-        this.posX += Math.sin(timer/36) * 4;
-        this.image.setTranslateX(posX);
-        this.posY += Math.cos(timer/8) * 2;
-        this.image.setTranslateY(posY);
 
         float deltaX = this.posX - this.playerPosX;
         float deltaY = this.posY - this.playerPosY;
         float deltaPos = (float)Math.sqrt((float)Math.pow(deltaX, 2) + (float)Math.pow(deltaY, 2));
         //System.out.println(deltaPos);
+        float aggX = -deltaX / deltaPos * 3;
+        float aggY = -deltaY / deltaPos * 3;
+        System.out.println(aggX+" - "+aggY);
 
         if(deltaPos < 200) {
             //System.out.println("Grrr ! Moi "+this.name+" vois un joueur à "+Math.round(deltaPos)+" pixels de moi");
+
+            this.posX += aggX;
+            this.posY += aggY;
+
+
+        }else{
+            this.posX += Math.sin(timer/36) * 4;
+            this.posY += Math.cos(timer/8) * 2;
+
         }
+        this.image.setTranslateX(posX);
+        this.image.setTranslateY(posY);
      }
 
     public ImageView getImage() {
