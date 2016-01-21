@@ -118,7 +118,7 @@ public class EntityPlayer extends Entity{
         //move
         this.accLimit = 6;
         this.friction = 0.5f;
-        this.acc = 3f;                              //3 (A et C = 0) => 0.55 (A et C = 100)
+        this.acc = 3f;
         this.accX = 0f;
         this.accY = 0f;
         this.pressedDown = false;
@@ -126,10 +126,6 @@ public class EntityPlayer extends Entity{
         this.pressedRight = false;
         this.pressedUp = false;
 
-        /*
-        0.22 * 0.9 * 10 = ~2 / moveSpeed = 0.22 => accLimit = 2
-        0.55 * 0.9 * 10 = ~5 / moveSpeed = 0.55 => accLimit = 5
-         */
 
         //caractéristiques secondaires
         calculateSecondarySpecs();
@@ -152,7 +148,7 @@ public class EntityPlayer extends Entity{
         Item pB3 = new Item("pieceArgent",0.9f);
         this.inv.addItem(pB3);
 
-        Item kA = new Item("keySilver",0.4F);
+        Item kA = new Item("keySilver",0.4f);
         this.inv.addItem(kA);
 
         this.inv.setShortcut(1,pB3);
@@ -160,6 +156,32 @@ public class EntityPlayer extends Entity{
 
         // ----------------------------------------------------------------
         // Fin test pour inventaire
+
+        // ----- début test arme -----
+        /*
+        String name,
+        float weight,
+        int precision,
+        int damage,
+        int speed,
+        int type,
+        int strenghtNeeded,
+        int dexterityNeeded,
+        int inteligenceNeeded
+         */
+        ItemWeapon gun1= new ItemWeapon(
+                "shotgun",
+                5f,
+                37,
+                12,
+                5,
+                1,
+                12,
+                15,
+                5
+        );
+        this.inv.addItem(gun1);
+        // ----- fin test arme -----
 
         lastTime = System.nanoTime();
         new AnimationTimer(){

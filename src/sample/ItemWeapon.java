@@ -1,40 +1,48 @@
 package sample;
 
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 public class ItemWeapon extends Item{
 
-    private String name;
-    private int precision;
-    private int damage;
-    private int speed;
-    private int newAttr;
-    private int type;
-    private int strenghtNeeded;
-    private int dexterityNeeded;
-    private int inteligenceNeeded;
+    //protected String name; inherit
+    protected int precision;
+    protected int damage;
+    protected int speed;
+    protected int newAttr;
+    protected int type;
+    protected int strenghtNeeded;
+    protected int dexterityNeeded;
+    protected int inteligenceNeeded;
 
     /**
     * Constructor
     */
     public ItemWeapon(String name,
+                      float weight,
                       int precision,
                       int damage,
                       int speed,
-                      int newAttr,
                       int type,
                       int strenghtNeeded,
                       int dexterityNeeded,
                       int inteligenceNeeded)
     {
-      this.name = name;
-      this.precision = precision;
-      this.damage = damage;
-      this.speed = speed;
-      this.newAttr = newAttr;
-      this.type = type;
-      this.strenghtNeeded = strenghtNeeded;
-      this.dexterityNeeded = dexterityNeeded;
-      this.inteligenceNeeded = inteligenceNeeded;
+        this.name = name;
+        this.weight = weight;
+        this.precision = precision;
+        this.damage = damage;
+        this.speed = speed;
+        this.type = type;
+        this.strenghtNeeded = strenghtNeeded;
+        this.dexterityNeeded = dexterityNeeded;
+        this.inteligenceNeeded = inteligenceNeeded;
+
+        this.description = "";
+        this.image = new ImageView();
+        this.imagePath = new Image(Main.class.getResourceAsStream("../img/gun/"+name+".png"));
+        this.image.setImage(imagePath);
     }
 
 
