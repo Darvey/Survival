@@ -24,8 +24,8 @@ public class Main extends Application {
                 root.getChildren().add(L.getTile(i,j).getImage());
             }
         }
-
-        //root.getChildren().add(L.getItem(3,3).getImage(), null);
+        System.out.println(L.getItem(3,3));
+        root.getChildren().add(L.getItem(3,3).getImage());
 
         // Init primaryStage //
         Scene home = new Scene(root, 960, 640, true);

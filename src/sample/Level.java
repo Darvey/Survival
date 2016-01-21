@@ -43,11 +43,11 @@ public class Level {
         }
 
         // -------- DEBUT test interactiveOnrenemt ---------//
-        /*
-        itemMap[3][3] = new Item("shroom1",1.2f,true);
+
+        itemMap[3][3] = new Item("shroom1", 1.2f, true, "consumable", null);
         itemMap[3][3].getImage().setTranslateX(32*3+12);
         itemMap[3][3].getImage().setTranslateY(32*3+10);
-        */
+
         // -------- DEBUT test interactiveOnrenemt ---------//
 
     }
@@ -61,7 +61,7 @@ public class Level {
             itemMap[3][3].getImage().setTranslateX(0);
             itemMap[3][3].getImage().setTranslateY(0);
             itemMap[3][3].getImage().setVisible(false);
-            player.addItem(itemMap[3][3]);
+            player.inv.addItem(itemMap[3][3].getName(), itemMap[3][3].getWeight(), true ,itemMap[3][3].getType());
         }
     }
 
@@ -77,8 +77,7 @@ public class Level {
         return tilesMap[x][y];
     }
 
-    public Item getItem(int x,int y)
-    {
+    public Item getItem(int x,int y){
         return itemMap[x][y];
     }
 
