@@ -25,7 +25,7 @@ public class Main extends Application {
             }
         }
 
-        root.getChildren().add(L.getItem(3,3).getImage());
+        //root.getChildren().add(L.getItem(3,3).getImage(), null);
 
         // Init primaryStage //
         Scene home = new Scene(root, 960, 640, true);

@@ -31,17 +31,19 @@ public class Item {
     protected ImageView thumbnailView;      // thumbnail node
     protected Image thumbnailImg;           // thumbnail image
 
+    protected Inventory inventory;
     /**
     * Constructor
     * @param name the name of the item
     * @param w the weight of the item
     */
-    public Item(String name,float w,boolean haveThumbnail)
+    public Item(String name, float w, boolean haveThumbnail, Inventory pInventory)
     {
         this.nbr = 1;
         this.name = name;
         this.weight = w;
         this.description = "";
+        this.inventory = pInventory;
 
         if(haveThumbnail) {
             // Image de l'item
@@ -121,6 +123,9 @@ public class Item {
     final EventHandler<MouseEvent> mouseListener = new EventHandler<MouseEvent>(){
         public void handle(MouseEvent e) {
             txtItemOnclic.setText(toStringItem());
+            System.out.println(inventory.player.constitution);
+            inventory.player.constitution++;
+            //inventory.deleteItem(getName());
         }
     };
 

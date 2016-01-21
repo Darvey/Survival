@@ -102,7 +102,7 @@ public class EntityPlayer extends Entity{
         this.valueCompGun = 0;
 
         //inventaire
-        this.inv = new Inventory();
+        this.inv = new Inventory(this);
 
         //image
         image = new ImageView();
@@ -132,26 +132,26 @@ public class EntityPlayer extends Entity{
 
         // ----------------------------------------------------------------
         // Debut test pour inventaire
+        this.inv.addItem("shroom1",0.2f,true);
+        this.inv.addItem("shroom1",0.2f,true);
+        this.inv.addItem("silverCoin",0.2f,true);
 
-        Item pO = new Item("pieceOr",0.2f);
-        this.inv.addItem(pO);
+        
+        /*Item s1 = new Item("shroom1",0.2f,true); // 1 CHAMPI
+        this.inv.addItem(s1);
+        Item s2 = new Item("shroom1",0.3f,true);                         // 2 CHAMPI
+        this.inv.addItem(s2);
 
-        Item pA = new Item("pieceBronze",1.0f);
-        this.inv.addItem(pA);
+        Item s3 = new Item("shroom1",0.1f,true);
+        this.inv.addItem(s3);
 
-        Item pB = new Item("pieceArgent",0.9f);
-        this.inv.addItem(pB);
-
-        Item pB2 = new Item("pieceArgent",0.9f);
-        this.inv.addItem(pB2);
-
-        Item pB3 = new Item("pieceArgent",0.9f);
-        this.inv.addItem(pB3);
-
-        Item kA = new Item("keySilver",0.4f);
-        this.inv.addItem(kA);
-
-        this.inv.setShortcut(1,pB3);
+        Item tabSilverCoin[] = new Item[100];                       // 100 pieces d'argent
+        for(int cnt=0 ; cnt < 100 ; cnt++){
+            tabSilverCoin[cnt] = new Item("silverCoin",0.05f,true);
+            this.inv.addItem(tabSilverCoin[cnt]);
+        }
+        */
+        //this.inv.setShortcut(1,s1);
 
 
         // ----------------------------------------------------------------
@@ -180,7 +180,7 @@ public class EntityPlayer extends Entity{
                 15,
                 5
         );
-        this.inv.addItem(gun1);
+        //this.inv.addItem(gun1);
         // ----- fin test arme -----
 
         lastTime = System.nanoTime();
@@ -277,7 +277,7 @@ public class EntityPlayer extends Entity{
         fps++;
         delta += currentTime - lastTime;
         if(delta > ONE_SECOND) {
-            System.out.println("FPS :"+ fps);
+            //System.out.println("FPS :"+ fps);
             delta -= ONE_SECOND;
             fps = 0;
         }
@@ -402,7 +402,7 @@ public class EntityPlayer extends Entity{
 
     public void addItem(Item item)
     {
-        this.inv.addItem(item);
+        //this.inv.addItem(item);
     }
 
     // ----- GETTERS -----// 

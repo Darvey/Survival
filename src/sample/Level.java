@@ -43,11 +43,11 @@ public class Level {
         }
 
         // -------- DEBUT test interactiveOnrenemt ---------//
-
+        /*
         itemMap[3][3] = new Item("shroom1",1.2f,true);
         itemMap[3][3].getImage().setTranslateX(32*3+12);
         itemMap[3][3].getImage().setTranslateY(32*3+10);
-
+        */
         // -------- DEBUT test interactiveOnrenemt ---------//
 
     }

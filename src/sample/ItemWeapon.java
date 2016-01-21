@@ -39,10 +39,10 @@ public class ItemWeapon extends Item{
         this.dexterityNeeded = dexterityNeeded;
         this.inteligenceNeeded = inteligenceNeeded;
 
-        this.description = "";
+        /*this.description = "";
         this.image = new ImageView();
         this.imagePath = new Image(Main.class.getResourceAsStream("../img/gun/"+name+".png"));
-        this.image.setImage(imagePath);
+        this.image.setImage(imagePath);*/
     }
 
 

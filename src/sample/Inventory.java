@@ -25,6 +25,7 @@ import java.util.*;
 
 public class Inventory {
 
+    protected EntityPlayer player;
     protected boolean isOpen = false;                   // est-ce que l'inventaire est ouvert ou non
     private int maxItem;                                // nombre d'item maximum
     private int maxWeight;                              // poid maximum supporté
@@ -58,8 +59,9 @@ public class Inventory {
     /**
     * Constructor
     */
-    public Inventory() {
+    public Inventory(EntityPlayer pPlayer) {
 
+        this.player = pPlayer;
         this.maxItem = 4*2;
         this.setMaxSize(20);
         font = Font.loadFont(Inventory.class.getResource("slkscr.ttf").toExternalForm(), 11);
@@ -100,6 +102,8 @@ public class Inventory {
         this.stage.setScene(scene);
 
         this.setBtnAction();
+
+        System.out.println(player.name);
     }
 
     /**
@@ -136,7 +140,9 @@ public class Inventory {
      * add an item into the inventory
      * @param item to add
      */
-    public void addItem(Item item) {
+    //public void addItem(Item item) {
+    public void addItem(String pName, float pWeigth, boolean pHaveThumbnail) {
+        Item item = new Item(pName, pWeigth, pHaveThumbnail, this);
         // Si l'objet est déjà présent dans l'inventaire
         if (this.itemMap.containsKey(item.getName()))
         {
