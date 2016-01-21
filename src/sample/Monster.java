@@ -68,7 +68,7 @@ public class Monster extends Entity implements MoveListener {
         //System.out.println(deltaPos);
         float aggX = -deltaX / deltaPos * 3;
         float aggY = -deltaY / deltaPos * 3;
-        System.out.println(aggX+" - "+aggY);
+        //System.out.println(aggX+" - "+aggY);
 
         if(deltaPos < 200) {
             //System.out.println("Grrr ! Moi "+this.name+" vois un joueur à "+Math.round(deltaPos)+" pixels de moi");
