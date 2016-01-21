@@ -132,11 +132,11 @@ public class EntityPlayer extends Entity{
 
         // ----------------------------------------------------------------
         // Debut test pour inventaire
-        this.inv.addItem("shroom1",0.2f,true);
-        this.inv.addItem("shroom1",0.2f,true);
-        this.inv.addItem("silverCoin",0.2f,true);
+        this.inv.addItem("shroom1",0.2f,true, "consumable");
+        this.inv.addItem("shroom1",0.2f,true, "consumable");
+        this.inv.addItem("silverCoin",0.2f,true, "junk");
 
-        
+
         /*Item s1 = new Item("shroom1",0.2f,true); // 1 CHAMPI
         this.inv.addItem(s1);
         Item s2 = new Item("shroom1",0.3f,true);                         // 2 CHAMPI
@@ -209,7 +209,7 @@ public class EntityPlayer extends Entity{
 
     /**
      * create a backup of the player
-     * @param String f file name to use for backup
+     * @param f file name to use for backup
      */
     public void save(String f){
         try {

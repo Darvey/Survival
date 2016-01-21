@@ -31,21 +31,27 @@ public class Item {
     protected ImageView thumbnailView;      // thumbnail node
     protected Image thumbnailImg;           // thumbnail image
 
-    protected Inventory inventory;
+    protected Inventory inventory;          // inventaire qui contient l'item
+    protected String type;                  // type de l'item (weapon / tool / consumable / junk)
+
     /**
     * Constructor
-    * @param name the name of the item
-    * @param w the weight of the item
+    * @param pName the name of the item
+    * @param pWeight the weight of the item
+    * @param pHaveThumbnail if the item has a thumbnail
+    * @param pType type of the item (weapon / consumable / tool / junk)
+    * @param pInventory inventory which contains the item
     */
-    public Item(String name, float w, boolean haveThumbnail, Inventory pInventory)
+    public Item(String pName, float pWeight, boolean pHaveThumbnail, String pType, Inventory pInventory)
     {
         this.nbr = 1;
-        this.name = name;
-        this.weight = w;
+        this.name = pName;
+        this.weight = pWeight;
         this.description = "";
         this.inventory = pInventory;
+        this.type = pType;
 
-        if(haveThumbnail) {
+        if(pHaveThumbnail) {
             // Image de l'item
             this.itemView = new ImageView();
             this.itemImg = new Image(Main.class.getResourceAsStream("../img/item/"+name+".png"));
@@ -78,7 +84,7 @@ public class Item {
     {
         String res =    this.name+" : \n"+
                         this.description+" \n"+
-                        "poid : "+this.weight;
+                        "poids : "+this.weight;
         return res;
     }
 
@@ -122,11 +128,51 @@ public class Item {
      */
     final EventHandler<MouseEvent> mouseListener = new EventHandler<MouseEvent>(){
         public void handle(MouseEvent e) {
-            txtItemOnclic.setText(toStringItem());
-            System.out.println(inventory.player.constitution);
-            inventory.player.constitution++;
+
+            switch(e.getButton()){
+                case PRIMARY:
+                    //affichage de la description
+                    txtItemOnclic.setText(toStringItem());
+                    break;
+                case SECONDARY:
+                    //utilisation de l'item
+                    use();
+                    break;
+            }
+
+            //System.out.println(inventory.player.constitution);
+            //System.out.println(nbr);
+            //inventory.player.constitution++;
+            //nbr = 12;
             //inventory.deleteItem(getName());
         }
     };
 
+    public void use(){
+        type = this.getType();
+        switch(type){
+            case "weapon":
+                System.out.println("Equippement de l'arme");
+                break;
+            case "tool":
+                System.out.println("Utilisation de l'outil");
+                break;
+            case "consumable":
+                System.out.println("Consommation du consommable");
+                // fonction effet()
+                this.setNbr(this.getNbr()-1);
+                this.inventory.labelMap.get(this.getName()).setText(Integer.toString(this.getNbr()));
+                this.inventory.refreshItemList();
+                break;
+            case "junk":
+                System.out.println("Putain ça sert à rien ce truc");
+                break;
+            default:
+                break;
+        }
+    }
+
+    public String getType(){
+        return this.type;
+    }
 }

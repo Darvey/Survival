@@ -39,7 +39,7 @@ public class Inventory {
 
     private HashMap<String,Item> itemMap;               // liste d'items
     private HashMap<String,Position> posMap;            // lie un item avec une position dans l'inventaire
-    private HashMap<String,Label> labelMap;             // liste des labels contenant le nombre de chaque item
+    protected HashMap<String,Label> labelMap;             // liste des labels contenant le nombre de chaque item
 
     private Group group;
 
@@ -138,11 +138,13 @@ public class Inventory {
 
     /**
      * add an item into the inventory
-     * @param item to add
+     * @param pName name
+     * @param pWeigth weigth
+     * @param pName name
      */
     //public void addItem(Item item) {
-    public void addItem(String pName, float pWeigth, boolean pHaveThumbnail) {
-        Item item = new Item(pName, pWeigth, pHaveThumbnail, this);
+    public void addItem(String pName, float pWeigth, boolean pHaveThumbnail, String pType) {
+        Item item = new Item(pName, pWeigth, pHaveThumbnail, pType, this);
         // Si l'objet est déjà présent dans l'inventaire
         if (this.itemMap.containsKey(item.getName()))
         {
