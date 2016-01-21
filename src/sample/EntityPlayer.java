@@ -137,25 +137,22 @@ public class EntityPlayer extends Entity{
         // ----------------------------------------------------------------
         // Debut test pour inventaire
 
-        Item pO = new Item("pieceOr",0.2f);
-        this.inv.addItem(pO);
+        Item s1 = new Item("shroom1",0.2f,true);                         // 1 CHAMPI
+        this.inv.addItem(s1);
 
-        Item pA = new Item("pieceBronze",1.0f);
-        this.inv.addItem(pA);
+        Item s2 = new Item("shroom1",0.3f,true);                         // 2 CHAMPI
+        this.inv.addItem(s2);
 
-        Item pB = new Item("pieceArgent",0.9f);
-        this.inv.addItem(pB);
+        Item s3 = new Item("shroom1",0.1f,true);
+        this.inv.addItem(s3);
 
-        Item pB2 = new Item("pieceArgent",0.9f);
-        this.inv.addItem(pB2);
+        Item tabSilverCoin[] = new Item[100];                       // 100 pieces d'argent
+        for(int cnt=0 ; cnt < 100 ; cnt++){
+            tabSilverCoin[cnt] = new Item("silverCoin",0.05f,true);
+            this.inv.addItem(tabSilverCoin[cnt]);
+        }
 
-        Item pB3 = new Item("pieceArgent",0.9f);
-        this.inv.addItem(pB3);
-
-        Item kA = new Item("keySilver",0.4F);
-        this.inv.addItem(kA);
-
-        this.inv.setShortcut(1,pB3);
+        this.inv.setShortcut(1,s1);
 
 
         // ----------------------------------------------------------------
@@ -322,7 +319,6 @@ public class EntityPlayer extends Entity{
         con = endurance / resistance du corps
         int = intelligence innée / force mental
         */
-
 
 
         //-----déplacement-----

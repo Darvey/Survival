@@ -44,7 +44,7 @@ public class Level {
 
         // -------- DEBUT test interactiveOnrenemt ---------//
 
-        itemMap[3][3] = new Item("interactiveOrnement/shroom1",1.2f);
+        itemMap[3][3] = new Item("shroom1",1.2f,true);
         itemMap[3][3].getImage().setTranslateX(32*3+12);
         itemMap[3][3].getImage().setTranslateY(32*3+10);
 
@@ -57,7 +57,10 @@ public class Level {
         int caseX = (int)player.getImage().getTranslateX()/32;
         int caseY = (int)player.getImage().getTranslateY()/32;
         System.out.println("posPlayer = "+caseX+" "+caseY);
-        if(caseX == 2 && caseY == 2){
+        if(caseX == 3 && caseY == 3){
+            itemMap[3][3].getImage().setTranslateX(0);
+            itemMap[3][3].getImage().setTranslateY(0);
+            itemMap[3][3].getImage().setVisible(false);
             player.addItem(itemMap[3][3]);
         }
     }

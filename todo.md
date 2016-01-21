@@ -9,3 +9,7 @@
 ##Weapon
 * Creation d'une arme et ajout dans l'inventaire
 * Utilisation d'une arme
+
+##inventaire
+* Refonte graphique (*david*)
+* ajout description d'un item (*david*)
