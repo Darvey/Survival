@@ -1,5 +1,7 @@
 package sample;
 
+import java.util.Random;
+
 /*
     Description de la classe :
  */
@@ -10,6 +12,7 @@ public class Level {
     private Item[][] itemMap;
     private int h;
     private int l;
+    private Random random;
 
     /*
         Constructeur
@@ -21,6 +24,7 @@ public class Level {
 
         this.h=y;
         this.l=x;
+        random = new Random();
 
         int defInt[][] = new int[x][y];
         itemMap = new Item[x][y];
@@ -32,13 +36,16 @@ public class Level {
             }
         }
 
+        String levelTile[][] = createLevel();
+
         // Creation des Tiles avec la matrice de Int
 
         tilesMap = new Tile[x][y];
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
-                tilesMap[i][j] = new Tile(32, 32, 32 * i, 32 * j, 1, defInt[i][j]);
+                //tilesMap[i][j] = new Tile(32, 32, 32 * i, 32 * j, 1, defInt[i][j]);
+                tilesMap[i][j] = new Tile(32, 32, 32 * i, 32 * j, 1, levelTile[i][j]);
             }
         }
 
@@ -79,6 +86,130 @@ public class Level {
 
     public Item getItem(int x,int y){
         return itemMap[x][y];
+    }
+
+    public String[][] createLevel(){
+
+        int levelMatrice[][][] = new int[15][10][4];
+        String levelTile[][] = new String[15][10];
+        int a;
+        int b;
+        int c;
+        int d;
+
+        for(int i = 0; i < 15; i++) {
+            for(int j = 0; j < 10; j++) {
+                if(i != 0 && j == 0){
+
+                    if(levelMatrice[i-1][j][1] == 1){
+                        a = 1;
+                    }else{
+                        a = 0;
+                    }
+
+                    b = this.random.nextInt(2);
+
+                    if(levelMatrice[i-1][j][3] == 1){
+                        c = 1;
+                    }else{
+                        c = 0;
+                    }
+
+                    d = this.random.nextInt(2);
+
+                }else if(i == 0 && j != 0){
+
+                    if(levelMatrice[i][j-1][2] == 1){
+                        a = 1;
+                    }else{
+                        a = 0;
+                    }
+
+                    if(levelMatrice[i][j-1][3] == 1){
+                        b = 1;
+                    }else{
+                        b = 0;
+                    }
+
+                    c = this.random.nextInt(2);
+                    d = this.random.nextInt(2);
+
+                }else if(i != 0 && j != 0) {
+
+                    if(levelMatrice[i-1][j][1] == 1){
+                        a = 1;
+                    }else{
+                        a = 0;
+                    }
+
+                    if(levelMatrice[i][j-1][3] == 1){
+                        b = 1;
+                    }else{
+                        b = 0;
+                    }
+
+                    if(levelMatrice[i-1][j][3] == 1){
+                        c = 1;
+                    }else{
+                        c = 0;
+                    }
+
+                    d = this.random.nextInt(2);
+
+                }else if(i == 0 && j == 0){
+                    a = this.random.nextInt(2);
+                    b = this.random.nextInt(2);
+                    c = this.random.nextInt(2);
+                    d = this.random.nextInt(2);
+
+                }else{
+
+                    a = 9;
+                    b = 9;
+                    c = 9;
+                    d = 9;
+                }
+                //System.out.println(a + "/" + b + "/" + c + "/" + d);
+                levelMatrice[i][j][0] = a;
+                levelMatrice[i][j][1] = b;
+                levelMatrice[i][j][2] = c;
+                levelMatrice[i][j][3] = d;
+                levelTile[i][j] = ""+a+b+c+d;
+                System.out.println(levelTile[i][j]);
+            }
+        }
+        return levelTile;
+        /*System.out.println(levelMatrice);
+
+        for(int i = 0; i < 10; i++) {
+            for (int j = 0; j < 1; j++) {
+                if(levelMatrice[i][j][0] == 1){
+                    System.out.print("#");
+                }else{
+                    System.out.print("-");
+                }
+                if(levelMatrice[i][j][1] == 1){
+                    System.out.print("#");
+                }else{
+                    System.out.print("-");
+                }
+            }
+        }
+        System.out.println();
+        for(int i = 0; i < 10; i++) {
+            for (int j = 0; j < 1; j++) {
+                if(levelMatrice[i][j][2] == 1){
+                    System.out.print("#");
+                }else{
+                    System.out.print("-");
+                }
+                if(levelMatrice[i][j][3] == 1){
+                    System.out.print("#");
+                }else{
+                    System.out.print("-");
+                }
+            }
+        }*/
     }
 
 }

@@ -27,7 +27,7 @@ public class Tile {
         @param z Z position
         @param id Tile id
      */
-    public Tile(int h, int w, int x, int y, int z, int id) {
+    public Tile(int h, int w, int x, int y, int z, String id) {
         this.width = w;
         this.height = h;
         this.posX = x;
@@ -40,19 +40,74 @@ public class Tile {
         image.setTranslateZ(posZ);
 
         switch (id) {
-            case 1:
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/lowGrass.png"));
+            case "0000" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_0.png"));
                 this.solid = false;
                 break;
-            case 2:
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/medGrass.png"));
+            case "0001" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_1.png"));
                 this.solid = false;
                 break;
-            case 3:
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/highGrass.png"));
+            case "0010" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_2.png"));
                 this.solid = false;
                 break;
-            default:;
+            case "0011" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_3.png"));
+                this.solid = false;
+                break;
+            case "0100" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_4.png"));
+                this.solid = false;
+                break;
+            case "0101" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_5.png"));
+                this.solid = false;
+                break;
+            case "0110" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_6.png"));
+                this.solid = false;
+                break;
+            case "0111" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_7.png"));
+                this.solid = false;
+                break;
+            case "1000" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_8.png"));
+                this.solid = false;
+                break;
+            case "1001" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_9.png"));
+                this.solid = false;
+                break;
+            case "1010" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_a.png"));
+                this.solid = false;
+                break;
+            case "1011" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_b.png"));
+                this.solid = false;
+                break;
+            case "1100" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_c.png"));
+                this.solid = false;
+                break;
+            case "1101" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_d.png"));
+                this.solid = false;
+                break;
+            case "1110" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_e.png"));
+                this.solid = false;
+                break;
+            case "1111" :
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_f.png"));
+                this.solid = false;
+                break;
+            default:
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_0.png"));
+                this.solid = false;
+                break;
         }
         image.setImage(imagePath);
         image.setVisible(true);
