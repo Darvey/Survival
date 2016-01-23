@@ -11,10 +11,10 @@
 * Utilisation d'une arme
 
 ##Pixel art
-* création des bordures de tile
+* ~~création des bordures de tile~~
 
 ##Map
-* création d'une map définie
+* ~~création d'une map générée~~
 
 
 ##inventaire
