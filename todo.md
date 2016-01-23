@@ -5,8 +5,11 @@
 * ~~Utilisation d'un item de l'inventaire~~
 * ~~Affichage nombre d'item dans l'inventaire ( *david* )~~
 * Tester les effets de differents items sur le personnage ( *cédric* en cours )
+* Lors du ramassage d'un item, mettre en place le principe de petit inventaire qui s'ouvre.
+* Mettre un coffre/une boite avec un principe de statut fermé => ouvert
 
 ##Weapon
+* Revoir les items : creation d'item en tant que classe abstraite + ajouter les classes filles
 * Creation d'une arme et ajout dans l'inventaire
 * Utilisation d'une arme
 
@@ -15,7 +18,9 @@
 
 ##Map
 * ~~création d'une map générée~~
-
+* ajouter le 3ème niveau de tile à la génération (herbes hautes)
+* ajouter des champignons par-ci par-là de façon aléatoire
+* unifier la taille de la map (on la redéfinit dans main, dans level...)
 
 ##inventaire
 * Refonte graphique (*david*) (en cours)
