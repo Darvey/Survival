@@ -111,13 +111,13 @@ public class ItemTool extends Item {
 
     public void use(){
 
-        System.out.println("Consommation du consommable depuis ItemConsumable");
-        // l'item est consommé
-        this.setNbr(this.getNbr()-1);
+        System.out.println("Utilisation de l'outil depuis ItemTool");
+        // l'outil n'est pas consommé
+        /*this.setNbr(this.getNbr()-1);
         this.inventory.labelMap.get(this.getName()).setText(Integer.toString(this.getNbr()));
-        this.inventory.refreshItemList();
+        this.inventory.refreshItemList();*/
 
-        // => effet du consommable
+        // => effet de l'outil
 
 
     }
