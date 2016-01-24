@@ -1,5 +1,7 @@
 package sample;
 
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 
 import java.util.Random;
@@ -74,19 +76,25 @@ public class Level {
         }
     }
 
-    public boolean collision(int posX,int posY)
+    public boolean collision(Bounds pBox)
     {
-        boolean res = false;
-        int caseX = posX/32;
-        int caseY = posY/32;
-
-        if(caseX < h && caseY < l) {
-            if (tilesMap[caseX][caseY].getSolid()) {
-                System.out.println("Collision");
-                res = true;
-            }
+        if( tilesMap[(int) pBox.getMinX() /32][ (int) pBox.getMinY() / 32].getSolid() )
+        {
+            return true;
         }
-        return res;
+        if( tilesMap[(int) pBox.getMinX() /32][ (int) pBox.getMaxY() / 32].getSolid() )
+        {
+            return true;
+        }
+        if( tilesMap[(int) pBox.getMaxX() /32][ (int) pBox.getMinY() / 32].getSolid() )
+        {
+            return true;
+        }
+        if( tilesMap[(int) pBox.getMaxX() /32][ (int) pBox.getMaxY() / 32].getSolid() )
+        {
+            return true;
+        }
+        return false;
     }
 
     public int getH() {
