@@ -33,6 +33,7 @@ abstract class Item {
 
     protected Inventory inventory;          // inventaire qui contient l'item
     protected String type;                  // type de l'item (weapon / tool / consumable / junk)
+    protected String family;                // famille de l'item
 
     /**
     * Constructor
