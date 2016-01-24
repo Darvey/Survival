@@ -143,8 +143,10 @@ public class Inventory {
      * @param pName name
      */
     //public void addItem(Item item) {
+
     public void addItem(String pName, float pWeigth, boolean pHaveThumbnail, String pType) {
         Item item = new Item(pName, pWeigth, pHaveThumbnail, pType, this);
+
         // Si l'objet est déjà présent dans l'inventaire
         if (this.itemMap.containsKey(item.getName()))
         {
@@ -206,7 +208,10 @@ public class Inventory {
                 this.gridMat[x][y] = false;
                 // supprime sa position
                 this.posMap.remove(entry.getKey());
-
+            }
+            else
+            {
+                this.labelMap.get(entry.getKey()).setText(Integer.toString(entry.getValue().getNbr()));
             }
         }
 

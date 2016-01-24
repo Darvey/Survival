@@ -65,8 +65,8 @@ public class Tile {
                 this.solid = false;
                 break;
             case "0110" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_6.png"));
-                this.solid = false;
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/highGrass.png"));
+                this.solid = true;
                 break;
             case "0111" :
                 imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_7.png"));
@@ -114,8 +114,18 @@ public class Tile {
     }
 
     /*
-        Getters
+        Getters & setters
      */
+    public void setSolid(boolean b)
+    {
+        this.solid = b;
+    }
+
+    public boolean getSolid()
+    {
+        return solid;
+    }
+
     public int getWidth() {
         return width;
     }

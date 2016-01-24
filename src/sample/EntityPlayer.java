@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -59,10 +60,15 @@ public class EntityPlayer extends Entity{
     protected float acc;
     protected float accX;
     protected float accY;
+
+    protected Direction direction;                                          // NOUVEAU
+    protected Position position;                                            // NOUVEAU
+
     protected boolean pressedUp;
     protected boolean pressedDown;
     protected boolean pressedLeft;
     protected boolean pressedRight;
+
     //constantes de mouvement
     protected float accLimit;
     protected float friction;
@@ -75,6 +81,8 @@ public class EntityPlayer extends Entity{
     protected long fps = 0;
     protected long delta = 0;
 
+    Level l;
+
     /*
         Player Constructor.
         @param String name nom du joueur
@@ -84,9 +92,10 @@ public class EntityPlayer extends Entity{
         @param int c constitution value
         @param int i intelligence value
      */
-    public EntityPlayer(String name, int s, int a, int d, int c, int i) {
+    public EntityPlayer(String name, int s, int a, int d, int c, int i,Level l) {
 
         this.name = name;
+        this.l = l;
 
         //caractéristiques principales
         this.strength = s;
@@ -106,7 +115,7 @@ public class EntityPlayer extends Entity{
 
         //image
         image = new ImageView();
-        Image imagePath = new Image(Main.class.getResourceAsStream("../img/player/gilbert.png"));
+        imagePath = new Image(Main.class.getResourceAsStream("../img/player/gilbert.png"));
         image.setImage(imagePath);
 
         this.posX = 0f;
@@ -121,6 +130,10 @@ public class EntityPlayer extends Entity{
         this.acc = 3f;
         this.accX = 0f;
         this.accY = 0f;
+
+        this.position = new Position(0,0);
+        this.direction = new Direction(0,0);
+
         this.pressedDown = false;
         this.pressedLeft = false;
         this.pressedRight = false;
@@ -242,15 +255,19 @@ public class EntityPlayer extends Entity{
         switch(dir){
             case 0 :
                 this.pressedUp = true;
+                this.direction.setY(-1);
                 break;
             case 1 :
                 this.pressedDown = true;
+                this.direction.setY(1);
                 break;
             case 2 :
                 this.pressedLeft = true;
+                this.direction.setX(-1);
                 break;
             case 3 :
                 this.pressedRight = true;
+                this.direction.setX(1);
                 break;
             case 4 :
                 this.pressedUp = false;
@@ -282,6 +299,7 @@ public class EntityPlayer extends Entity{
             fps = 0;
         }
         lastTime = currentTime;
+
 
         //application des accélerations en fonction des touches appuyées
         if (this.pressedUp) {
@@ -319,10 +337,15 @@ public class EntityPlayer extends Entity{
         accY = approximatelyZero(accY);
 
         //déplacement du personnage en fonction de son accéleration (moveSpeed)
-        this.posX += accX;
-        this.image.setTranslateX(posX);
-        this.posY += accY;
-        this.image.setTranslateY(posY);
+
+
+        if(l.collision( (int)(posX+accX),(int)(posY+accY)) == false )  {
+            this.posX += accX;
+            this.image.setTranslateX(posX);
+            this.posY += accY;
+            this.image.setTranslateY(posY);
+        }
+
     }
 
     private float approximatelyZero(float f){

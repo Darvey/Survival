@@ -124,7 +124,7 @@ public class Item {
     }
 
     /**
-     * Action for a thumbnail clic
+     * Action for a thumbnail leftclic
      */
     final EventHandler<MouseEvent> mouseListener = new EventHandler<MouseEvent>(){
         public void handle(MouseEvent e) {

@@ -1,5 +1,7 @@
 package sample;
 
+import javafx.geometry.Pos;
+
 import java.util.Random;
 
 /*
@@ -61,8 +63,8 @@ public class Level {
 
     public void action(EntityPlayer player)
     {
-        int caseX = (int)player.getImage().getTranslateX()/32;
-        int caseY = (int)player.getImage().getTranslateY()/32;
+        int caseX = (int)player.getImage().getTranslateX()+7/32;
+        int caseY = (int)player.getImage().getTranslateY()+10/32;
         System.out.println("posPlayer = "+caseX+" "+caseY);
         if(caseX == 3 && caseY == 3){
             itemMap[3][3].getImage().setTranslateX(0);
@@ -70,6 +72,21 @@ public class Level {
             itemMap[3][3].getImage().setVisible(false);
             player.inv.addItem(itemMap[3][3].getName(), itemMap[3][3].getWeight(), true ,itemMap[3][3].getType());
         }
+    }
+
+    public boolean collision(int posX,int posY)
+    {
+        boolean res = false;
+        int caseX = posX/32;
+        int caseY = posY/32;
+
+        if(caseX < h && caseY < l) {
+            if (tilesMap[caseX][caseY].getSolid()) {
+                System.out.println("Collision");
+                res = true;
+            }
+        }
+        return res;
     }
 
     public int getH() {
