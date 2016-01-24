@@ -1,4 +1,5 @@
 package sample;
+import javafx.geometry.BoundingBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -7,16 +8,20 @@ import javafx.scene.image.ImageView;
  */
 public class Tile {
 
-    protected int width; // largeur de l'image
-    protected int height; // hauteur de l'image
-    protected int posX; // position en x
-    protected int posY; // position en y
-    protected int posZ; // position en z
+    protected int width;                            // largeur de l'image
+    protected int height;                           // hauteur de l'image
+    protected int posX;                             // position en x
+    protected int posY;                             // position en y
+    protected int posZ;                             // position en z
 
-    protected boolean solid;
+    protected boolean solid;                        // true if Tile is a solid Element (with a BoundingBox)
 
     protected ImageView image;
     protected Image imagePath;
+
+    protected BoundingBox bbox;
+
+
 
     /*
         Constructeur de la classe.
@@ -28,16 +33,18 @@ public class Tile {
         @param id Tile id
      */
     public Tile(int h, int w, int x, int y, int z, String id) {
+
         this.width = w;
         this.height = h;
         this.posX = x;
         this.posY = y;
         this.posZ = z;
 
-        image = new ImageView();
-        image.setTranslateX(posX);
-        image.setTranslateY(posY);
-        image.setTranslateZ(posZ);
+        this.image = new ImageView();
+        this.image.setTranslateX(posX);
+        this.image.setTranslateY(posY);
+        this.image.setTranslateZ(posZ);
+
 
         switch (id) {
             case "0000" :
@@ -65,8 +72,8 @@ public class Tile {
                 this.solid = false;
                 break;
             case "0110" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_6.png"));
-                this.solid = false;
+                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/highGrass.png"));
+                this.solid = true;
                 break;
             case "0111" :
                 imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_7.png"));
@@ -114,8 +121,18 @@ public class Tile {
     }
 
     /*
-        Getters
+        Getters & setters
      */
+    public void setSolid(boolean b)
+    {
+        this.solid = b;
+    }
+
+    public boolean getSolid()
+    {
+        return solid;
+    }
+
     public int getWidth() {
         return width;
     }

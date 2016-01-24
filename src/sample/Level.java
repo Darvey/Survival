@@ -1,5 +1,9 @@
 package sample;
 
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
+
 import java.util.Random;
 
 /*
@@ -61,8 +65,8 @@ public class Level {
 
     public void action(EntityPlayer player)
     {
-        int caseX = (int)player.getImage().getTranslateX()/32;
-        int caseY = (int)player.getImage().getTranslateY()/32;
+        int caseX = (int)player.getImage().getTranslateX()+7/32;
+        int caseY = (int)player.getImage().getTranslateY()+10/32;
         System.out.println("posPlayer = "+caseX+" "+caseY);
         if(caseX == 3 && caseY == 3){
             itemMap[3][3].getImage().setTranslateX(0);
@@ -70,6 +74,27 @@ public class Level {
             itemMap[3][3].getImage().setVisible(false);
             player.inv.addItem(itemMap[3][3].getName(), itemMap[3][3].getWeight(), true ,itemMap[3][3].getType());
         }
+    }
+
+    public boolean collision(int nX,int nY)
+    {
+        if( tilesMap[(int) nX /32][ (int) nY / 32].getSolid() )
+        {
+            return true;
+        }
+        if( tilesMap[(int) nX /32][ (int) (nY+20) / 32].getSolid() )
+        {
+            return true;
+        }
+        if( tilesMap[(int) (nX+15) /32][ (int) nY / 32].getSolid() )
+        {
+            return true;
+        }
+        if( tilesMap[(int) (nX+15) /32][ (int) (nY+20) / 32].getSolid() )
+        {
+            return true;
+        }
+        return false;
     }
 
     public int getH() {

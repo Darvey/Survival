@@ -59,7 +59,7 @@ public class Controller {
                 case DIGIT1:
                     player.inv.useShortcut(1);
                     break;
-                case E :
+                case R :
                     level.action(player);
                     break;
                 default:
