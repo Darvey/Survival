@@ -15,7 +15,7 @@ import sun.plugin2.util.ColorUtil;
  * Un item
  * peu aussi représenter un groupe d'items identiques du moment que l'attribut 'nbr' dépasse 1.
  */
-public class Item {
+abstract class Item {
 
 
     private static Label txtItemOnclic = new Label();
@@ -42,7 +42,11 @@ public class Item {
     * @param pType type of the item (weapon / consumable / tool / junk)
     * @param pInventory inventory which contains the item
     */
-    public Item(String pName, float pWeight, boolean pHaveThumbnail, String pType, Inventory pInventory)
+    public Item(String pName,
+                float pWeight,
+                boolean pHaveThumbnail,
+                String pType,
+                Inventory pInventory)
     {
         this.nbr = 1;
         this.name = pName;
@@ -120,6 +124,7 @@ public class Item {
     }
 
     public ImageView getThumbnail(){
+
         return this.thumbnailView;
     }
 

@@ -144,7 +144,7 @@ public class Inventory {
      */
     //public void addItem(Item item) {
     public void addItem(String pName, float pWeigth, boolean pHaveThumbnail, String pType) {
-        Item item = new Item(pName, pWeigth, pHaveThumbnail, pType, this);
+        Consumable item = new Consumable(pName, pWeigth, pHaveThumbnail, pType, this);
         // Si l'objet est déjà présent dans l'inventaire
         if (this.itemMap.containsKey(item.getName()))
         {

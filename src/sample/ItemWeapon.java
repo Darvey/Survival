@@ -45,6 +45,12 @@ public class ItemWeapon extends Item{
         this.image.setImage(imagePath);*/
     }
 
+    public void use(){
+
+        System.out.println("Equippement de l'arme par la classe ItemWeapon");
+
+    }
+
 
 
 
