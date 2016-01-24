@@ -188,7 +188,7 @@ public class EntityPlayer extends Entity{
         int dexterityNeeded,
         int inteligenceNeeded
          */
-        ItemWeapon gun1= new ItemWeapon(
+        /*ItemWeapon gun1= new ItemWeapon(
                 "shotgun",
                 5f,
                 37,
@@ -198,7 +198,7 @@ public class EntityPlayer extends Entity{
                 12,
                 15,
                 5
-        );
+        );*/
         //this.inv.addItem(gun1);
         // ----- fin test arme -----
 
