@@ -65,8 +65,8 @@ public class Level {
 
     public void action(EntityPlayer player)
     {
-        int caseX = (int)player.getImage().getTranslateX()+7/32;
-        int caseY = (int)player.getImage().getTranslateY()+10/32;
+        int caseX = (int)(player.getImage().getTranslateX()+7)/32;
+        int caseY = (int)(player.getImage().getTranslateY()+10)/32;
         System.out.println("posPlayer = "+caseX+" "+caseY);
         if(caseX == 3 && caseY == 3){
             itemMap[3][3].getImage().setTranslateX(0);
