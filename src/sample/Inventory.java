@@ -144,7 +144,25 @@ public class Inventory {
      */
     //public void addItem(Item item) {
     public void addItem(String pName, float pWeigth, boolean pHaveThumbnail, String pType) {
-        Consumable item = new Consumable(pName, pWeigth, pHaveThumbnail, pType, this);
+
+        Item item;
+
+        switch(pType){
+            case "consumable" :
+                item = new ItemConsumable(pName, pWeigth, "description", pHaveThumbnail, "type", "famille", this, "descriptionAlt", 12);
+                break;
+            case "weapon" :
+                item = new ItemWeapon(pName, pWeigth, "description", pHaveThumbnail, "type", "famille", this, 12, 14, 16, 78, 2, 4, "damageType", "associateItem");
+                break;
+            case "tool" :
+                item = new ItemTool(pName, pWeigth, "description", pHaveThumbnail, "type", "famille", this, 12, 14, 16);
+                break;
+            default :
+                item = new ItemJunk(pName, pWeigth, "description", pHaveThumbnail, "type", "famille", this, "descriptionAlt", 12);
+                break;
+        }
+
+
         // Si l'objet est déjà présent dans l'inventaire
         if (this.itemMap.containsKey(item.getName()))
         {
@@ -171,9 +189,10 @@ public class Inventory {
             Position p = searchFreeBox();
 
             // ajout dans le tableau d'association "item/Position"
-            this.posMap.put(item.getName(),p);
+            this.posMap.put(item.getName(), p);
 
             // ajout de la miniature et son label au pane
+
             itemMap.get(item.getName()).getThumbnail().setTranslateX(p.getX()*37+4);
             itemMap.get(item.getName()).getThumbnail().setTranslateY(p.getY()*37+4+20);
             labelMap.get(item.getName()).setTranslateX(p.getX()*37+5);

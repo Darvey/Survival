@@ -151,9 +151,12 @@ public class EntityPlayer extends Entity{
 
         // ----------------------------------------------------------------
         // Debut test pour inventaire
-        this.inv.addItem("shroom1",0.2f,true, "consumable");
-        this.inv.addItem("shroom1",0.2f,true, "consumable");
-        this.inv.addItem("silverCoin",0.2f,true, "junk");
+        this.inv.addItem("shroom1", 0.2f, true, "consumable");
+        this.inv.addItem("shroom1", 0.2f, true, "consumable");
+        this.inv.addItem("silverCoin", 0.2f, true, "junk");
+        this.inv.addItem("shotgun", 5.7f, true, "weapon");
+        this.inv.addItem("bronzeCoin", 0.1f, true, "tool");
+
 
 
         /*Item s1 = new Item("shroom1",0.2f,true); // 1 CHAMPI

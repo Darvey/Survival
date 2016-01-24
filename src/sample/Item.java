@@ -18,7 +18,7 @@ import sun.plugin2.util.ColorUtil;
 abstract class Item {
 
 
-    private static Label txtItemOnclic = new Label();
+    protected static Label txtItemOnclic = new Label();
 
     protected String name;                  // nom de l'item
     protected String description;           // déscription de l'item
@@ -31,9 +31,10 @@ abstract class Item {
     protected ImageView thumbnailView;      // thumbnail node
     protected Image thumbnailImg;           // thumbnail image
 
+    protected String type;                  // type de l'item (food / drink...)
+    protected String family;                // famille de l'item (champignon / herbe / médicament / potion...)
+
     protected Inventory inventory;          // inventaire qui contient l'item
-    protected String type;                  // type de l'item (weapon / tool / consumable / junk)
-    protected String family;                // famille de l'item
 
     /**
     * Constructor
@@ -70,7 +71,7 @@ abstract class Item {
         }else{
             // Image de l'item
             this.itemView = new ImageView();
-            this.itemImg = new Image(Main.class.getResourceAsStream("../img/"+name+".png"));
+            this.itemImg = new Image(Main.class.getResourceAsStream("../img/item/"+name+".png"));
             this.itemView.setImage(itemImg);
         }
     }
@@ -101,19 +102,20 @@ abstract class Item {
     }
 
     public String getName() {
-        return name;
+
+        return this.name;
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public float getWeight() {
-        return weight * nbr;
+        return this.weight * this.nbr;
     }
 
     public int getNbr() {
-        return nbr;
+        return this.nbr;
     }
 
     public void setNbr(int nbr) {

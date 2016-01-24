@@ -14,26 +14,6 @@ import javafx.scene.input.MouseEvent;
 
 public class ItemTool extends Item {
 
-    private static Label txtItemOnclic = new Label();
-
-    protected String name;                  // nom de l'item
-    protected String description;           // déscription de l'item
-    protected float weight;                 // poid de l'item
-    protected int nbr;                      // nombre de cet Item présent dans le groupe
-
-    protected ImageView itemView;           // node de l'item
-    protected Image itemImg;                // image de l'item
-
-    protected ImageView thumbnailView;      // thumbnail node
-    protected Image thumbnailImg;           // thumbnail image
-
-    protected String type;                  // type de l'item (food / drink...)
-    protected String family;                // famille de l'item (champignon / herbe / médicament / potion...)
-
-    protected Inventory inventory;          // inventaire qui contient l'item
-
-
-    /* add */
 
     protected int strenghtNeeded;           // force nécessaire pour avoir la bonne description
     protected int dexterityNeeded;          // dexterité nécessaire pour avoir la bonne description
@@ -61,8 +41,8 @@ public class ItemTool extends Item {
         this.family = pFamily;
         this.inventory = pInventory;
 
-        this.strenghtNeeded = strenghtNeeded;
-        this.dexterityNeeded = dexterityNeeded;
+        this.strenghtNeeded = pStrenghtNeeded;
+        this.dexterityNeeded = pDexterityNeeded;
         this.intelligenceNeeded = pIntelligenceNeeded;
 
         if(pHaveThumbnail) {

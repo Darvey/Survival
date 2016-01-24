@@ -14,27 +14,6 @@ import javafx.scene.input.MouseEvent;
 
 public class ItemJunk extends Item {
 
-    private static Label txtItemOnclic = new Label();
-
-    protected String name;                  // nom de l'item
-    protected String description;           // description de l'item
-    protected float weight;                 // poids de l'item
-    protected int nbr;                      // nombre de cet Item présent dans le groupe
-
-    protected ImageView itemView;           // node de l'item
-    protected Image itemImg;                // image de l'item
-
-    protected ImageView thumbnailView;      // thumbnail node
-    protected Image thumbnailImg;           // thumbnail image
-
-    protected String type;                  // type de l'item (?)
-    protected String family;                // famille de l'item (pièce / statuette / joyaux...)
-
-    protected Inventory inventory;          // inventaire qui contient l'item
-
-
-    /* add */
-
     protected String descriptionAlt;        // description alternative quand on est trop bête
     protected int intelligenceNeeded;       // intelligence nécessaire pour avoir la bonne description
 
