@@ -347,17 +347,16 @@ public class EntityPlayer extends Entity{
         this.nextPosX += accX;
         this.nextPosY += accY;
 
-        this.image.setTranslateX(nextPosX);
-        this.image.setTranslateY(nextPosY);
-
-        if( l.collision(image.getBoundsInParent()) )  {
-            this.image.setTranslateX(posX);
-            this.image.setTranslateY(posY);
+        if( l.collision(nextPosX,nextPosY) )  {
+            nextPosX = (int)posX;
+            nextPosY = (int)posY;
         }
         else
         {
             posX = nextPosX;
             posY = nextPosY;
+            image.setTranslateX(posX);
+            image.setTranslateY(posY);
         }
 
 

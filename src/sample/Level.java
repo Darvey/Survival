@@ -76,21 +76,21 @@ public class Level {
         }
     }
 
-    public boolean collision(Bounds pBox)
+    public boolean collision(int nX,int nY)
     {
-        if( tilesMap[(int) pBox.getMinX() /32][ (int) pBox.getMinY() / 32].getSolid() )
+        if( tilesMap[(int) nX /32][ (int) nY / 32].getSolid() )
         {
             return true;
         }
-        if( tilesMap[(int) pBox.getMinX() /32][ (int) pBox.getMaxY() / 32].getSolid() )
+        if( tilesMap[(int) nX /32][ (int) (nY+20) / 32].getSolid() )
         {
             return true;
         }
-        if( tilesMap[(int) pBox.getMaxX() /32][ (int) pBox.getMinY() / 32].getSolid() )
+        if( tilesMap[(int) (nX+15) /32][ (int) nY / 32].getSolid() )
         {
             return true;
         }
-        if( tilesMap[(int) pBox.getMaxX() /32][ (int) pBox.getMaxY() / 32].getSolid() )
+        if( tilesMap[(int) (nX+15) /32][ (int) (nY+20) / 32].getSolid() )
         {
             return true;
         }
