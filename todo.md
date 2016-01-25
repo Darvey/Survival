@@ -1,16 +1,16 @@
 #Todo liste
 ##Item
 * ~~Ajouter un item à ramasser sur la Map~~
-* ~~Rammasage d'un item~~
+* ~~Ramassage d'un item~~
 * ~~Utilisation d'un item de l'inventaire~~
-* ~~Affichage nombre d'item dans l'inventaire ( *david* )~~
+* ~~Affichage nombre d'item dans l'inventaire~~
 * Tester les effets de differents items sur le personnage ( *cédric* en cours )
 * Lors du ramassage d'un item, mettre en place le principe de petit inventaire qui s'ouvre.
 * Mettre un coffre/une boite avec un principe de statut fermé => ouvert
 
 ##Weapon
-* Revoir les items : creation d'item en tant que classe abstraite + ajouter les classes filles
-* Creation d'une arme et ajout dans l'inventaire
+* ~~Revoir les items : creation d'item en tant que classe abstraite + ajouter les classes filles~~
+* ~~Creation d'une arme et ajout dans l'inventaire~~
 * Utilisation d'une arme
 
 ##Pixel art
