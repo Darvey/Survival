@@ -72,7 +72,8 @@ public class Tile {
                 this.solid = false;
                 break;
             case "0110" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/highGrass.png"));
+                //imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/highGrass.png"));
+                imagePath = new Image(Main.class.getResourceAsStream("../img/collider_32x32.png"));
                 this.solid = true;
                 break;
             case "0111" :

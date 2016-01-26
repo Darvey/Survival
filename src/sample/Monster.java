@@ -27,7 +27,7 @@ public class Monster extends Entity implements MoveListener {
     protected float playerPosX;
     protected float playerPosY;
 
-    public Monster(String pName, float pPosX, float pPosY) {
+    public Monster(String pName, int pPosX, int pPosY) {
 
         image = new ImageView();
         Image imagePath = new Image(Main.class.getResourceAsStream("../img/monster/mothaStatic.png"));

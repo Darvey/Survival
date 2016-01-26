@@ -4,6 +4,8 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
 /*
@@ -17,6 +19,13 @@ public class Level {
     private int h;
     private int l;
     private Random random;
+
+    //variables pour les collisions
+    protected Line2D.Double lineUp;
+    protected Line2D.Double lineDown;
+    protected Line2D.Double lineLeft;
+    protected Line2D.Double lineRight;
+    protected Rectangle2D.Double collisionArea;
 
     /*
         Constructeur
@@ -76,25 +85,51 @@ public class Level {
         }
     }
 
-    public boolean collision(int nX,int nY)
+    public boolean[] collision(int nX,int nY, int offset)
     {
-        if( tilesMap[(int) nX /32][ (int) nY / 32].getSolid() )
-        {
-            return true;
+        /* ------- OPTIMISATION -------
+        pour l'instant on check tous les objets (tile pour l'instant) de la map,
+        il faudrait tester uniquement les cases à proximité du joueur
+        donc redéfinir un tableau tileArray avec seulement la case sur laquelle on est
+        et celles qui entourent le perso
+        tilesMap[(int) nX /32][ (int) nY / 32]
+        */
+        boolean col[] = new boolean[4];
+        boolean colUp = false;
+        boolean colDown = false;
+        boolean colLeft = false;
+        boolean colRight = false;
+
+        this.lineUp = new Line2D.Double(nX, nY-offset, nX+32, nY-offset);
+        this.lineDown = new Line2D.Double(nX, nY+32+offset, nX+32, nY+32+offset);
+        this.lineLeft = new Line2D.Double(nX-offset, nY, nX-offset, nY+32);
+        this.lineRight = new Line2D.Double(nX+32+offset, nY, nX+32+offset, nY+32);
+
+        for(Tile tileArray[] : tilesMap){
+            for(Tile elem : tileArray){
+                if(elem.solid){
+                    this.collisionArea = new Rectangle2D.Double(elem.posX+1, elem.posY+1, 30, 30);
+                    if(this.lineUp.intersects(this.collisionArea)){
+                        colUp = true;
+                    }
+                    if(this.lineDown.intersects(this.collisionArea)){
+                        colDown = true;
+                    }
+                    if(this.lineLeft.intersects(this.collisionArea)){
+                        colLeft = true;
+                    }
+                    if(this.lineRight.intersects(this.collisionArea)){
+                        colRight = true;
+                    }
+                }
+            }
         }
-        if( tilesMap[(int) nX /32][ (int) (nY+20) / 32].getSolid() )
-        {
-            return true;
-        }
-        if( tilesMap[(int) (nX+15) /32][ (int) nY / 32].getSolid() )
-        {
-            return true;
-        }
-        if( tilesMap[(int) (nX+15) /32][ (int) (nY+20) / 32].getSolid() )
-        {
-            return true;
-        }
-        return false;
+        col[0] = colUp;
+        col[1] = colDown;
+        col[2] = colLeft;
+        col[3] = colRight;
+
+        return col;
     }
 
     public int getH() {

@@ -8,8 +8,8 @@ public class Entity {
     protected int stealth;
 
     // position du joueur sur la carte
-    protected float posX;
-    protected float posY;
+    protected int posX;
+    protected int posY;
 
     public Entity(){
 

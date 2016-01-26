@@ -63,10 +63,16 @@ public class EntityPlayer extends Entity{
     protected float acc;
     protected float accX;
     protected float accY;
+    protected float velX;
+    protected float velY;
+    protected int velXInteger;
+    protected int velYInteger;
 
     protected Direction direction;                                          // NOUVEAU
     protected int nextPosX;
     protected int nextPosY;
+    protected int prevPosX;
+    protected int prevPosY;
 
     protected boolean pressedUp;
     protected boolean pressedDown;
@@ -75,6 +81,7 @@ public class EntityPlayer extends Entity{
 
     //constantes de mouvement
     protected float accLimit;
+    protected float velLimit;
     protected float friction;
     //--------------
 
@@ -119,11 +126,11 @@ public class EntityPlayer extends Entity{
 
         //image
         image = new ImageView();
-        imagePath = new Image(Main.class.getResourceAsStream("../img/player/gilbert.png"));
+        imagePath = new Image(Main.class.getResourceAsStream("../img/collider_player.png"));
         image.setImage(imagePath);
 
-        this.posX = 0f;
-        this.posY = 0f;
+        this.posX = 0;
+        this.posY = 0;
 
         image.setTranslateY(posY);
         image.setTranslateX(posX);
@@ -132,11 +139,14 @@ public class EntityPlayer extends Entity{
 
 
         //move
-        this.accLimit = 6;
-        this.friction = 0.5f;
+        this.accLimit = 3;
+        this.velLimit = 6;
+        this.friction = 0.5f;               //friction du personnage (0.2 = boue/escalier, 0.5 = normal, 0.9 = glace)
         this.acc = 3f;
         this.accX = 0f;
         this.accY = 0f;
+        this.velX = 0f;
+        this.velY = 0f;
 
         this.direction = new Direction(0,0);
 
@@ -154,8 +164,8 @@ public class EntityPlayer extends Entity{
         this.inv.addItem("shroom1", 0.2f, true, "consumable");
         this.inv.addItem("shroom1", 0.2f, true, "consumable");
         this.inv.addItem("silverCoin", 0.2f, true, "junk");
-        this.inv.addItem("shotgun", 5.7f, true, "weapon");
         this.inv.addItem("bronzeCoin", 0.1f, true, "tool");
+        this.inv.addItem("shotgun", 5.7f, true, "weapon");
 
 
 
@@ -174,36 +184,6 @@ public class EntityPlayer extends Entity{
         }
         */
         //this.inv.setShortcut(1,s1);
-
-
-        // ----------------------------------------------------------------
-        // Fin test pour inventaire
-
-        // ----- début test arme -----
-        /*
-        String name,
-        float weight,
-        int precision,
-        int damage,
-        int speed,
-        int type,
-        int strenghtNeeded,
-        int dexterityNeeded,
-        int inteligenceNeeded
-         */
-        /*ItemWeapon gun1= new ItemWeapon(
-                "shotgun",
-                5f,
-                37,
-                12,
-                5,
-                1,
-                12,
-                15,
-                5
-        );*/
-        //this.inv.addItem(gun1);
-        // ----- fin test arme -----
 
         lastTime = System.nanoTime();
         new AnimationTimer(){
@@ -302,33 +282,51 @@ public class EntityPlayer extends Entity{
         currentTime = System.nanoTime();
         fps++;
         delta += currentTime - lastTime;
-        if(delta > ONE_SECOND*3) {
+        if(delta > ONE_SECOND) {
             //System.out.println("FPS :"+ fps);
             delta -= ONE_SECOND;
             fps = 0;
         }
         lastTime = currentTime;
 
-
         //application des accélerations en fonction des touches appuyées
+        /* ------- OPTIMISATION -------
+        voir Level.collision
+         */
+        boolean[] col = l.collision(posX, posY, 1);
+
         if (this.pressedUp) {
-            this.accY -= this.moveSpeed;
+            if(col[0]){
+                this.accY = 0;
+            }else {
+                this.accY -= this.moveSpeed;
+            }
         }
         if (this.pressedDown) {
-            this.accY += this.moveSpeed;
+            if(col[1]){
+                this.accY = 0;
+            }else {
+                this.accY += this.moveSpeed;
+            }
         }
         if (this.pressedLeft) {
-            this.accX -= this.moveSpeed;
+            if(col[2]){
+                this.accX = 0;
+            }else {
+                this.accX -= this.moveSpeed;
+            }
         }
         if (this.pressedRight) {
-            this.accX += this.moveSpeed;
+            if(col[3]){
+                this.accX = 0;
+            }else {
+                this.accX += this.moveSpeed;
+            }
         }
 
-        //application de la friction (ex : 0.9 sur terre, 0.3 sur de la glace)
-        accX *= this.friction;
-        accY *= this.friction;
-
         this.accLimit = (float)(this.moveSpeed * this.friction * 10);
+        this.accLimit = 6;
+
         //cap de l'accéleration
         if (this.accX > this.accLimit)
             this.accX = this.accLimit;
@@ -339,30 +337,132 @@ public class EntityPlayer extends Entity{
         if (this.accY < -this.accLimit)
             this.accY = -this.accLimit;
 
-        //System.out.println("accX : "+this.accX+" / accLimit : "+this.accLimit+" / moveSpeed : "+this.moveSpeed);
+        velX += accX;
+        velY += accY;
+
+        accX = 0;
+        accY = 0;
+
+        //application de la friction (ex : 0.9 sur terre, 0.3 sur de la glace)
+        velX *= this.friction;
+        velY *= this.friction;
+
+        //cap de la velocité
+        if (this.velX > this.velLimit)
+            this.velX = this.velLimit;
+        if (this.velX < -this.velLimit)
+            this.velX = -this.velLimit;
+        if (this.velY > this.velLimit)
+            this.velY = this.velLimit;
+        if (this.velY < -this.velLimit)
+            this.velY = -this.velLimit;
+
+
 
         //arrondi à zero quand la valeur est très petite (ex : 0.000658 = 0)
-        accX = approximatelyZero(accX);
-        accY = approximatelyZero(accY);
+        velX = approximatelyZero(velX);
+        velY = approximatelyZero(velY);
+        float newVelX = 0;
+        float newVelY = 0;
+        /*
+        juste x : rac6² = rac36 = 6
+        x et y : rac(6²+6²) = rac72 = 8.48 // devrait être 6 !!!
+        x et y : rac(4.24² + 4.24²) = rac36 = 6
+        6 * rac2 = 4.24
+        x+y = 12 => / x = 2
+        x = 6 => / x = 1
+        ====> 6
+        l
+        l
+        l
+        v
+        6
+         */
+        
+        if(velX > 0 && velY > 0){
+            float ratio = (velX + velY) / (2*velX + 2*velY) ;
+            System.out.println("Vel : "+velX+" / "+velY+" - NewVel : "+newVelX+" / "+newVelY);
+            System.out.println(velX+velY+" / "+ratio);
+        }
 
         //déplacement du personnage en fonction de son accéleration (moveSpeed)
 
-        this.nextPosX += accX;
-        this.nextPosY += accY;
+        velXInteger = Math.round(velX); // nombre de pixel pour le déplacement
+        velYInteger = Math.round(velY);
+        prevPosX = posX;
+        prevPosY = posY;
 
-        if( l.collision(nextPosX,nextPosY) )  {
-            nextPosX = (int)posX;
-            nextPosY = (int)posY;
+        //déplacement vers le haut
+        if(velY < 0){
+            for (posY = posY; posY > prevPosY + velYInteger; posY--) {
+                /*
+                ------- OPTIMISATION -------
+                pour ne pas rechecker la map entière à chaque itération
+                il faut qu'au check initial, au lieu de retourner false/true
+                retourner l'ID de la tile à check pour ne faire le test que sur
+                elle
+                 */
+                col = l.collision(posX, posY, 1);
+                if(col[0]) {
+
+                    break;
+                }
+            }
         }
-        else
-        {
-            posX = nextPosX;
-            posY = nextPosY;
-            image.setTranslateX(posX);
-            image.setTranslateY(posY);
+        //déplacement vers le bas
+        if(velY > 0) {
+            for (posY = posY; posY < prevPosY + velYInteger; posY++) {
+                /*
+                ------- OPTIMISATION -------
+                pour ne pas rechecker la map entière à chaque itération
+                il faut qu'au check initial, au lieu de retourner false/true
+                retourner l'ID de la tile à check pour ne faire le test que sur
+                elle
+                 */
+                col = l.collision(posX, posY, 1);
+                if(col[1]) {
+                    break;
+                }
+            }
+        }
+        //déplacement vers la gauche
+        if(velX < 0){
+            for (posX = posX; posX > prevPosX + velXInteger; posX--) {
+                /*
+                ------- OPTIMISATION -------
+                pour ne pas rechecker la map entière à chaque itération
+                il faut qu'au check initial, au lieu de retourner false/true
+                retourner l'ID de la tile à check pour ne faire le test que sur
+                elle
+                 */
+                col = l.collision(posX, posY, 1);
+                if(col[2]) {
+                    break;
+                }
+            }
+        }
+        //déplacement vers la droite
+        if(velX > 0) {
+            for (posX = posX; posX < prevPosX + velXInteger; posX++) {
+                /*
+                ------- OPTIMISATION -------
+                pour ne pas rechecker la map entière à chaque itération
+                il faut qu'au check initial, au lieu de retourner false/true
+                retourner l'ID de la tile à check pour ne faire le test que sur
+                elle
+                 */
+                col = l.collision(posX, posY, 1);
+                if(col[3]) {
+                    break;
+                }
+            }
         }
 
-
+        /* ------- OPTIMISATION -------
+        A déplacer dans une fonction de rendu
+        */
+        image.setTranslateX(posX);
+        image.setTranslateY(posY);
     }
 
     private float approximatelyZero(float f){
