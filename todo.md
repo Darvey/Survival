@@ -1,4 +1,15 @@
 #Todo liste
+
+##Collisions
+* Améliorer le système de collision pour le rendre utilisable par tous les objets
+  * Création d'une classe collision avec 2 types de collisions :
+    * Collision entre player/monstre (4 lines) et les tiles (rectangle)
+    * Collision entre player (4lines) et monstre (4lines)
+
+##IA monstres
+* Tester plusieurs comportements
+* Mettre en place une fonction de pathfinding
+
 ##Item
 * ~~Ajouter un item à ramasser sur la Map~~
 * ~~Ramassage d'un item~~
@@ -11,10 +22,14 @@
 ##Weapon
 * ~~Revoir les items : creation d'item en tant que classe abstraite + ajouter les classes filles~~
 * ~~Creation d'une arme et ajout dans l'inventaire~~
-* Utilisation d'une arme
+* Mettre en place le système d'arme/inventaire expliqué plus bas
+* Utilisation d'une arme (cac et gun)
+* Les balles
 
 ##Pixel art
 * ~~création des bordures de tile~~
+* création d'un bloc pour les tests de collision (un rocher)
+* création d'une arme au cac
 
 ##Map
 * ~~création d'une map générée~~
@@ -22,7 +37,7 @@
 * ajouter des champignons par-ci par-là de façon aléatoire
 * unifier la taille de la map (on la redéfinit dans main, dans level...)
 
-##inventaire
+##Inventaire
 * Refonte graphique (*david*) (en cours)
 * ~~ajout description d'un item (*david*)~~
 
