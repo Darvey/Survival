@@ -23,6 +23,7 @@ public class Controller {
         //home.setOnKeyReleased(keyListener);
         home.setOnMousePressed(mouseListener); //souris
         home.setOnScroll(scrollListener); //molette souris (wheel)
+        home.setOnMouseMoved(mouseMovedListener);
 
     }
 
@@ -65,6 +66,15 @@ public class Controller {
                 default:
                     return;
             }
+        }
+    };
+
+    final EventHandler<MouseEvent> mouseMovedListener = new EventHandler<MouseEvent>() {
+
+        public void handle(MouseEvent e) {
+            player.mouseX = e.getX();
+            player.mouseY = e.getY();
+            System.out.println("mouseX : "+e.getX());
         }
     };
 
