@@ -28,10 +28,10 @@ public class Level {
     protected Rectangle2D.Double collisionArea;
 
     /*
-        Constructeur
-        @param x ,largeur de la map
-        @param y ,hauteur de la map
-        @param filePath ,chemin du fichier qui contient la définition du lvl
+     * Constructeur
+     * @param x ,largeur de la map
+     * @param y ,hauteur de la map
+     * @param filePath ,chemin du fichier qui contient la définition du lvl
      */
     public Level(int x,int y) {
 
