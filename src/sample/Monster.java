@@ -46,7 +46,7 @@ public class Monster extends Entity implements MoveListener {
 
         new AnimationTimer(){
             public void handle(long arg0){
-                behaviourMove();
+                //behaviourMove();
             }
         }.start();
     }
@@ -82,9 +82,12 @@ public class Monster extends Entity implements MoveListener {
             this.posY += Math.cos(timer/8) * 2;
 
         }
+
+     }
+    public void display(){
         this.image.setTranslateX(posX);
         this.image.setTranslateY(posY);
-     }
+    }
 
     public ImageView getImage() {
         return image;

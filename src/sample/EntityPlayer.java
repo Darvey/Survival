@@ -6,7 +6,10 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.transform.Rotate;
 
+import java.awt.event.MouseMotionListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +61,10 @@ public class EntityPlayer extends Entity{
     protected ImageView image;
     protected Image imagePath;
 
+    //arme
+    protected ImageView imageWeapon;
+    protected Image imagePathWeapon;
+
 
     //var de mouvements
     protected float acc;
@@ -94,6 +101,14 @@ public class EntityPlayer extends Entity{
 
     Level l;
 
+    //souris
+    protected double mouseX;
+    protected double mouseY;
+    protected double mouseDeltaX;
+    protected double mouseDeltaY;
+    protected double lastAngle;
+    protected double newAngle;
+
     /*
         Player Constructor.
         @param String name nom du joueur
@@ -129,11 +144,23 @@ public class EntityPlayer extends Entity{
         imagePath = new Image(Main.class.getResourceAsStream("../img/collider_player.png"));
         image.setImage(imagePath);
 
+        //image arme
+        imageWeapon = new ImageView();
+        imagePathWeapon = new Image(Main.class.getResourceAsStream("../img/item/shotgun.png"));
+        imageWeapon.setImage(imagePathWeapon);
+
         this.posX = 0;
         this.posY = 0;
 
         image.setTranslateY(posY);
         image.setTranslateX(posX);
+
+        //imageWeapon.setX(64);
+        //imageWeapon.setY(16);
+        this.lastAngle = 180;
+        imageWeapon.setRotate(this.lastAngle);
+
+
 
         // box collision
 
@@ -142,7 +169,7 @@ public class EntityPlayer extends Entity{
         this.accLimit = 3;
         this.velLimit = 6;
         this.friction = 0.5f;               //friction du personnage (0.2 = boue/escalier, 0.5 = normal, 0.9 = glace)
-        this.acc = 3f;
+        this.acc = 6f;
         this.accX = 0f;
         this.accY = 0f;
         this.velX = 0f;
@@ -188,7 +215,7 @@ public class EntityPlayer extends Entity{
         lastTime = System.nanoTime();
         new AnimationTimer(){
             public void handle(long arg0){
-                moveto();
+                //moveto();
             }
         }.start();
 
@@ -230,6 +257,10 @@ public class EntityPlayer extends Entity{
         }
     }
 
+    public void mouseMoved(MouseEvent e){
+        System.out.println("X : "+e.getX());
+    }
+
     /**
      * move the character in the direction given by parameter
      * @param dir the direction for the movement
@@ -237,7 +268,7 @@ public class EntityPlayer extends Entity{
     public void move(int dir){
         //récupération des touches appuyées et relachées
         //0, 1, 2, 3 : touche appuyées / 4, 5, 6, 7 : touche relachées
-
+        System.out.println(posX);
         for (MoveListener hl : listeners)
             hl.playerIsMoving(this.posX, this.posY);
 
@@ -283,7 +314,7 @@ public class EntityPlayer extends Entity{
         fps++;
         delta += currentTime - lastTime;
         if(delta > ONE_SECOND) {
-            //System.out.println("FPS :"+ fps);
+            System.out.println("FPS :"+ fps);
             delta -= ONE_SECOND;
             fps = 0;
         }
@@ -294,7 +325,7 @@ public class EntityPlayer extends Entity{
         voir Level.collision
          */
         boolean[] col = l.collision(posX, posY, 1);
-
+        this.moveSpeed = 10;
         if (this.pressedUp) {
             if(col[0]){
                 this.accY = 0;
@@ -324,8 +355,8 @@ public class EntityPlayer extends Entity{
             }
         }
 
-        this.accLimit = (float)(this.moveSpeed * this.friction * 10);
-        this.accLimit = 6;
+        //this.accLimit = (float)(this.moveSpeed * this.friction * 10);
+        //this.acc = 1;
 
         //cap de l'accéleration
         if (this.accX > this.accLimit)
@@ -343,7 +374,7 @@ public class EntityPlayer extends Entity{
         accX = 0;
         accY = 0;
 
-        //application de la friction (ex : 0.9 sur terre, 0.3 sur de la glace)
+        //application de la friction
         velX *= this.friction;
         velY *= this.friction;
 
@@ -362,30 +393,7 @@ public class EntityPlayer extends Entity{
         //arrondi à zero quand la valeur est très petite (ex : 0.000658 = 0)
         velX = approximatelyZero(velX);
         velY = approximatelyZero(velY);
-        float newVelX = 0;
-        float newVelY = 0;
-        /*
-        juste x : rac6² = rac36 = 6
-        x et y : rac(6²+6²) = rac72 = 8.48 // devrait être 6 !!!
-        x et y : rac(4.24² + 4.24²) = rac36 = 6
-        6 * rac2 = 4.24
-        x+y = 12 => / x = 2
-        x = 6 => / x = 1
-        ====> 6
-        l
-        l
-        l
-        v
-        6
-         */
-        
-        if(velX > 0 && velY > 0){
-            float ratio = (velX + velY) / (2*velX + 2*velY) ;
-            System.out.println("Vel : "+velX+" / "+velY+" - NewVel : "+newVelX+" / "+newVelY);
-            System.out.println(velX+velY+" / "+ratio);
-        }
 
-        //déplacement du personnage en fonction de son accéleration (moveSpeed)
 
         velXInteger = Math.round(velX); // nombre de pixel pour le déplacement
         velYInteger = Math.round(velY);
@@ -458,11 +466,25 @@ public class EntityPlayer extends Entity{
             }
         }
 
-        /* ------- OPTIMISATION -------
-        A déplacer dans une fonction de rendu
-        */
+
+        //gestion de la souris
+        this.mouseDeltaX = this.mouseX - this.posX;
+        this.mouseDeltaY = this.mouseY - this.posY;
+        double deg = Math.toDegrees(Math.atan2(this.mouseDeltaY, -this.mouseDeltaX));
+        this.newAngle = lastAngle - deg;
+        this.lastAngle = deg;
+        System.out.println(newAngle);
+
+    }
+
+    public void display(){
+
         image.setTranslateX(posX);
         image.setTranslateY(posY);
+        imageWeapon.setTranslateX(posX);
+        imageWeapon.setTranslateY(posY);
+        imageWeapon.getTransforms().add(new Rotate(this.newAngle, 50, 16));
+
     }
 
     private float approximatelyZero(float f){
@@ -490,7 +512,7 @@ public class EntityPlayer extends Entity{
         //-----déplacement-----
         //vitesse de déplacement (0.22 => 0.55 (si con et agi à 100))
         this.moveSpeed = this.acc + ((float)this.constitution / 100) + (float)((float)this.agility / 62.5);
-
+        this.moveSpeed = 0.5f;
         //furtivité du personnage
         this.stealth = Math.round(10 + ((this.agility + 1)/ 2));
         //endurance
@@ -572,6 +594,11 @@ public class EntityPlayer extends Entity{
     }
 
     public ImageView getImage() {
+
         return image;
+    }
+
+    public ImageView getImageWeapon() {
+        return imageWeapon;
     }
 }
