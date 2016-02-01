@@ -1,8 +1,11 @@
 package sample;
 
+import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 
 
 public class Monster extends Entity implements MoveListener {
@@ -22,6 +25,7 @@ public class Monster extends Entity implements MoveListener {
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
     protected ImageView image;
     protected Image imagePath;
+    protected SpriteAnimation animationWalk;
 
     protected int timer;
 
@@ -34,9 +38,16 @@ public class Monster extends Entity implements MoveListener {
 
     public Monster(String pName, int pPosX, int pPosY) {
 
+        //image et animation
         image = new ImageView();
-        Image imagePath = new Image(Main.class.getResourceAsStream("../img/monster/mothaStatic.png"));
+        imagePath = new Image(Main.class.getResourceAsStream("../img/mothaBlue_walk2.png"));
         image.setImage(imagePath);
+        image.setViewport(new Rectangle2D(0, 0, 52, 89));
+
+        animationWalk = new SpriteAnimation(image, Duration.millis(1411), 17, 4, 0, 0, 31, 29);
+        animationWalk.setCycleCount(Animation.INDEFINITE);
+        animationWalk.play();
+
 
         this.name = pName;
         this.posX = pPosX;
@@ -102,7 +113,6 @@ public class Monster extends Entity implements MoveListener {
                 break;
             case "PASSIVE_WALK":
                 this.posX += Math.sin(timer/36) * 4;
-                this.posY += Math.cos(timer/8) * 2;
                 break;
             default:
                 break;

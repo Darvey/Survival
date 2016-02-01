@@ -60,7 +60,6 @@ public class EntityPlayer extends Entity{
     protected Inventory inv;
 
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
-    protected SpriteAnimation animation;
     protected SpriteAnimation animationWalk;
     protected SpriteAnimation animationIdle;
     protected ImageView image;
