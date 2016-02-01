@@ -6,6 +6,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import sun.plugin2.util.ColorUtil;
 /**
  * Un item
  * peu aussi représenter un groupe d'items identiques du moment que l'attribut 'nbr' dépasse 1.
