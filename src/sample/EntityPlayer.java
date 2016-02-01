@@ -1,10 +1,14 @@
 package sample;
 
+import javafx.animation.Animation;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
+import javafx.util.Duration;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,6 +18,8 @@ public class EntityPlayer extends Entity{
 
 
     protected String name;
+    protected String state;
+    protected String facing;
 
     // Compétences
     protected int valueCompFire;
@@ -54,6 +60,8 @@ public class EntityPlayer extends Entity{
     protected Inventory inv;
 
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
+    protected SpriteAnimation animationWalk;
+    protected SpriteAnimation animationIdle;
     protected ImageView image;
     protected Image imagePath;
 
@@ -105,7 +113,18 @@ public class EntityPlayer extends Entity{
     protected double lastAngle;
     protected double newAngle;
     protected Rotate rotation;
+    protected double weaponRotation;
+    protected int weaponPosX;
+    protected int weaponPosY;
+    protected int weaponScaleX;
 
+
+    /*
+        Default Constructor
+     */
+    public EntityPlayer(){
+
+    }
     /*
         Player Constructor.
         @param String name nom du joueur
@@ -118,8 +137,10 @@ public class EntityPlayer extends Entity{
     public EntityPlayer(String name, int s, int a, int d, int c, int i,Level l) {
 
 
-
+        //attributs principaux
         this.name = name;
+        this.state = "IDLE";
+        this.facing = "RIGHT";
         this.l = l;
 
         //caractéristiques principales
@@ -138,29 +159,37 @@ public class EntityPlayer extends Entity{
         //inventaire
         this.inv = new Inventory(this);
 
-        //image
+        //image et animation
         image = new ImageView();
-        imagePath = new Image(Main.class.getResourceAsStream("../img/collider_player.png"));
+        imagePath = new Image(Main.class.getResourceAsStream("../img/playerWalk.png"));
         image.setImage(imagePath);
+        image.setViewport(new Rectangle2D(0, 0, 52, 89));
+
+        animationWalk = new SpriteAnimation(image, Duration.millis(800), 8, 4, 0, 0, 52, 89);
+        animationIdle = new SpriteAnimation(image, Duration.millis(800), 2, 4, 0, 178, 52, 89);
+
+        animationWalk.setCycleCount(Animation.INDEFINITE);
+        animationIdle.setCycleCount(Animation.INDEFINITE);
 
         //image arme
         imageWeapon = new ImageView();
         imagePathWeapon = new Image(Main.class.getResourceAsStream("../img/item/shotgun.png"));
         imageWeapon.setImage(imagePathWeapon);
 
+        //position et initialisation position du perso
         this.posX = 0;
         this.posY = 0;
 
         image.setTranslateY(posY);
         image.setTranslateX(posX);
 
-        //imageWeapon.setX(64);
-        //imageWeapon.setY(16);
-        this.lastAngle = 180;
-        imageWeapon.setRotate(this.lastAngle);
-        this.rotation = new Rotate();
+        //position, angle et initialisation de l'arme
+        imageWeapon.getTransforms().add(0, new Translate(0, 0));
+        imageWeapon.getTransforms().add(1, new Scale(1, 1));
+        imageWeapon.getTransforms().add(2, new Rotate(0, 0, 0));
 
-        //variable pour le calcul du fps
+
+        //variables pour le calcul du fps
         this.currentTime = System.nanoTime();
         this.lastTime = System.nanoTime();
 
@@ -173,19 +202,14 @@ public class EntityPlayer extends Entity{
         this.accY = 0f;
         this.velX = 0f;
         this.velY = 0f;
-
-        this.direction = new Direction(0,0);
-
         this.pressedDown = false;
         this.pressedLeft = false;
         this.pressedRight = false;
         this.pressedUp = false;
 
-
         //caractéristiques secondaires
         calculateSecondarySpecs();
 
-        // ----------------------------------------------------------------
         // Debut test pour inventaire
         this.inv.addItem("shroom1", 0.2f, true, "consumable");
         this.inv.addItem("shroom1", 0.2f, true, "consumable");
@@ -193,43 +217,21 @@ public class EntityPlayer extends Entity{
         this.inv.addItem("bronzeCoin", 0.1f, true, "tool");
         this.inv.addItem("shotgun", 5.7f, true, "weapon");
 
-        imageWeapon.getTransforms().add(0, new Rotate(0, 0, 0));
-
-
-
-        /*Item s1 = new Item("shroom1",0.2f,true); // 1 CHAMPI
-        this.inv.addItem(s1);
-        Item s2 = new Item("shroom1",0.3f,true);                         // 2 CHAMPI
-        this.inv.addItem(s2);
-
-        Item s3 = new Item("shroom1",0.1f,true);
-        this.inv.addItem(s3);
-
+        /*
         Item tabSilverCoin[] = new Item[100];                       // 100 pieces d'argent
         for(int cnt=0 ; cnt < 100 ; cnt++){
             tabSilverCoin[cnt] = new Item("silverCoin",0.05f,true);
             this.inv.addItem(tabSilverCoin[cnt]);
         }
+        this.inv.setShortcut(1,s1);
         */
-        //this.inv.setShortcut(1,s1);
-
-
-
-    }
-    /**
-     * Default Constructor
-     */
-    public EntityPlayer(){
-
     }
 
     // liste des écouteurs du déplacement du joueur
-    private List<MoveListener> listeners = new ArrayList<>();
-
+    private final List<MoveListener> listeners = new ArrayList<>();
     public void addListener(MoveListener toAdd) {
         listeners.add(toAdd);
     }
-
 
 
     /**
@@ -262,28 +264,22 @@ public class EntityPlayer extends Entity{
      * @param dir the direction for the movement
      */
     public void move(int dir){
-        //récupération des touches appuyées et relachées
-        //0, 1, 2, 3 : touche appuyées / 4, 5, 6, 7 : touche relachées
-        //System.out.println(posX);
+
         for (MoveListener hl : listeners)
             hl.playerIsMoving(this.posX, this.posY);
 
         switch(dir){
             case 0 :
                 this.pressedUp = true;
-                this.direction.setY(-1);
                 break;
             case 1 :
                 this.pressedDown = true;
-                this.direction.setY(1);
                 break;
             case 2 :
                 this.pressedLeft = true;
-                this.direction.setX(-1);
                 break;
             case 3 :
                 this.pressedRight = true;
-                this.direction.setX(1);
                 break;
             case 4 :
                 this.pressedUp = false;
@@ -300,12 +296,11 @@ public class EntityPlayer extends Entity{
             default :
                 break;
         }
-
     }
 
     public void moveto() {
 
-        //calcul du fps
+        // ----- calcul du fps -----
         this.currentTime = System.nanoTime();
         this.fps++;
         this.delta += (this.currentTime - this.lastTime);
@@ -315,6 +310,7 @@ public class EntityPlayer extends Entity{
             this.fps = 0;
         }
         this.lastTime = this.currentTime;
+        // -------------------------
 
         //application des accélerations en fonction des touches appuyées
         /* ------- OPTIMISATION -------
@@ -351,8 +347,13 @@ public class EntityPlayer extends Entity{
             }
         }
 
-        //this.accLimit = (float)(this.moveSpeed * this.friction * 10);
-        //this.acc = 1;
+        //statut du perso
+        if(this.accX != 0 || this.accY != 0){
+
+            this.state = "WALK";
+        }else{
+            this.state = "IDLE";
+        }
 
         //cap de l'accéleration
         if (this.accX > this.accLimit)
@@ -384,12 +385,9 @@ public class EntityPlayer extends Entity{
         if (this.velY < -this.velLimit)
             this.velY = -this.velLimit;
 
-
-
         //arrondi à zero quand la valeur est très petite (ex : 0.000658 = 0)
         velX = approximatelyZero(velX);
         velY = approximatelyZero(velY);
-
 
         velXInteger = Math.round(velX); // nombre de pixel pour le déplacement
         velYInteger = Math.round(velY);
@@ -417,7 +415,7 @@ public class EntityPlayer extends Entity{
         }
         //déplacement vers le bas
         if(velY > 0) {
-            for (posY = posY; posY < prevPosY + velYInteger; posY++) {
+            while(posY < prevPosY + velYInteger){
                 /*
                 ------- OPTIMISATION -------
                 pour ne pas rechecker la map entière à chaque itération
@@ -429,11 +427,12 @@ public class EntityPlayer extends Entity{
                 if(col[1]) {
                     break;
                 }
+                posY++;
             }
         }
         //déplacement vers la gauche
         if(velX < 0){
-            for (posX = posX; posX > prevPosX + velXInteger; posX--) {
+            while(posX > prevPosX + velXInteger){
                 /*
                 ------- OPTIMISATION -------
                 pour ne pas rechecker la map entière à chaque itération
@@ -445,11 +444,12 @@ public class EntityPlayer extends Entity{
                 if(col[2]) {
                     break;
                 }
+                posX--;
             }
         }
         //déplacement vers la droite
         if(velX > 0) {
-            for (posX = posX; posX < prevPosX + velXInteger; posX++) {
+            while(posX < prevPosX + velXInteger) {
                 /*
                 ------- OPTIMISATION -------
                 pour ne pas rechecker la map entière à chaque itération
@@ -461,58 +461,68 @@ public class EntityPlayer extends Entity{
                 if(col[3]) {
                     break;
                 }
+                posX++;
             }
         }
-
-
 
         //gestion de la souris
         this.mouseDeltaX = this.mouseX - this.posX;
         this.mouseDeltaY = this.mouseY - this.posY;
-        double deg = Math.toDegrees(Math.atan2(this.mouseDeltaY, -this.mouseDeltaX));
+        weaponRotation = Math.toDegrees(Math.atan2(this.mouseDeltaY, -this.mouseDeltaX));
 
+
+        //orientation gauche/droite
         if(mouseX > posX){
-            deg += 180;
-            deg *= -1;
-            imageWeapon.setTranslateX(50);
-            //imageWeapon.setScaleY(-1);
-            imageWeapon.setScaleX(-1);
-
+            this.facing = "RIGHT";
+            weaponRotation += 180;
+            weaponPosX = this.posX + 60;
+            weaponScaleX = -1;
         }else{
-            //imageWeapon.setScaleY(1);
-            imageWeapon.setScaleX(1);
+            this.facing = "LEFT";
+            weaponRotation *= -1;
+            weaponPosX = this.posX - 8;
+            weaponScaleX = 1;
         }
-
-        this.newAngle = lastAngle - deg;
-        this.lastAngle = deg;
-        //System.out.println(newAngle);
-
-
-
+        weaponPosY = this.posY + 50;
     }
 
     public void display(){
-        double deg = Math.toDegrees(Math.atan2(this.mouseDeltaY, -this.mouseDeltaX));
+
+        //déplacement du personnage
         image.setTranslateX(posX);
         image.setTranslateY(posY);
 
-        //!!! bon tout ça c'est dégueulasse pour l'instant, il faudra bien répartir ce qui est
-        //du calcul (=> UPDATE) et ce qui est de l'affichage (=> DISPLAY) !!!
-        if(mouseX > posX) {
-            imageWeapon.setTranslateX(posX-28);
-            imageWeapon.setScaleX(-1);
-
+        if(this.facing == "RIGHT") {
+            image.setScaleX(1);
         }else{
-
-            imageWeapon.setTranslateX(posX+20-28);
-            imageWeapon.setScaleX(1);
-            deg = (deg + 180) * -1;
-
+            image.setScaleX(-1);
         }
-        imageWeapon.setTranslateY(posY+10);
 
-        imageWeapon.getTransforms().set(0, new Rotate(deg, 43, 6));
 
+        //application des transformations sur l'arme
+        imageWeapon.getTransforms().set(1, new Scale(weaponScaleX, 1));
+        imageWeapon.getTransforms().set(0, new Translate(weaponPosX, weaponPosY));
+        imageWeapon.getTransforms().set(2, new Rotate(weaponRotation, 43, 6));
+
+
+        animation();
+    }
+
+    public void animation(){
+
+        //on anime le perso en fonction de son état (idle = au repos, walk = marche)
+        switch(this.state){
+            case "IDLE":
+                animationIdle.play();
+                animationWalk.stop();
+                break;
+            case "WALK":
+                animationWalk.play();
+                animationIdle.stop();
+                break;
+            default:
+                break;
+        }
     }
 
     private float approximatelyZero(float f){
@@ -527,6 +537,7 @@ public class EntityPlayer extends Entity{
     }
 
     private void calculateSecondarySpecs(){
+
         /*
         str = force physique
         agi = agilité du corps
@@ -534,8 +545,6 @@ public class EntityPlayer extends Entity{
         con = endurance / resistance du corps
         int = intelligence innée / force mental
         */
-
-
 
         //-----déplacement-----
         //vitesse de déplacement (0.22 => 0.55 (si con et agi à 100))
@@ -587,12 +596,8 @@ public class EntityPlayer extends Entity{
 
 
     public void displayInventory(){
-        this.inv.display();
-    }
 
-    public void addItem(Item item)
-    {
-        //this.inv.addItem(item);
+        this.inv.display();
     }
 
     // ----- GETTERS -----// 
@@ -627,6 +632,7 @@ public class EntityPlayer extends Entity{
     }
 
     public ImageView getImageWeapon() {
+
         return imageWeapon;
     }
 }
