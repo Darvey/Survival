@@ -1,15 +1,11 @@
 package sample;
 
-import javafx.animation.AnimationTimer;
-import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
-import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 
-import java.awt.event.MouseMotionListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,8 +90,8 @@ public class EntityPlayer extends Entity{
 
     //pour le calcul de fps
     protected final long ONE_SECOND = 1000000000;
-    protected long currentTime = 0;
-    protected long lastTime = 0;
+    protected long currentTime;
+    protected long lastTime;
     protected long fps = 0;
     protected long delta = 0;
 
@@ -108,6 +104,7 @@ public class EntityPlayer extends Entity{
     protected double mouseDeltaY;
     protected double lastAngle;
     protected double newAngle;
+    protected Rotate rotation;
 
     /*
         Player Constructor.
@@ -119,6 +116,8 @@ public class EntityPlayer extends Entity{
         @param int i intelligence value
      */
     public EntityPlayer(String name, int s, int a, int d, int c, int i,Level l) {
+
+
 
         this.name = name;
         this.l = l;
@@ -159,11 +158,11 @@ public class EntityPlayer extends Entity{
         //imageWeapon.setY(16);
         this.lastAngle = 180;
         imageWeapon.setRotate(this.lastAngle);
+        this.rotation = new Rotate();
 
-
-
-        // box collision
-
+        //variable pour le calcul du fps
+        this.currentTime = System.nanoTime();
+        this.lastTime = System.nanoTime();
 
         //move
         this.accLimit = 3;
@@ -194,6 +193,8 @@ public class EntityPlayer extends Entity{
         this.inv.addItem("bronzeCoin", 0.1f, true, "tool");
         this.inv.addItem("shotgun", 5.7f, true, "weapon");
 
+        imageWeapon.getTransforms().add(0, new Rotate(0, 0, 0));
+
 
 
         /*Item s1 = new Item("shroom1",0.2f,true); // 1 CHAMPI
@@ -212,12 +213,7 @@ public class EntityPlayer extends Entity{
         */
         //this.inv.setShortcut(1,s1);
 
-        lastTime = System.nanoTime();
-        new AnimationTimer(){
-            public void handle(long arg0){
-                //moveto();
-            }
-        }.start();
+
 
     }
     /**
@@ -228,7 +224,7 @@ public class EntityPlayer extends Entity{
     }
 
     // liste des écouteurs du déplacement du joueur
-    private List<MoveListener> listeners = new ArrayList<MoveListener>();
+    private List<MoveListener> listeners = new ArrayList<>();
 
     public void addListener(MoveListener toAdd) {
         listeners.add(toAdd);
@@ -258,7 +254,7 @@ public class EntityPlayer extends Entity{
     }
 
     public void mouseMoved(MouseEvent e){
-        System.out.println("X : "+e.getX());
+        //System.out.println("X : "+e.getX());
     }
 
     /**
@@ -268,7 +264,7 @@ public class EntityPlayer extends Entity{
     public void move(int dir){
         //récupération des touches appuyées et relachées
         //0, 1, 2, 3 : touche appuyées / 4, 5, 6, 7 : touche relachées
-        System.out.println(posX);
+        //System.out.println(posX);
         for (MoveListener hl : listeners)
             hl.playerIsMoving(this.posX, this.posY);
 
@@ -310,15 +306,15 @@ public class EntityPlayer extends Entity{
     public void moveto() {
 
         //calcul du fps
-        currentTime = System.nanoTime();
-        fps++;
-        delta += currentTime - lastTime;
-        if(delta > ONE_SECOND) {
-            System.out.println("FPS :"+ fps);
-            delta -= ONE_SECOND;
-            fps = 0;
+        this.currentTime = System.nanoTime();
+        this.fps++;
+        this.delta += (this.currentTime - this.lastTime);
+        if(this.delta > this.ONE_SECOND) {
+            System.out.println("FPS :"+ this.fps);
+            this.delta -= this.ONE_SECOND;
+            this.fps = 0;
         }
-        lastTime = currentTime;
+        this.lastTime = this.currentTime;
 
         //application des accélerations en fonction des touches appuyées
         /* ------- OPTIMISATION -------
@@ -402,7 +398,8 @@ public class EntityPlayer extends Entity{
 
         //déplacement vers le haut
         if(velY < 0){
-            for (posY = posY; posY > prevPosY + velYInteger; posY--) {
+            //il vaut mieux faire un while du coup
+            while(posY > prevPosY + velYInteger){
                 /*
                 ------- OPTIMISATION -------
                 pour ne pas rechecker la map entière à chaque itération
@@ -415,6 +412,7 @@ public class EntityPlayer extends Entity{
 
                     break;
                 }
+                posY--;
             }
         }
         //déplacement vers le bas
@@ -467,23 +465,53 @@ public class EntityPlayer extends Entity{
         }
 
 
+
         //gestion de la souris
         this.mouseDeltaX = this.mouseX - this.posX;
         this.mouseDeltaY = this.mouseY - this.posY;
         double deg = Math.toDegrees(Math.atan2(this.mouseDeltaY, -this.mouseDeltaX));
+
+        if(mouseX > posX){
+            deg += 180;
+            deg *= -1;
+            imageWeapon.setTranslateX(50);
+            //imageWeapon.setScaleY(-1);
+            imageWeapon.setScaleX(-1);
+
+        }else{
+            //imageWeapon.setScaleY(1);
+            imageWeapon.setScaleX(1);
+        }
+
         this.newAngle = lastAngle - deg;
         this.lastAngle = deg;
-        System.out.println(newAngle);
+        //System.out.println(newAngle);
+
+
 
     }
 
     public void display(){
-
+        double deg = Math.toDegrees(Math.atan2(this.mouseDeltaY, -this.mouseDeltaX));
         image.setTranslateX(posX);
         image.setTranslateY(posY);
-        imageWeapon.setTranslateX(posX);
-        imageWeapon.setTranslateY(posY);
-        imageWeapon.getTransforms().add(new Rotate(this.newAngle, 50, 16));
+
+        //!!! bon tout ça c'est dégueulasse pour l'instant, il faudra bien répartir ce qui est
+        //du calcul (=> UPDATE) et ce qui est de l'affichage (=> DISPLAY) !!!
+        if(mouseX > posX) {
+            imageWeapon.setTranslateX(posX-28);
+            imageWeapon.setScaleX(-1);
+
+        }else{
+
+            imageWeapon.setTranslateX(posX+20-28);
+            imageWeapon.setScaleX(1);
+            deg = (deg + 180) * -1;
+
+        }
+        imageWeapon.setTranslateY(posY+10);
+
+        imageWeapon.getTransforms().set(0, new Rotate(deg, 43, 6));
 
     }
 

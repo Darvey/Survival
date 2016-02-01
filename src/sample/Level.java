@@ -1,9 +1,5 @@
 package sample;
 
-import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
-import javafx.geometry.Pos;
-
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
@@ -13,7 +9,7 @@ import java.util.Random;
  */
 public class Level {
 
-    private String name;
+    protected String name;
     private Tile[][] tilesMap;
     private Item[][] itemMap;
     private int h;
@@ -35,6 +31,7 @@ public class Level {
      */
     public Level(int x,int y) {
 
+        this.name = "Premier niveau";
         this.h=y;
         this.l=x;
         random = new Random();
@@ -76,7 +73,6 @@ public class Level {
     {
         int caseX = (int)(player.getImage().getTranslateX()+7)/32;
         int caseY = (int)(player.getImage().getTranslateY()+10)/32;
-        System.out.println("posPlayer = "+caseX+" "+caseY);
         if(caseX == 3 && caseY == 3){
             itemMap[3][3].getImage().setTranslateX(0);
             itemMap[3][3].getImage().setTranslateY(0);
@@ -194,7 +190,7 @@ public class Level {
                     c = this.random.nextInt(2);
                     d = this.random.nextInt(2);
 
-                }else if(i != 0 && j != 0) {
+                }else if(i != 0) {
 
                     if(levelMatrice[i-1][j][1] == 1){
                         a = 1;
@@ -216,20 +212,14 @@ public class Level {
 
                     d = this.random.nextInt(2);
 
-                }else if(i == 0 && j == 0){
+                }else{ //  Simplify 'i == 0 && j == 0'
                     a = this.random.nextInt(2);
                     b = this.random.nextInt(2);
                     c = this.random.nextInt(2);
                     d = this.random.nextInt(2);
 
-                }else{
-
-                    a = 9;
-                    b = 9;
-                    c = 9;
-                    d = 9;
                 }
-                //System.out.println(a + "/" + b + "/" + c + "/" + d);
+
                 levelMatrice[i][j][0] = a;
                 levelMatrice[i][j][1] = b;
                 levelMatrice[i][j][2] = c;
@@ -239,37 +229,5 @@ public class Level {
             }
         }
         return levelTile;
-        /*System.out.println(levelMatrice);
-
-        for(int i = 0; i < 10; i++) {
-            for (int j = 0; j < 1; j++) {
-                if(levelMatrice[i][j][0] == 1){
-                    System.out.print("#");
-                }else{
-                    System.out.print("-");
-                }
-                if(levelMatrice[i][j][1] == 1){
-                    System.out.print("#");
-                }else{
-                    System.out.print("-");
-                }
-            }
-        }
-        System.out.println();
-        for(int i = 0; i < 10; i++) {
-            for (int j = 0; j < 1; j++) {
-                if(levelMatrice[i][j][2] == 1){
-                    System.out.print("#");
-                }else{
-                    System.out.print("-");
-                }
-                if(levelMatrice[i][j][3] == 1){
-                    System.out.print("#");
-                }else{
-                    System.out.print("-");
-                }
-            }
-        }*/
     }
-
 }
