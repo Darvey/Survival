@@ -17,6 +17,7 @@ public class Monster extends Entity implements MoveListener {
     protected String name;
     protected int reach;
     protected int aggressivity; //0 : fuyard, 1 : se défend, 2 : agressif
+    protected float attackSpeed;
 
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
     protected ImageView image;
@@ -45,6 +46,8 @@ public class Monster extends Entity implements MoveListener {
         System.out.println(posX);
         image.setTranslateY(this.posY);
         image.setTranslateX(this.posX);
+
+        this.attackSpeed = 2.3f;
 
         timer = 0;
 
@@ -113,7 +116,7 @@ public class Monster extends Entity implements MoveListener {
     public void attack(){
 
         if(timeAttack == 0){
-            timeAttack = 120;
+            timeAttack = (int)(60 / attackSpeed);
             System.out.println("Grrr, je t'attaque toutes les "+timeAttack+" frames ! Prends ça dans ta gueule !");
         }else{
             timeAttack--;

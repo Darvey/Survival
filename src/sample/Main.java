@@ -36,6 +36,8 @@ public class Main extends Application {
         // Ajout joueur au group
         root.getChildren().add(p.getImage());
         root.getChildren().add(p.getImageWeapon());
+        //root.getChildren().add(p.getRight());
+        //root.getChildren().add(p.getLeft());
 
         // init controles du joueur
         new Controller(home,p,L);
@@ -94,6 +96,8 @@ public class Main extends Application {
             if(!pPrimaryStage.isShowing()){
                 runFlag = false;
             }
+
+
 
             // convert the time to seconds
             double currTime = (double)System.nanoTime() / 1000000000.0;
