@@ -1,6 +1,5 @@
 package sample;
 
-import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
@@ -12,11 +11,11 @@ public class Controller {
     EntityPlayer player;
     Level level;
 
-    public Controller(Scene h,EntityPlayer p,Level level){
+    public Controller(Scene home,EntityPlayer p,Level level){
 
         this.player = p;
         this.level = level;
-        Scene home = h;
+        //Scene home = h;
         System.out.println("enterControllerClass");
         home.setOnKeyPressed(keyPressedListener); //clavier pressed
         home.setOnKeyReleased(keyReleasedListener); //clavier released
@@ -64,7 +63,7 @@ public class Controller {
                     level.action(player);
                     break;
                 default:
-                    return;
+                    break;
             }
         }
     };
@@ -74,7 +73,7 @@ public class Controller {
         public void handle(MouseEvent e) {
             player.mouseX = e.getX();
             player.mouseY = e.getY();
-            System.out.println("mouseX : "+e.getX());
+            //System.out.println("mouseX : "+e.getX());
         }
     };
 
@@ -106,7 +105,7 @@ public class Controller {
                     player.move(7);
                 break;
                 default:
-                    return;
+                    break;
             }
         }
     };
@@ -137,25 +136,17 @@ public class Controller {
                     System.out.println("Position clic molette = (x :" + e.getSceneX() + ", y :" + e.getSceneY() + ")");
                     break;
                 default :
-                    return;
+                    break;
             }
         }
     };
 
-    final EventHandler<ScrollEvent> scrollListener = new EventHandler<ScrollEvent>(){
-        /*
-        en jeu :
-        molette avant/arrière = sélection de l'arme
-         */
-
-        //détection molette de la souris
-        public void handle(ScrollEvent e){
-            //dans quel sens va la molette
-            if(e.getDeltaY() > 0){
-                System.out.println("Molette tournée vers l'avant");
-            }else if(e.getDeltaY() < 0){
-                System.out.println("Molette tournée vers l'arrière");
-            }   
+    final EventHandler<ScrollEvent> scrollListener = e -> {
+        //dans quel sens va la molette
+        if(e.getDeltaY() > 0){
+            System.out.println("Molette tournée vers l'avant");
+        }else if(e.getDeltaY() < 0){
+            System.out.println("Molette tournée vers l'arrière");
         }
     };
 

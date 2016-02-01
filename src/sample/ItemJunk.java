@@ -24,8 +24,8 @@ public class ItemJunk extends Item {
                           String pType,
                           String pFamily,
                           Inventory pInventory,
-                          String descriptionAlt,
-                          int intelligenceNeeded)
+                          String pDescriptionAlt,
+                          int pIntelligenceNeeded)
     {
         this.nbr = 1;
         this.name = pName;
@@ -34,6 +34,8 @@ public class ItemJunk extends Item {
         this.type = pType;
         this.family = pFamily;
         this.inventory = pInventory;
+        this.descriptionAlt = pDescriptionAlt;
+        this.intelligenceNeeded = pIntelligenceNeeded;
 
         if(pHaveThumbnail) {
             // Image de l'item

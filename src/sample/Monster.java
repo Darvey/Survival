@@ -27,6 +27,10 @@ public class Monster extends Entity implements MoveListener {
     protected float playerPosX;
     protected float playerPosY;
 
+    protected String state;
+
+    protected int timeAttack;
+
     public Monster(String pName, int pPosX, int pPosY) {
 
         image = new ImageView();
@@ -38,17 +42,16 @@ public class Monster extends Entity implements MoveListener {
         this.posY = pPosY;
         this.playerPosX = -1000000;
         this.playerPosY = -1000000;
-
-        image.setTranslateY(posY);
-        image.setTranslateX(posX);
+        System.out.println(posX);
+        image.setTranslateY(this.posY);
+        image.setTranslateX(this.posX);
 
         timer = 0;
 
-        new AnimationTimer(){
-            public void handle(long arg0){
-                //behaviourMove();
-            }
-        }.start();
+        state = new String("PASSIVE_WALK");
+
+        timeAttack = 0;
+
     }
 
     public void playerIsMoving(float pPosX, float pPosY){
@@ -65,31 +68,60 @@ public class Monster extends Entity implements MoveListener {
         float deltaX = this.posX - this.playerPosX;
         float deltaY = this.posY - this.playerPosY;
         float deltaPos = (float)Math.sqrt((float)Math.pow(deltaX, 2) + (float)Math.pow(deltaY, 2));
-        //System.out.println(deltaPos);
-        float aggX = -deltaX / deltaPos * 3;
-        float aggY = -deltaY / deltaPos * 3;
-        //System.out.println(aggX+" - "+aggY);
+        float aggX;
+        float aggY;
 
-        if(deltaPos < 200) {
-            //System.out.println("Grrr ! Moi "+this.name+" vois un joueur à "+Math.round(deltaPos)+" pixels de moi");
-
-            this.posX += aggX;
-            this.posY += aggY;
-
-
+        if(deltaPos != 0) {
+            aggX = -deltaX / deltaPos * 3;
+            aggY = -deltaY / deltaPos * 3;
         }else{
-            this.posX += Math.sin(timer/36) * 4;
-            this.posY += Math.cos(timer/8) * 2;
-
+            aggX = 0;
+            aggY = 0;
         }
 
-     }
+        //ici, quelle est son statut ? en fonction de la position du joueur etc.
+        if(deltaPos < 200 && deltaPos >= 50){
+            this.state = "AGRESSIVE_WALK";
+        }else if(deltaPos < 50){
+            this.state = "ATTACK";
+        }else{
+            this.state = "PASSIVE_WALK";
+        }
+
+        //ici, quelle est son comportement, par statut
+        switch(this.state) {
+            case "AGRESSIVE_WALK":
+                this.posX += aggX;
+                this.posY += aggY;
+                break;
+            case "ATTACK":
+                attack();
+                break;
+            case "PASSIVE_WALK":
+                this.posX += Math.sin(timer/36) * 4;
+                this.posY += Math.cos(timer/8) * 2;
+                break;
+            default:
+                break;
+        }
+    }
     public void display(){
-        this.image.setTranslateX(posX);
-        this.image.setTranslateY(posY);
+        this.image.setTranslateX(this.posX);
+        this.image.setTranslateY(this.posY);
+    }
+
+    public void attack(){
+
+        if(timeAttack == 0){
+            timeAttack = 120;
+            System.out.println("Grrr, je t'attaque toutes les "+timeAttack+" frames ! Prends ça dans ta gueule !");
+        }else{
+            timeAttack--;
+        }
     }
 
     public ImageView getImage() {
+
         return image;
     }
 }

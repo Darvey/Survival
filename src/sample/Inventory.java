@@ -1,21 +1,13 @@
 package sample;
 
-import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.event.ActionEvent;
+
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -140,7 +132,6 @@ public class Inventory {
      * add an item into the inventory
      * @param pName name
      * @param pWeigth weigth
-     * @param pName name
      */
     //public void addItem(Item item) {
     public void addItem(String pName, float pWeigth, boolean pHaveThumbnail, String pType) {
@@ -263,7 +254,7 @@ public class Inventory {
         {
             for (int x = 0; x < nbrBoxOnX; x++)
             {
-                if (this.gridMat[x][y] == false)
+                if (!this.gridMat[x][y])
                 {
                     this.gridMat[x][y] = true;
                     return p = new Position(x,y);

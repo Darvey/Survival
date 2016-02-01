@@ -1,11 +1,11 @@
 package sample;
 
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -87,10 +87,9 @@ abstract class Item {
      */
     public String toStringItem()
     {
-        String res =    this.name+" : \n"+
+        return this.name+" : \n"+
                         this.description+" \n"+
-                        "poids : "+this.weight;
-        return res;
+                        "poids : "+ this.weight;
     }
 
     // ----- GETTERS ----- //
@@ -133,26 +132,24 @@ abstract class Item {
     /**
      * Action for a thumbnail leftclic
      */
-    final EventHandler<MouseEvent> mouseListener = new EventHandler<MouseEvent>(){
-        public void handle(MouseEvent e) {
+    final EventHandler<MouseEvent> mouseListener = e -> {
 
-            switch(e.getButton()){
-                case PRIMARY:
-                    //affichage de la description
-                    txtItemOnclic.setText(toStringItem());
-                    break;
-                case SECONDARY:
-                    //utilisation de l'item
-                    use();
-                    break;
-            }
-
-            //System.out.println(inventory.player.constitution);
-            //System.out.println(nbr);
-            //inventory.player.constitution++;
-            //nbr = 12;
-            //inventory.deleteItem(getName());
+        switch(e.getButton()){
+            case PRIMARY:
+                //affichage de la description
+                txtItemOnclic.setText(toStringItem());
+                break;
+            case SECONDARY:
+                //utilisation de l'item
+                use();
+                break;
         }
+
+        //System.out.println(inventory.player.constitution);
+        //System.out.println(nbr);
+        //inventory.player.constitution++;
+        //nbr = 12;
+        //inventory.deleteItem(getName());
     };
 
     public void use(){

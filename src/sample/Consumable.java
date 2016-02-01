@@ -10,11 +10,11 @@ public class Consumable extends Item{
     protected int precision;
     protected int damage;
     protected int speed;
-    protected int newAttr;
+
     protected String type;
     protected int strenghtNeeded;
     protected int dexterityNeeded;
-    protected int inteligenceNeeded;
+    protected int intelligenceNeeded;
 
     /**
      * Constructor
@@ -24,13 +24,7 @@ public class Consumable extends Item{
         this.nbr = 1;
         this.name = pName;
         this.weight = pWeight;
-        this.precision = precision;
-        this.damage = damage;
-        this.speed = speed;
         this.type = pType;
-        this.strenghtNeeded = strenghtNeeded;
-        this.dexterityNeeded = dexterityNeeded;
-        this.inteligenceNeeded = inteligenceNeeded;
         this.inventory = pInventory;
 
         /*this.description = "";
