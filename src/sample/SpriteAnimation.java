@@ -8,6 +8,8 @@ import javafx.util.Duration;
 
 public class SpriteAnimation extends Transition {
 
+    // ********** ATTRIBUTES ********** //
+
     private final ImageView imageView;
     private final int count;
     private final int columns;
@@ -18,6 +20,20 @@ public class SpriteAnimation extends Transition {
 
     private int lastIndex;
 
+    // ********** CONSTRUCTORS ********** //
+
+    /**
+     * Constructor
+     *
+     * @param imageView     the image used for the animation
+     * @param duration      the duration of the animation
+     * @param count         number of sprite
+     * @param columns       number of colums in the image
+     * @param offsetX       the offset on the X axis
+     * @param offsetY       the offset one the Y axis
+     * @param width         width of a sprite
+     * @param height        height of a sprite
+     */
     public SpriteAnimation(
             ImageView imageView,
             Duration duration,
@@ -35,6 +51,8 @@ public class SpriteAnimation extends Transition {
         setCycleDuration(duration);
         setInterpolator(Interpolator.LINEAR);
     }
+
+    // ********** METHODS ********** //
 
     protected void interpolate(double k) {
         final int index = Math.min((int) Math.floor(k * count), count - 1);

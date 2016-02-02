@@ -97,14 +97,15 @@ public class EntityPlayer extends Entity{
     public EntityPlayer(){
 
     }
-    /*
-        Player Constructor.
-        @param String name nom du joueur
-        @param int s strength value
-        @param int a agility value
-        @param itn d dexterity value
-        @param int c constitution value
-        @param int i intelligence value
+    /**
+     *   Player Constructor.
+     *
+     *   @param name nom du joueur
+     *   @param s strength value
+     *   @param a agility value
+     *   @param d dexterity value
+     *   @param c constitution value
+     *   @param i intelligence value
      */
     public EntityPlayer(String name, int s, int a, int d, int c, int i,Level l, Group pRoot) {
 

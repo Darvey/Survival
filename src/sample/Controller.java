@@ -8,9 +8,20 @@ import javafx.scene.input.ScrollEvent;
 
 public class Controller {
 
+    // ********** ATTRIBUTES ********** //
+
     EntityPlayer player;
     Level level;
 
+    // ********** CONSTRUCTORS ********** //
+
+    /**
+     * Constructor
+     *
+     * @param home      Scene
+     * @param p         EntityPlayer
+     * @param level     Level
+     */
     public Controller(Scene home,EntityPlayer p,Level level){
 
         this.player = p;
@@ -26,6 +37,11 @@ public class Controller {
 
     }
 
+    // ********** METHODES ********** //
+
+    /**
+     * Set actions when a key is pressed
+     */
     private final EventHandler<KeyEvent> keyPressedListener = new EventHandler<KeyEvent>() {
 
         public void handle(KeyEvent e){
@@ -68,6 +84,9 @@ public class Controller {
         }
     };
 
+    /**
+     * Set actions when the mouse is moved
+     */
     private final EventHandler<MouseEvent> mouseMovedListener = new EventHandler<MouseEvent>() {
 
         public void handle(MouseEvent e) {
@@ -77,6 +96,10 @@ public class Controller {
         }
     };
 
+
+    /**
+     * Set actions when a key is released
+     */
     private final EventHandler<KeyEvent> keyReleasedListener = new EventHandler<KeyEvent>() {
 
         public void handle(KeyEvent e){
@@ -110,6 +133,9 @@ public class Controller {
         }
     };
 
+    /**
+     * Set actions when a mouse button is pressed
+     */
     private final EventHandler<MouseEvent> mouseListener = new EventHandler<MouseEvent>(){
         /*
         en jeu :
@@ -142,6 +168,9 @@ public class Controller {
         }
     };
 
+    /**
+     * Set actions when a scroll is performed
+     */
     private final EventHandler<ScrollEvent> scrollListener = e -> {
         //dans quel sens va la molette
         if(e.getDeltaY() > 0){

@@ -6,6 +6,8 @@ import javafx.scene.image.ImageView;
 
 public class Consumable extends Item{
 
+    // ********** ATTRIBUTES ********** //
+
     //protected String name; inherit
     protected int precision;
     protected int damage;
@@ -16,8 +18,16 @@ public class Consumable extends Item{
     protected int dexterityNeeded;
     protected int intelligenceNeeded;
 
+    // ********** CONSTRUCTORS ********** //
+
     /**
      * Constructor
+     *
+     * @param pName             name of the consumable
+     * @param pWeight           weight of the consumable
+     * @param pHaveThumbnail    if the consumable have a thumbnail or not in img Folder
+     * @param pType             Type of the consumable
+     * @param pInventory
      */
     public Consumable(String pName, float pWeight, boolean pHaveThumbnail, String pType, Inventory pInventory)
     {
@@ -51,10 +61,10 @@ public class Consumable extends Item{
         }
     }
 
+    // **********  METHODS ********** //
+
     public void use(){
-
         System.out.println("Je mange depuis consumable");
-
     }
 
 

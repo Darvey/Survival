@@ -9,37 +9,36 @@ import javafx.util.Duration;
 
 public class Monster extends Entity implements MoveListener {
 
-    /*
-    entity :
-    health
-    dodge
-    stealth
-    moveSpeed
-    */
-    protected final String name;
 
+    // ********** ATTRIBUTES ********** //
+
+    protected final String name;
 
     protected int reach;
     protected int aggressivity; //0 : fuyard, 1 : se défend, 2 : agressif
     protected float attackSpeed;
 
-    // pour tester ( plus tard on utilisera des tableaux pour les animations... )
-
     protected final SpriteAnimation animationWalk;
 
     //interaction joueur
-    protected float playerPosX;
-    protected float playerPosY;
+    protected static float playerPosX;
+    protected static float playerPosY;
+
     protected float deltaPos;
     float deltaX;
     float deltaY;
 
     protected int timeAttack;
 
+    // ********** CONSTRUCTORS ********** //
 
-
-
-
+    /**
+     * Constructor
+     *
+     * @param pName     name of the monster
+     * @param pPosX     position on the X axis
+     * @param pPosY     position on the Y axis
+     */
     public Monster(String pName, int pPosX, int pPosY) {
 
         //image et animation
@@ -56,8 +55,9 @@ public class Monster extends Entity implements MoveListener {
         this.name = pName;
         this.posX = pPosX;
         this.posY = pPosY;
-        this.playerPosX = -1000000;
-        this.playerPosY = -1000000;
+        playerPosX = -1000000;
+        playerPosY = -1000000;
+
         System.out.println(posX);
 
         this.popX = this.posX;
@@ -85,16 +85,23 @@ public class Monster extends Entity implements MoveListener {
 
         this.timeAttack = 0;
 
-
-
     }
 
+    // ********** METHODS ********** //
+
+    /**
+     * Update the player's position in the class
+     *
+     * @param pPosX     position of the player on the X axis
+     * @param pPosY     position of the player on the Y axis
+     */
     public void playerIsMoving(float pPosX, float pPosY){
 
         //System.out.println("Grrr ! Moi "+this.name+" vois un joueur situé en :"+pPosX+"/"+pPosY);
-        this.playerPosX = pPosX;
-        this.playerPosY = pPosY;
+        playerPosX = pPosX;
+        playerPosY = pPosY;
     }
+
 
     public void attack(){
 
@@ -106,15 +113,19 @@ public class Monster extends Entity implements MoveListener {
         }
     }
 
-    /*
-        ------- GETTERS -------
+
+    /**
+     * Method which Return the acceleration
+     *
+     * @param col   colision grid
+     * @return      the acceleration
      */
     @Override
     protected float[] getAcc(boolean[] col){
 
         //calcul de l'accélération
-        this.deltaX = this.posX - this.playerPosX;
-        this.deltaY = this.posY - this.playerPosY;
+        this.deltaX = this.posX - playerPosX;
+        this.deltaY = this.posY - playerPosY;
         this.deltaPos = (float)Math.sqrt((float)Math.pow(deltaX, 2) + (float)Math.pow(deltaY, 2));
         float aggX;
         float aggY;
@@ -156,7 +167,6 @@ public class Monster extends Entity implements MoveListener {
                 break;
         }
 
-        // return de l'accélération
         float[] acc = new float[2];
         acc[0] = this.accX;
         acc[1] = this.accY;
