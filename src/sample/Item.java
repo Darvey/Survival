@@ -1,21 +1,19 @@
 package sample;
 
+/**
+ * Item
+ * peu aussi représenter un groupe d'items identiques du moment que l'attribut 'nbr' dépasse 1.
+ */
+
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import sun.plugin2.util.ColorUtil;
-/**
- * Un item
- * peu aussi représenter un groupe d'items identiques du moment que l'attribut 'nbr' dépasse 1.
- */
 abstract class Item {
 
+    // ********** ATTRIBUTES ********** //
 
     protected static Label txtItemOnclic = new Label();
 
@@ -35,13 +33,15 @@ abstract class Item {
 
     protected Inventory inventory;          // inventaire qui contient l'item
 
+    // ********** CONSTRUCTORS ********** //
+
     /**
     * Constructor
-    * @param pName the name of the item
-    * @param pWeight the weight of the item
-    * @param pHaveThumbnail if the item has a thumbnail
-    * @param pType type of the item (weapon / consumable / tool / junk)
-    * @param pInventory inventory which contains the item
+    * @param pName              the name of the item
+    * @param pWeight            the weight of the item
+    * @param pHaveThumbnail     if the item has a thumbnail
+    * @param pType              type of the item (weapon / consumable / tool / junk)
+    * @param pInventory         inventory which contains the item
     */
     public Item(String pName,
                 float pWeight,
@@ -75,6 +75,10 @@ abstract class Item {
         }
     }
 
+
+    // ********** METHODES ********** //
+
+
     /**
     * Default Constructor
     */
@@ -83,50 +87,14 @@ abstract class Item {
     }
 
     /**
-     * @return a String with each value of the item
+     * Method that returns the name, description, and the weight of an item as a string
+     * @return String value
      */
     public String toStringItem()
     {
         return this.name+" : \n"+
                         this.description+" \n"+
                         "poids : "+ this.weight;
-    }
-
-    // ----- GETTERS ----- //
-
-
-    public static Label getTxtItemOnclic() {
-        return txtItemOnclic;
-    }
-
-    public String getName() {
-
-        return this.name;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public float getWeight() {
-        return this.weight * this.nbr;
-    }
-
-    public int getNbr() {
-        return this.nbr;
-    }
-
-    public void setNbr(int nbr) {
-        this.nbr = nbr;
-    }
-
-    public ImageView getImage() {
-        return this.itemView;
-    }
-
-    public ImageView getThumbnail(){
-
-        return this.thumbnailView;
     }
 
     /**
@@ -144,12 +112,6 @@ abstract class Item {
                 use();
                 break;
         }
-
-        //System.out.println(inventory.player.constitution);
-        //System.out.println(nbr);
-        //inventory.player.constitution++;
-        //nbr = 12;
-        //inventory.deleteItem(getName());
     };
 
     public void use(){
@@ -176,7 +138,44 @@ abstract class Item {
         }
     }
 
+    // ********** SETTERS ********** //
+
+    public void setNbr(int nbr) {
+        this.nbr = nbr;
+    }
+
+    // ********** GETTERS ********** //
+
     public String getType(){
         return this.type;
     }
+
+    public static Label getTxtItemOnclic() {
+        return txtItemOnclic;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public float getWeight() {
+        return this.weight * this.nbr;
+    }
+
+    public int getNbr() {
+        return this.nbr;
+    }
+
+    public ImageView getImage() {
+        return this.itemView;
+    }
+
+    public ImageView getThumbnail(){
+        return this.thumbnailView;
+    }
+
 }

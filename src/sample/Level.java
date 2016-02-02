@@ -4,10 +4,14 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
-/*
-    Description de la classe :
+/**
+ *   Description de la classe :
+ *
  */
+
 public class Level {
+
+    // ********** ATTRIBUTES ********** //
 
     protected final String name;
     private final Tile[][] tilesMap;
@@ -25,11 +29,13 @@ public class Level {
     protected Line2D.Double lineRight;
     protected Rectangle2D.Double collisionArea;
 
-    /*
+    // ********** CONSTRUCTORS ********** //
+
+    /**
      * Constructeur
-     * @param x ,largeur de la map
-     * @param y ,hauteur de la map
-     * @param filePath ,chemin du fichier qui contient la définition du lvl
+     *
+     * @param pWidth    largeur de la map
+     * @param pHeight   hauteur de la map
      */
     public Level(int pWidth,int pHeight) {
 
@@ -61,17 +67,13 @@ public class Level {
                 tilesMap[i][j] = new Tile(32, 32, 32 * i, 32 * j, 1, levelTile[i][j]);
             }
         }
-
-        // -------- DEBUT test interactiveOnrenemt ---------//
-        /*
-        itemMap[3][3] = new Item("shroom1", 1.2f, true, "consumable", null);
-        itemMap[3][3].getImage().setTranslateX(32*3+12);
-        itemMap[3][3].getImage().setTranslateY(32*3+10);
-        */
-        // -------- DEBUT test interactiveOnrenemt ---------//
-
     }
 
+    /**
+     * This methods is launched each time the 'R' key is pressed
+     *
+     * @param player    the player who performed the action
+     */
     public void action(EntityPlayer player)
     {
         int caseX = (int)(player.getImage().getTranslateX()+7)/32;

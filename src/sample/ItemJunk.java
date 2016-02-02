@@ -88,10 +88,6 @@ public class ItemJunk extends Item {
         /*this.setNbr(this.getNbr()-1);
         this.inventory.labelMap.get(this.getName()).setText(Integer.toString(this.getNbr()));
         this.inventory.refreshItemList();*/
-
-
-
-
     }
 
 }
