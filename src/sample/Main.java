@@ -11,6 +11,7 @@ public class Main extends Application {
 
     protected EntityPlayer p;
     protected Monster m[];
+    protected Level level;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -18,10 +19,12 @@ public class Main extends Application {
         //creation du groupe
         Group root = new Group();
 
-        Level L = new Level(15, 10);
-        for(int i = 0; i < 15; i++){
-            for(int j = 0; j < 10; j++){
-                root.getChildren().add(L.getTile(i,j).getImage());
+        int widthLevel = 15;
+        int heigthLevel = 10;
+        this.level = new Level(widthLevel, heigthLevel);
+        for(int i = 0; i < this.level.width; i++){
+            for(int j = 0; j < this.level.height; j++){
+                root.getChildren().add(this.level.getTile(i,j).getImage());
             }
         }
         /*System.out.println(L.getItem(3,3));
@@ -31,31 +34,31 @@ public class Main extends Application {
         Scene home = new Scene(root, 960, 640, true);
 
         // Creation joueur
-        p = new EntityPlayer("Bernard",16,100,55,100,12,L); //s a d c i
+        p = new EntityPlayer("Bernard",16,100,55,100,12,this.level); //s a d c i
 
         // Ajout joueur au group
         root.getChildren().add(p.getImage());
-        root.getChildren().add(p.getImageWeapon());
+        //root.getChildren().add(p.getImageWeapon());
         //root.getChildren().add(p.getRight());
         //root.getChildren().add(p.getLeft());
 
         // init controles du joueur
-        new Controller(home,p,L);
+        new Controller(home,p,this.level);
 
         //création d'un monstre
         Monster monster1 = new Monster("Albert la mouche", 200, 200);
-        //Monster monster2 = new Monster("Hector à babord", 400, 400);
-        m = new Monster[1];
+        Monster monster2 = new Monster("Hector à babord", 400, 400);
+        m = new Monster[2];
         m[0] = monster1;
-        //m[1] = monster2;
+        m[1] = monster2;
 
         // Ajout monstre au group
         root.getChildren().add(monster1.getImage());
-        //root.getChildren().add(monster2.getImage());
+        root.getChildren().add(monster2.getImage());
 
         //les monstres écoutent le joueur
         p.addListener(monster1);
-        //p.addListener(monster2);
+        p.addListener(monster2);
 
         primaryStage.setTitle("Survival");
         primaryStage.setScene(home);
@@ -145,9 +148,10 @@ public class Main extends Application {
         }
     }
     private void update(){
-        this.p.moveto();
+        this.p.move(this.level);
         for(Monster monster : this.m){
-            monster.behaviourMove();
+            //monster.behaviourMove();
+            monster.move(this.level);
         }
     }
     private void display(){
