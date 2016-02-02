@@ -26,7 +26,7 @@ public class Controller {
 
     }
 
-    final EventHandler<KeyEvent> keyPressedListener = new EventHandler<KeyEvent>() {
+    private final EventHandler<KeyEvent> keyPressedListener = new EventHandler<KeyEvent>() {
 
         public void handle(KeyEvent e){
             /*
@@ -39,19 +39,19 @@ public class Controller {
             switch(e.getCode()) {
                 case Z :
                     //System.out.println("Z");
-                    player.move(0);
+                    player.updateControl(0);
                     break;
                 case S :
                     //System.out.println("S");
-                    player.move(1);
+                    player.updateControl(1);
                     break;
                 case Q :
                     //System.out.println("Q");
-                    player.move(2);
+                    player.updateControl(2);
                     break;
                 case D :
                     //System.out.println("D");
-                    player.move(3);
+                    player.updateControl(3);
                     break;
                 case I :
                     player.displayInventory();
@@ -68,7 +68,7 @@ public class Controller {
         }
     };
 
-    final EventHandler<MouseEvent> mouseMovedListener = new EventHandler<MouseEvent>() {
+    private final EventHandler<MouseEvent> mouseMovedListener = new EventHandler<MouseEvent>() {
 
         public void handle(MouseEvent e) {
             player.mouseX = e.getX();
@@ -77,7 +77,7 @@ public class Controller {
         }
     };
 
-    final EventHandler<KeyEvent> keyReleasedListener = new EventHandler<KeyEvent>() {
+    private final EventHandler<KeyEvent> keyReleasedListener = new EventHandler<KeyEvent>() {
 
         public void handle(KeyEvent e){
             /*
@@ -90,19 +90,19 @@ public class Controller {
             switch(e.getCode()) {
                 case Z :
                     //System.out.println("rZ");
-                    player.move(4);
+                    player.updateControl(4);
                     break;
                 case S :
                     //System.out.println("rS");
-                    player.move(5);
+                    player.updateControl(5);
                     break;
                 case Q :
                     //System.out.println("rQ");
-                    player.move(6);
+                    player.updateControl(6);
                     break;
                 case D :
                     //System.out.println("rD");
-                    player.move(7);
+                    player.updateControl(7);
                 break;
                 default:
                     break;
@@ -110,7 +110,7 @@ public class Controller {
         }
     };
 
-    final EventHandler<MouseEvent> mouseListener = new EventHandler<MouseEvent>(){
+    private final EventHandler<MouseEvent> mouseListener = new EventHandler<MouseEvent>(){
         /*
         en jeu :
         clic gauche = tir principal
@@ -141,7 +141,7 @@ public class Controller {
         }
     };
 
-    final EventHandler<ScrollEvent> scrollListener = e -> {
+    private final EventHandler<ScrollEvent> scrollListener = e -> {
         //dans quel sens va la molette
         if(e.getDeltaY() > 0){
             System.out.println("Molette tournée vers l'avant");

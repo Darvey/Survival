@@ -2,9 +2,6 @@ package sample;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Translate;
 
 public class Entity {
 
@@ -26,16 +23,16 @@ public class Entity {
     protected int posY;
     protected int popX;
     protected int popY;
-    protected int prevPosX;
-    protected int prevPosY;
+    private int prevPosX;
+    private int prevPosY;
     protected float accX;
     protected float accY;
     protected float accLimit;
     protected float velX;
     protected float velY;
     protected float velLimit;
-    protected int velXInteger;
-    protected int velYInteger;
+    private int velXInteger;
+    private int velYInteger;
 
     // collider
     protected int colX;
@@ -46,8 +43,8 @@ public class Entity {
     protected float friction;
 
     //animations
-    protected SpriteAnimation animationWalk;
-    protected SpriteAnimation animationIdle;
+    private SpriteAnimation animationWalk;
+    private SpriteAnimation animationIdle;
 
     Level level;
 
@@ -213,9 +210,9 @@ public class Entity {
         image.setTranslateX(posX);
         image.setTranslateY(posY);
 
-        if(this.facing == "RIGHT") {
+        if(this.facing.equals("RIGHT")) {
             image.setScaleX(1);
-        }else if(this.facing == "LEFT"){
+        }else if(this.facing.equals("LEFT")){
             image.setScaleX(-1);
         }
 
@@ -242,7 +239,7 @@ public class Entity {
 
 
 
-    protected float approximatelyZero(float f){
+    private float approximatelyZero(float f){
 
         float rF = f;
         if(rF > 0f && rF < 0.1f)

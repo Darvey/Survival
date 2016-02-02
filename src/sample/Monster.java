@@ -1,7 +1,6 @@
 package sample;
 
 import javafx.animation.Animation;
-import javafx.animation.AnimationTimer;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -27,8 +26,6 @@ public class Monster extends Entity implements MoveListener {
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
 
     protected final SpriteAnimation animationWalk;
-
-    protected int timer;
 
     //interaction joueur
     protected float playerPosX;
@@ -62,9 +59,9 @@ public class Monster extends Entity implements MoveListener {
         this.playerPosX = -1000000;
         this.playerPosY = -1000000;
         System.out.println(posX);
-        image.setTranslateY(this.posY);
-        image.setTranslateX(this.posX);
+
         this.popX = this.posX;
+
         //collider
         this.colX = 7;
         this.colY = 10;
@@ -83,12 +80,10 @@ public class Monster extends Entity implements MoveListener {
 
         this.attackSpeed = 2.3f;
 
-        timer = 0;
-
         this.state = "PASSIVE_WALK";
         this.facing = "RIGHT";
 
-        timeAttack = 0;
+        this.timeAttack = 0;
 
 
 

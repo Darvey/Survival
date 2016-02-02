@@ -4,7 +4,6 @@ import javafx.animation.Animation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
@@ -18,75 +17,72 @@ public class EntityPlayer extends Entity{
 
 
     // Compétences
-    protected int valueCompFire;
-    protected int valueCompBow;
-    protected int valueCompGun;
-    protected int valueCompCut;
+    //private int valueCompFire;
+    //private int valueCompBow;
+    //private int valueCompGun;
+    //private int valueCompCut;
 
     // Caractéristiques principales
-    protected int agility;
-    protected int strength;
-    protected int constitution;
-    protected int dexterity;
-    protected int intelligence;
+    private int agility;
+    private int strength;
+    private int constitution;
+    private int dexterity;
+    private int intelligence;
 
     //Caractéristiques secondaires
-    protected int endurance;
-    protected int modAttackSpeedCacS;
-    protected int modAttackSpeedCacB;
-    protected int modAttackSpeedRange;
-    protected int modDamageCacS;
-    protected int modDamageCacB;
-    protected int modDamageRange;
-    protected int modPrecisionCacS;
-    protected int modPrecisionCacB;
-    protected int modPrecisionRange;
-    protected int modPrecisionGun;
-    protected int resistanceDisease;
-    protected int resistancePoison;
-    protected int resistanceTiredness;
-    protected int resistancePsy;
-    protected int identify;
-    protected int learn;
+    private int endurance;
+    private int modAttackSpeedCacS;
+    private int modAttackSpeedCacB;
+    private int modAttackSpeedRange;
+    private int modDamageCacS;
+    private int modDamageCacB;
+    private int modDamageRange;
+    private int modPrecisionCacS;
+    private int modPrecisionCacB;
+    private int modPrecisionRange;
+    private int modPrecisionGun;
+    private int resistanceDisease;
+    private int resistancePoison;
+    private int resistanceTiredness;
+    private int resistancePsy;
+    private int identify;
+    private int learn;
 
     protected Inventory inv;
 
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
-    protected SpriteAnimation animationWalk;
-    protected SpriteAnimation animationIdle;
+    private SpriteAnimation animationWalk;
+    private SpriteAnimation animationIdle;
 
 
     //arme affichée
-    protected ImageView imageWeapon;
-    protected Image imagePathWeapon;
+    private ImageView imageWeapon;
+    private Image imagePathWeapon;
 
     //touches
-    protected boolean pressedUp;
-    protected boolean pressedDown;
-    protected boolean pressedLeft;
-    protected boolean pressedRight;
+    private boolean pressedUp;
+    private boolean pressedDown;
+    private boolean pressedLeft;
+    private boolean pressedRight;
 
     //pour le calcul de fps
-    protected final long ONE_SECOND = 1000000000;
-    protected long currentTime;
-    protected long lastTime;
-    protected long fps = 0;
-    protected long delta = 0;
+    private final long ONE_SECOND = 1000000000;
+    private long currentTime;
+    private long lastTime;
+    private long fps = 0;
+    private long delta = 0;
 
 
 
     //souris
     protected double mouseX;
     protected double mouseY;
-    protected double mouseDeltaX;
-    protected double mouseDeltaY;
-    protected double lastAngle;
-    protected double newAngle;
-    protected Rotate rotation;
-    protected double weaponRotation;
-    protected int weaponPosX;
-    protected int weaponPosY;
-    protected int weaponScaleX;
+    private double mouseDeltaX;
+    private double mouseDeltaY;
+    private double weaponRotation;
+    private int weaponPosX;
+    private int weaponPosY;
+    private int weaponScaleX;
 
 
     /*
@@ -121,10 +117,10 @@ public class EntityPlayer extends Entity{
         this.intelligence = i;
 
         //compétences
-        this.valueCompBow = 0;
-        this.valueCompCut = 0;
-        this.valueCompFire = 0;
-        this.valueCompGun = 0;
+        //this.valueCompBow = 0;
+        //this.valueCompCut = 0;
+        //this.valueCompFire = 0;
+        //this.valueCompGun = 0;
 
         //inventaire
         this.inv = new Inventory(this);
@@ -223,8 +219,6 @@ public class EntityPlayer extends Entity{
 
             oos.writeObject(this); // objet à sauvegarder : this
             oos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -234,7 +228,7 @@ public class EntityPlayer extends Entity{
      * move the character in the direction given by parameter
      * @param dir the direction for the movement
      */
-    public void move(int dir){
+    public void updateControl(int dir){
 
         for (MoveListener hl : listeners)
             hl.playerIsMoving(this.posX, this.posY);
@@ -447,7 +441,7 @@ public class EntityPlayer extends Entity{
         return this.state;
     }
 
-    public void getFps(){
+    private void getFps(){
 
         this.currentTime = System.nanoTime();
         this.fps++;
@@ -465,10 +459,23 @@ public class EntityPlayer extends Entity{
         return this.inv;
     }
 
-
-
     public ImageView getImageWeapon() {
 
         return this.imageWeapon;
     }
+
+    public int getEndurance(){
+        return this.endurance;
+    }
+
+    public int getModAttackSpeedCacS(){
+        return modAttackSpeedCacS;
+    }
+    // ...
+
+
+
+
+
+
 }
