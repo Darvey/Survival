@@ -14,9 +14,26 @@ import javafx.scene.input.MouseEvent;
 
 public class ItemConsumable extends Item {
 
+    // ********** ATTRIBUTES ********** //
+
     protected String descriptionAlt;        // description alternative quand on est trop bête
     protected int intelligenceNeeded;       // intelligence nécessaire pour avoir la bonne description
 
+    // ********** CONSTRUCTORS ********** //
+
+    /**
+     * Constructor
+     *
+     * @param pName                     name of the consumable
+     * @param pWeight                   weight of the consumable
+     * @param pDescription              description of the consumable
+     * @param pHaveThumbnail            if the consumable have a thumbnail in img Folder or not
+     * @param pType                     type of the consumable
+     * @param pFamily                   family of the consumable
+     * @param pInventory                inventory where is the item
+     * @param pDescriptionAlt           alternative description
+     * @param pIntelligenceNeeded       intelligence needed to use the item
+     */
     public ItemConsumable(String pName,
                           float pWeight,
                           String pDescription,
@@ -57,6 +74,8 @@ public class ItemConsumable extends Item {
         }
     }
 
+    // ********** METHODS ********** //
+
     /**
      * Action for a thumbnail leftclic
      */
@@ -73,12 +92,6 @@ public class ItemConsumable extends Item {
                     use();
                     break;
             }
-
-            //System.out.println(inventory.player.constitution);
-            //System.out.println(nbr);
-            //inventory.player.constitution++;
-            //nbr = 12;
-            //inventory.deleteItem(getName());
         }
     };
 
@@ -89,10 +102,7 @@ public class ItemConsumable extends Item {
         this.setNbr(this.getNbr()-1);
         this.inventory.labelMap.get(this.getName()).setText(Integer.toString(this.getNbr()));
         this.inventory.refreshItemList();
-
         // => effet du consommable
-
-
     }
 
 }

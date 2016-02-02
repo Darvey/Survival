@@ -8,6 +8,8 @@ import javafx.scene.image.ImageView;
  */
 public class Tile {
 
+    // ********** ATTRIBUTES ********** //
+
     protected int width;                            // largeur de l'image
     protected int height;                           // hauteur de l'image
     protected int posX;                             // position en x
@@ -20,17 +22,16 @@ public class Tile {
     protected Image imagePath;
 
     protected BoundingBox bbox;
+    
+    /**
+        Construcor
 
-
-
-    /*
-        Constructeur de la classe.
-        @param h Tile height
-        @param w Tile width
-        @param x X position
-        @param y Y position
-        @param z Z position
-        @param id Tile id
+        @param h    Tile height
+        @param w    Tile width
+        @param x    X position
+        @param y    Y position
+        @param z    Z position
+        @param id   Tile id
      */
     public Tile(int h, int w, int x, int y, int z, String id) {
 
@@ -121,13 +122,15 @@ public class Tile {
         image.setVisible(true);
     }
 
-    /*
-        Getters & setters
-     */
+
+    // ********** SETTERS ********** //
+
     public void setSolid(boolean b)
     {
         this.solid = b;
     }
+
+    // ********** GETTERS ********** //
 
     public boolean getSolid()
     {
