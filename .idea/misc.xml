@@ -39,7 +39,10 @@
     </properties>
   </component>
   <component name="EntryPointsManager">
-    <entry_points version="2.0" />
+    <entry_points version="2.0">
+      <entry_point TYPE="field" FQNAME="sample.EntityPlayer valueCompFire" />
+      <entry_point TYPE="field" FQNAME="sample.EntityPlayer valueCompGun" />
+    </entry_points>
   </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" value="$USER_HOME$" />

@@ -9,8 +9,8 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    protected EntityPlayer p;
-    protected Monster m[];
+    protected EntityPlayer player;
+    protected Entity arrayEntities[];
     protected Level level;
 
     @Override
@@ -27,38 +27,36 @@ public class Main extends Application {
                 root.getChildren().add(this.level.getTile(i,j).getImage());
             }
         }
-        /*System.out.println(L.getItem(3,3));
-        root.getChildren().add(L.getItem(3,3).getImage());*/
 
         // Init primaryStage //
         Scene home = new Scene(root, 960, 640, true);
 
         // Creation joueur
-        p = new EntityPlayer("Bernard",16,100,55,100,12,this.level); //s a d c i
+        player = new EntityPlayer("Bernard",16,100,55,100,12,this.level, root); //s a d c i
 
         // Ajout joueur au group
-        root.getChildren().add(p.getImage());
-        //root.getChildren().add(p.getImageWeapon());
-        //root.getChildren().add(p.getRight());
-        //root.getChildren().add(p.getLeft());
+        root.getChildren().add(player.getImage());
+        root.getChildren().add(player.getImageWeapon());
 
         // init controles du joueur
-        new Controller(home,p,this.level);
+        new Controller(home, this.player, this.level);
 
         //création d'un monstre
         Monster monster1 = new Monster("Albert la mouche", 200, 200);
         Monster monster2 = new Monster("Hector à babord", 400, 400);
-        m = new Monster[2];
-        m[0] = monster1;
-        m[1] = monster2;
+
+        arrayEntities = new Entity[3];
+        arrayEntities[0] = player;
+        arrayEntities[1] = monster1;
+        arrayEntities[2] = monster2;
 
         // Ajout monstre au group
         root.getChildren().add(monster1.getImage());
         root.getChildren().add(monster2.getImage());
 
         //les monstres écoutent le joueur
-        p.addListener(monster1);
-        p.addListener(monster2);
+        player.addListener(monster1);
+        player.addListener(monster2);
 
         primaryStage.setTitle("Survival");
         primaryStage.setScene(home);
@@ -84,7 +82,8 @@ public class Main extends Application {
 
         boolean runFlag = true;
 
-        double delta = 0.0166d; //60fps
+        //double delta = 0.0166d; //60fps
+        double delta = 0.02d; //50fps
 
         //startup();
 
@@ -106,6 +105,7 @@ public class Main extends Application {
             double currTime = (double)System.nanoTime() / 1000000000.0;
             if((currTime - nextTime) > maxTimeDiff) nextTime = currTime;
 
+            if(true)
             if(currTime >= nextTime)
             {
                 // assign the time for the next update
@@ -114,7 +114,7 @@ public class Main extends Application {
                 update();
                 //System.out.println("update");
 
-
+                if(true)
                 if((currTime < nextTime) || (skippedFrames > maxSkippedFrames))
                 {
                     display();
@@ -148,16 +148,16 @@ public class Main extends Application {
         }
     }
     private void update(){
-        this.p.move(this.level);
-        for(Monster monster : this.m){
+        //this.player.move(this.level);
+        for(Entity entity : this.arrayEntities){
             //monster.behaviourMove();
-            monster.move(this.level);
+            entity.move(this.level);
         }
     }
     private void display(){
-        this.p.display();
-        for(Monster monster : this.m){
-            monster.display();
+        //this.player.display();
+        for(Entity entity : this.arrayEntities){
+            entity.display();
         }
 
     }

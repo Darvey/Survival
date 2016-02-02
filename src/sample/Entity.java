@@ -40,6 +40,13 @@ public class Entity {
     protected int colWidth;
     protected int colHeight;
 
+    //hitbox
+    protected int hitX;
+    protected int hitY;
+    protected int hitWidth;
+    protected int hitHeight;
+
+
     protected float friction;
 
     //animations
@@ -55,8 +62,7 @@ public class Entity {
     public void move(Level l){
 
         //récupération des collisions en fonction du level
-        //à ajouter : envoyer la position du rectangle de collision + w/h
-        boolean[] col = l.collision(posX+colX, posY+colY, colWidth, colHeight, 1);
+        boolean[] col = l.collision(this.posX+this.colX, this.posY+this.colY, this.colWidth, this.colHeight, 1);
 
         //à ajouter : récupération des collisions entre Entity
 

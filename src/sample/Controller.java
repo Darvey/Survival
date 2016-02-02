@@ -121,6 +121,7 @@ public class Controller {
             //sur quel bouton de la souris on appuie ?
             switch(e.getButton()) {
                 case PRIMARY :
+                    player.updateControl(8);
                     if(e.getClickCount() == 2){
                         if(player.inv.isOpen){
                             System.out.println("Position double-clic gauche = (x :" + e.getSceneX() + ", y :" + e.getSceneY() + ")");

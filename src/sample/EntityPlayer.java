@@ -2,6 +2,7 @@ package sample;
 
 import javafx.animation.Animation;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.transform.Rotate;
@@ -11,10 +12,13 @@ import javafx.util.Duration;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EntityPlayer extends Entity{
 
+    Group group;
 
     // Compétences
     //private int valueCompFire;
@@ -58,6 +62,8 @@ public class EntityPlayer extends Entity{
     //arme affichée
     private ImageView imageWeapon;
     private Image imagePathWeapon;
+    private List<Bullet> bulletList;
+
 
     //touches
     private boolean pressedUp;
@@ -100,8 +106,10 @@ public class EntityPlayer extends Entity{
         @param int c constitution value
         @param int i intelligence value
      */
-    public EntityPlayer(String name, int s, int a, int d, int c, int i,Level l) {
+    public EntityPlayer(String name, int s, int a, int d, int c, int i,Level l, Group pRoot) {
 
+        this.group = pRoot;
+        bulletList = new ArrayList<>();
 
         //attributs principaux
         this.name = name;
@@ -258,6 +266,9 @@ public class EntityPlayer extends Entity{
             case 7 :
                 this.pressedRight = false;
                 break;
+            case 8 :
+                this.attack();
+                break;
             default :
                 break;
         }
@@ -288,6 +299,20 @@ public class EntityPlayer extends Entity{
             weaponScaleX = 1;
         }
         weaponPosY = this.posY + 50;
+
+
+        //gestion des balles
+        for(int i = 0; i < bulletList.size(); i++) {
+            if (bulletList.get(i).posX > 480 || bulletList.get(i).posX < 0 || bulletList.get(i).posY < 0 || bulletList.get(i).posY > 320) {
+                bulletList.remove(i);
+            }
+        }
+
+        for(int i = 0; i < bulletList.size(); i++){
+
+            bulletList.get(i).update();
+        }
+
     }
 
     @Override
@@ -301,7 +326,13 @@ public class EntityPlayer extends Entity{
         imageWeapon.getTransforms().set(2, new Rotate(weaponRotation, 43, 6));
 
 
+        for(int i = 0; i < bulletList.size(); i++){
+            bulletList.get(i).display();
+
+        }
+
         animation();
+
     }
 
     public void animation(){
@@ -318,6 +349,19 @@ public class EntityPlayer extends Entity{
                 break;
             default:
                 break;
+        }
+    }
+
+    public void attack(){
+        for(int i = 0; i < 8; i++){
+            //image et animation
+
+            double bulletDirection = Math.atan2(mouseDeltaY, mouseDeltaX);
+
+            Bullet bullet = new Bullet(this.posX+16, this.posY+50, bulletDirection);
+            bulletList.add(bullet);
+
+            this.group.getChildren().add(bullet.getImage());
         }
     }
 
