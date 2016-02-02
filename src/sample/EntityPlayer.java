@@ -4,7 +4,6 @@ import javafx.animation.Animation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
@@ -17,106 +16,73 @@ import java.util.List;
 public class EntityPlayer extends Entity{
 
 
-    protected String name;
-    protected String state;
-    protected String facing;
-
     // Compétences
-    protected int valueCompFire;
-    protected int valueCompBow;
-    protected int valueCompGun;
-    protected int valueCompCut;
+    //private int valueCompFire;
+    //private int valueCompBow;
+    //private int valueCompGun;
+    //private int valueCompCut;
 
     // Caractéristiques principales
-    protected int agility;
-    protected int strength;
-    protected int constitution;
-    protected int dexterity;
-    protected int intelligence;
+    private int agility;
+    private int strength;
+    private int constitution;
+    private int dexterity;
+    private int intelligence;
 
     //Caractéristiques secondaires
-    //protected int health;
-    //protected float moveSpeed;
-    //protected int dodge;
-    //protected int stealth;
-    protected int endurance;
-    protected int modAttackSpeedCacS;
-    protected int modAttackSpeedCacB;
-    protected int modAttackSpeedRange;
-    protected int modDamageCacS;
-    protected int modDamageCacB;
-    protected int modDamageRange;
-    protected int modPrecisionCacS;
-    protected int modPrecisionCacB;
-    protected int modPrecisionRange;
-    protected int modPrecisionGun;
-    protected int resistanceDisease;
-    protected int resistancePoison;
-    protected int resistanceTiredness;
-    protected int resistancePsy;
-    protected int identify;
-    protected int learn;
+    private int endurance;
+    private int modAttackSpeedCacS;
+    private int modAttackSpeedCacB;
+    private int modAttackSpeedRange;
+    private int modDamageCacS;
+    private int modDamageCacB;
+    private int modDamageRange;
+    private int modPrecisionCacS;
+    private int modPrecisionCacB;
+    private int modPrecisionRange;
+    private int modPrecisionGun;
+    private int resistanceDisease;
+    private int resistancePoison;
+    private int resistanceTiredness;
+    private int resistancePsy;
+    private int identify;
+    private int learn;
 
     protected Inventory inv;
 
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
-    protected SpriteAnimation animationWalk;
-    protected SpriteAnimation animationIdle;
-    protected ImageView image;
-    protected Image imagePath;
-
-    //arme
-    protected ImageView imageWeapon;
-    protected Image imagePathWeapon;
+    private SpriteAnimation animationWalk;
+    private SpriteAnimation animationIdle;
 
 
-    //var de mouvements
-    protected float acc;
-    protected float accX;
-    protected float accY;
-    protected float velX;
-    protected float velY;
-    protected int velXInteger;
-    protected int velYInteger;
+    //arme affichée
+    private ImageView imageWeapon;
+    private Image imagePathWeapon;
 
-    protected Direction direction;                                          // NOUVEAU
-    protected int nextPosX;
-    protected int nextPosY;
-    protected int prevPosX;
-    protected int prevPosY;
-
-    protected boolean pressedUp;
-    protected boolean pressedDown;
-    protected boolean pressedLeft;
-    protected boolean pressedRight;
-
-    //constantes de mouvement
-    protected float accLimit;
-    protected float velLimit;
-    protected float friction;
-    //--------------
+    //touches
+    private boolean pressedUp;
+    private boolean pressedDown;
+    private boolean pressedLeft;
+    private boolean pressedRight;
 
     //pour le calcul de fps
-    protected final long ONE_SECOND = 1000000000;
-    protected long currentTime;
-    protected long lastTime;
-    protected long fps = 0;
-    protected long delta = 0;
+    private final long ONE_SECOND = 1000000000;
+    private long currentTime;
+    private long lastTime;
+    private long fps = 0;
+    private long delta = 0;
 
-    Level l;
+
 
     //souris
     protected double mouseX;
     protected double mouseY;
-    protected double mouseDeltaX;
-    protected double mouseDeltaY;
-    protected double lastAngle;
-    protected double newAngle;
-    protected Rotate rotation;
-    protected double weaponRotation;
-    protected int weaponPosX;
-    protected int weaponPosY;
-    protected int weaponScaleX;
+    private double mouseDeltaX;
+    private double mouseDeltaY;
+    private double weaponRotation;
+    private int weaponPosX;
+    private int weaponPosY;
+    private int weaponScaleX;
 
 
     /*
@@ -141,7 +107,7 @@ public class EntityPlayer extends Entity{
         this.name = name;
         this.state = "IDLE";
         this.facing = "RIGHT";
-        this.l = l;
+        this.level = l;
 
         //caractéristiques principales
         this.strength = s;
@@ -151,10 +117,10 @@ public class EntityPlayer extends Entity{
         this.intelligence = i;
 
         //compétences
-        this.valueCompBow = 0;
-        this.valueCompCut = 0;
-        this.valueCompFire = 0;
-        this.valueCompGun = 0;
+        //this.valueCompBow = 0;
+        //this.valueCompCut = 0;
+        //this.valueCompFire = 0;
+        //this.valueCompGun = 0;
 
         //inventaire
         this.inv = new Inventory(this);
@@ -180,6 +146,12 @@ public class EntityPlayer extends Entity{
         this.posX = 0;
         this.posY = 0;
 
+        //collider
+        this.colX = 16;
+        this.colY = 78;
+        this.colWidth = 16;
+        this.colHeight = 10;
+
         image.setTranslateY(posY);
         image.setTranslateX(posX);
 
@@ -197,7 +169,6 @@ public class EntityPlayer extends Entity{
         this.accLimit = 3;
         this.velLimit = 6;
         this.friction = 0.5f;               //friction du personnage (0.2 = boue/escalier, 0.5 = normal, 0.9 = glace)
-        this.acc = 6f;
         this.accX = 0f;
         this.accY = 0f;
         this.velX = 0f;
@@ -248,22 +219,16 @@ public class EntityPlayer extends Entity{
 
             oos.writeObject(this); // objet à sauvegarder : this
             oos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void mouseMoved(MouseEvent e){
-        //System.out.println("X : "+e.getX());
     }
 
     /**
      * move the character in the direction given by parameter
      * @param dir the direction for the movement
      */
-    public void move(int dir){
+    public void updateControl(int dir){
 
         for (MoveListener hl : listeners)
             hl.playerIsMoving(this.posX, this.posY);
@@ -298,178 +263,17 @@ public class EntityPlayer extends Entity{
         }
     }
 
-    public void moveto() {
+    @Override
+    public void move(Level level) {
 
-        // ----- calcul du fps -----
-        this.currentTime = System.nanoTime();
-        this.fps++;
-        this.delta += (this.currentTime - this.lastTime);
-        if(this.delta > this.ONE_SECOND) {
-            System.out.println("FPS :"+ this.fps);
-            this.delta -= this.ONE_SECOND;
-            this.fps = 0;
-        }
-        this.lastTime = this.currentTime;
-        // -------------------------
+        getFps();
 
-        //application des accélerations en fonction des touches appuyées
-        /* ------- OPTIMISATION -------
-        voir Level.collision
-         */
-        boolean[] col = l.collision(posX, posY, 1);
-        this.moveSpeed = 10;
-        if (this.pressedUp) {
-            if(col[0]){
-                this.accY = 0;
-            }else {
-                this.accY -= this.moveSpeed;
-            }
-        }
-        if (this.pressedDown) {
-            if(col[1]){
-                this.accY = 0;
-            }else {
-                this.accY += this.moveSpeed;
-            }
-        }
-        if (this.pressedLeft) {
-            if(col[2]){
-                this.accX = 0;
-            }else {
-                this.accX -= this.moveSpeed;
-            }
-        }
-        if (this.pressedRight) {
-            if(col[3]){
-                this.accX = 0;
-            }else {
-                this.accX += this.moveSpeed;
-            }
-        }
-
-        //statut du perso
-        if(this.accX != 0 || this.accY != 0){
-
-            this.state = "WALK";
-        }else{
-            this.state = "IDLE";
-        }
-
-        //cap de l'accéleration
-        if (this.accX > this.accLimit)
-            this.accX = this.accLimit;
-        if (this.accX < -this.accLimit)
-            this.accX = -this.accLimit;
-        if (this.accY > this.accLimit)
-            this.accY = this.accLimit;
-        if (this.accY < -this.accLimit)
-            this.accY = -this.accLimit;
-
-        velX += accX;
-        velY += accY;
-
-        accX = 0;
-        accY = 0;
-
-        //application de la friction
-        velX *= this.friction;
-        velY *= this.friction;
-
-        //cap de la velocité
-        if (this.velX > this.velLimit)
-            this.velX = this.velLimit;
-        if (this.velX < -this.velLimit)
-            this.velX = -this.velLimit;
-        if (this.velY > this.velLimit)
-            this.velY = this.velLimit;
-        if (this.velY < -this.velLimit)
-            this.velY = -this.velLimit;
-
-        //arrondi à zero quand la valeur est très petite (ex : 0.000658 = 0)
-        velX = approximatelyZero(velX);
-        velY = approximatelyZero(velY);
-
-        velXInteger = Math.round(velX); // nombre de pixel pour le déplacement
-        velYInteger = Math.round(velY);
-        prevPosX = posX;
-        prevPosY = posY;
-
-        //déplacement vers le haut
-        if(velY < 0){
-            //il vaut mieux faire un while du coup
-            while(posY > prevPosY + velYInteger){
-                /*
-                ------- OPTIMISATION -------
-                pour ne pas rechecker la map entière à chaque itération
-                il faut qu'au check initial, au lieu de retourner false/true
-                retourner l'ID de la tile à check pour ne faire le test que sur
-                elle
-                 */
-                col = l.collision(posX, posY, 1);
-                if(col[0]) {
-
-                    break;
-                }
-                posY--;
-            }
-        }
-        //déplacement vers le bas
-        if(velY > 0) {
-            while(posY < prevPosY + velYInteger){
-                /*
-                ------- OPTIMISATION -------
-                pour ne pas rechecker la map entière à chaque itération
-                il faut qu'au check initial, au lieu de retourner false/true
-                retourner l'ID de la tile à check pour ne faire le test que sur
-                elle
-                 */
-                col = l.collision(posX, posY, 1);
-                if(col[1]) {
-                    break;
-                }
-                posY++;
-            }
-        }
-        //déplacement vers la gauche
-        if(velX < 0){
-            while(posX > prevPosX + velXInteger){
-                /*
-                ------- OPTIMISATION -------
-                pour ne pas rechecker la map entière à chaque itération
-                il faut qu'au check initial, au lieu de retourner false/true
-                retourner l'ID de la tile à check pour ne faire le test que sur
-                elle
-                 */
-                col = l.collision(posX, posY, 1);
-                if(col[2]) {
-                    break;
-                }
-                posX--;
-            }
-        }
-        //déplacement vers la droite
-        if(velX > 0) {
-            while(posX < prevPosX + velXInteger) {
-                /*
-                ------- OPTIMISATION -------
-                pour ne pas rechecker la map entière à chaque itération
-                il faut qu'au check initial, au lieu de retourner false/true
-                retourner l'ID de la tile à check pour ne faire le test que sur
-                elle
-                 */
-                col = l.collision(posX, posY, 1);
-                if(col[3]) {
-                    break;
-                }
-                posX++;
-            }
-        }
+        super.move(level);
 
         //gestion de la souris
         this.mouseDeltaX = this.mouseX - this.posX;
         this.mouseDeltaY = this.mouseY - this.posY;
         weaponRotation = Math.toDegrees(Math.atan2(this.mouseDeltaY, -this.mouseDeltaX));
-
 
         //orientation gauche/droite
         if(mouseX > posX){
@@ -486,18 +290,10 @@ public class EntityPlayer extends Entity{
         weaponPosY = this.posY + 50;
     }
 
+    @Override
     public void display(){
 
-        //déplacement du personnage
-        image.setTranslateX(posX);
-        image.setTranslateY(posY);
-
-        if(this.facing == "RIGHT") {
-            image.setScaleX(1);
-        }else{
-            image.setScaleX(-1);
-        }
-
+        super.display();
 
         //application des transformations sur l'arme
         imageWeapon.getTransforms().set(1, new Scale(weaponScaleX, 1));
@@ -525,16 +321,7 @@ public class EntityPlayer extends Entity{
         }
     }
 
-    private float approximatelyZero(float f){
 
-        float rF = f;
-        if(rF > 0f && rF < 0.1f)
-            rF = 0f;
-        if(rF < 0f && rF > -0.1f)
-            rF = 0f;
-
-        return rF;
-    }
 
     private void calculateSecondarySpecs(){
 
@@ -548,7 +335,7 @@ public class EntityPlayer extends Entity{
 
         //-----déplacement-----
         //vitesse de déplacement (0.22 => 0.55 (si con et agi à 100))
-        this.moveSpeed = this.acc + ((float)this.constitution / 100) + (float)((float)this.agility / 62.5);
+        //this.moveSpeed = this.acc + ((float)this.constitution / 100) + (float)((float)this.agility / 62.5);
         this.moveSpeed = 0.5f;
         //furtivité du personnage
         this.stealth = Math.round(10 + ((this.agility + 1)/ 2));
@@ -600,39 +387,95 @@ public class EntityPlayer extends Entity{
         this.inv.display();
     }
 
-    // ----- GETTERS -----// 
+    /*
+        ------- GETTERS -------
+     */
+
+    @Override
+    protected float[] getAcc(boolean[] col){
+
+        this.moveSpeed = 10;
+        if (this.pressedUp) {
+            if(col[0]){
+                this.accY = 0;
+            }else {
+                this.accY -= this.moveSpeed;
+            }
+        }
+        if (this.pressedDown) {
+            if(col[1]){
+                this.accY = 0;
+            }else {
+                this.accY += this.moveSpeed;
+            }
+        }
+        if (this.pressedLeft) {
+            if(col[2]){
+                this.accX = 0;
+            }else {
+                this.accX -= this.moveSpeed;
+            }
+        }
+        if (this.pressedRight) {
+            if(col[3]){
+                this.accX = 0;
+            }else {
+                this.accX += this.moveSpeed;
+            }
+        }
+        float[] acc = new float[2];
+        acc[0] = this.accX;
+        acc[1] = this.accY;
+        return acc;
+    }
+
+    @Override
+    public String getState(){
+        //statut du perso
+        if(this.accX != 0 || this.accY != 0){
+
+            this.state = "WALK";
+        }else{
+            this.state = "IDLE";
+        }
+        return this.state;
+    }
+
+    private void getFps(){
+
+        this.currentTime = System.nanoTime();
+        this.fps++;
+        this.delta += (this.currentTime - this.lastTime);
+        if(this.delta > this.ONE_SECOND) {
+            System.out.println("FPS : "+this.fps);
+            this.delta -= this.ONE_SECOND;
+            this.fps = 0;
+        }
+        this.lastTime = this.currentTime;
+    }
 
     public Inventory getIv() {
-        return inv;
-    }
 
-    public int getAgility() {
-        return agility;
-    }
-
-    public int getConstitution() {
-        return constitution;
-    }
-
-    public int getDexterity() {
-        return dexterity;
-    }
-
-    public int getIntelect() {
-        return intelligence;
-    }
-
-    public int getStrength() {
-        return strength;
-    }
-
-    public ImageView getImage() {
-
-        return image;
+        return this.inv;
     }
 
     public ImageView getImageWeapon() {
 
-        return imageWeapon;
+        return this.imageWeapon;
     }
+
+    public int getEndurance(){
+        return this.endurance;
+    }
+
+    public int getModAttackSpeedCacS(){
+        return modAttackSpeedCacS;
+    }
+    // ...
+
+
+
+
+
+
 }

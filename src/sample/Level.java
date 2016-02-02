@@ -9,12 +9,14 @@ import java.util.Random;
  */
 public class Level {
 
-    protected String name;
-    private Tile[][] tilesMap;
-    private Item[][] itemMap;
+    protected final String name;
+    private final Tile[][] tilesMap;
+    private final Item[][] itemMap;
     private int h;
     private int l;
-    private Random random;
+    protected final int width;
+    protected final int height;
+    private final Random random;
 
     //variables pour les collisions
     protected Line2D.Double lineUp;
@@ -29,19 +31,20 @@ public class Level {
      * @param y ,hauteur de la map
      * @param filePath ,chemin du fichier qui contient la définition du lvl
      */
-    public Level(int x,int y) {
+    public Level(int pWidth,int pHeight) {
 
         this.name = "Premier niveau";
-        this.h=y;
-        this.l=x;
+
+        this.width = pWidth;
+        this.height = pHeight;
         random = new Random();
 
-        int defInt[][] = new int[x][y];
-        itemMap = new Item[x][y];
+        int defInt[][] = new int[this.width][this.height];
+        itemMap = new Item[this.width][this.height];
 
         //matrice de Int
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
                 defInt[i][j] = i % 3 + 1;
             }
         }
@@ -50,10 +53,10 @@ public class Level {
 
         // Creation des Tiles avec la matrice de Int
 
-        tilesMap = new Tile[x][y];
+        tilesMap = new Tile[this.width][this.height];
 
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
                 //tilesMap[i][j] = new Tile(32, 32, 32 * i, 32 * j, 1, defInt[i][j]);
                 tilesMap[i][j] = new Tile(32, 32, 32 * i, 32 * j, 1, levelTile[i][j]);
             }
@@ -81,7 +84,7 @@ public class Level {
         }
     }
 
-    public boolean[] collision(int nX,int nY, int offset)
+    public boolean[] collision(int nX,int nY, int nWidth, int nHeight, int offset)
     {
         /* ------- OPTIMISATION -------
         pour l'instant on check tous les objets (tile pour l'instant) de la map,
@@ -96,10 +99,10 @@ public class Level {
         boolean colLeft = false;
         boolean colRight = false;
 
-        this.lineUp = new Line2D.Double(nX, nY-offset, nX+32, nY-offset);
-        this.lineDown = new Line2D.Double(nX, nY+32+offset, nX+32, nY+32+offset);
-        this.lineLeft = new Line2D.Double(nX-offset, nY, nX-offset, nY+32);
-        this.lineRight = new Line2D.Double(nX+32+offset, nY, nX+32+offset, nY+32);
+        this.lineUp = new Line2D.Double(nX, nY-offset, nX+nWidth, nY-offset);
+        this.lineDown = new Line2D.Double(nX, nY+nHeight+offset, nX+nWidth, nY+nHeight+offset);
+        this.lineLeft = new Line2D.Double(nX-offset, nY, nX-offset, nY+nHeight);
+        this.lineRight = new Line2D.Double(nX+nWidth+offset, nY, nX+nWidth+offset, nY+nHeight);
 
         for(Tile tileArray[] : tilesMap){
             for(Tile elem : tileArray){
@@ -146,15 +149,15 @@ public class Level {
 
     public String[][] createLevel(){
 
-        int levelMatrice[][][] = new int[15][10][4];
-        String levelTile[][] = new String[15][10];
+        int levelMatrice[][][] = new int[this.width][this.height][4];
+        String levelTile[][] = new String[this.width][this.height];
         int a;
         int b;
         int c;
         int d;
 
-        for(int i = 0; i < 15; i++) {
-            for(int j = 0; j < 10; j++) {
+        for(int i = 0; i < this.width; i++) {
+            for(int j = 0; j < this.height; j++) {
                 if(i != 0 && j == 0){
 
                     if(levelMatrice[i-1][j][1] == 1){

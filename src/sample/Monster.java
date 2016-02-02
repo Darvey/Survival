@@ -1,7 +1,6 @@
 package sample;
 
 import javafx.animation.Animation;
-import javafx.animation.AnimationTimer;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,24 +16,29 @@ public class Monster extends Entity implements MoveListener {
     stealth
     moveSpeed
     */
-    protected String name;
+    protected final String name;
+
+
     protected int reach;
     protected int aggressivity; //0 : fuyard, 1 : se défend, 2 : agressif
     protected float attackSpeed;
 
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
-    protected ImageView image;
-    protected Image imagePath;
-    protected SpriteAnimation animationWalk;
 
-    protected int timer;
+    protected final SpriteAnimation animationWalk;
 
+    //interaction joueur
     protected float playerPosX;
     protected float playerPosY;
-
-    protected String state;
+    protected float deltaPos;
+    float deltaX;
+    float deltaY;
 
     protected int timeAttack;
+
+
+
+
 
     public Monster(String pName, int pPosX, int pPosY) {
 
@@ -44,7 +48,7 @@ public class Monster extends Entity implements MoveListener {
         image.setImage(imagePath);
         image.setViewport(new Rectangle2D(0, 0, 52, 89));
 
-        animationWalk = new SpriteAnimation(image, Duration.millis(1411), 17, 4, 0, 0, 31, 29);
+        animationWalk = new SpriteAnimation(image, Duration.millis(1200), 17, 4, 0, 0, 31, 29);
         animationWalk.setCycleCount(Animation.INDEFINITE);
         animationWalk.play();
 
@@ -55,16 +59,33 @@ public class Monster extends Entity implements MoveListener {
         this.playerPosX = -1000000;
         this.playerPosY = -1000000;
         System.out.println(posX);
-        image.setTranslateY(this.posY);
-        image.setTranslateX(this.posX);
+
+        this.popX = this.posX;
+
+        //collider
+        this.colX = 7;
+        this.colY = 10;
+        this.colWidth = 15;
+        this.colHeight = 14;
+
+        //move
+        this.accLimit = 3;
+        this.velLimit = 6;
+        this.friction = 0.5f;               //friction du personnage (0.2 = boue/escalier, 0.5 = normal, 0.9 = glace)
+        this.accX = 2f;
+        this.accY = 0f;
+        this.velX = 0f;
+        this.velY = 0f;
+        this.moveSpeed = 3;
 
         this.attackSpeed = 2.3f;
 
-        timer = 0;
+        this.state = "PASSIVE_WALK";
+        this.facing = "RIGHT";
 
-        state = new String("PASSIVE_WALK");
+        this.timeAttack = 0;
 
-        timeAttack = 0;
+
 
     }
 
@@ -73,54 +94,6 @@ public class Monster extends Entity implements MoveListener {
         //System.out.println("Grrr ! Moi "+this.name+" vois un joueur situé en :"+pPosX+"/"+pPosY);
         this.playerPosX = pPosX;
         this.playerPosY = pPosY;
-    }
-
-    public void behaviourMove(){
-
-        timer += 1;
-
-        float deltaX = this.posX - this.playerPosX;
-        float deltaY = this.posY - this.playerPosY;
-        float deltaPos = (float)Math.sqrt((float)Math.pow(deltaX, 2) + (float)Math.pow(deltaY, 2));
-        float aggX;
-        float aggY;
-
-        if(deltaPos != 0) {
-            aggX = -deltaX / deltaPos * 3;
-            aggY = -deltaY / deltaPos * 3;
-        }else{
-            aggX = 0;
-            aggY = 0;
-        }
-
-        //ici, quelle est son statut ? en fonction de la position du joueur etc.
-        if(deltaPos < 200 && deltaPos >= 50){
-            this.state = "AGRESSIVE_WALK";
-        }else if(deltaPos < 50){
-            this.state = "ATTACK";
-        }else{
-            this.state = "PASSIVE_WALK";
-        }
-
-        //ici, quelle est son comportement, par statut
-        switch(this.state) {
-            case "AGRESSIVE_WALK":
-                this.posX += aggX;
-                this.posY += aggY;
-                break;
-            case "ATTACK":
-                attack();
-                break;
-            case "PASSIVE_WALK":
-                this.posX += Math.sin(timer/36) * 4;
-                break;
-            default:
-                break;
-        }
-    }
-    public void display(){
-        this.image.setTranslateX(this.posX);
-        this.image.setTranslateY(this.posY);
     }
 
     public void attack(){
@@ -133,8 +106,72 @@ public class Monster extends Entity implements MoveListener {
         }
     }
 
-    public ImageView getImage() {
+    /*
+        ------- GETTERS -------
+     */
+    @Override
+    protected float[] getAcc(boolean[] col){
 
-        return image;
+        //calcul de l'accélération
+        this.deltaX = this.posX - this.playerPosX;
+        this.deltaY = this.posY - this.playerPosY;
+        this.deltaPos = (float)Math.sqrt((float)Math.pow(deltaX, 2) + (float)Math.pow(deltaY, 2));
+        float aggX;
+        float aggY;
+
+        if(deltaPos != 0) {
+            aggX = -deltaX / deltaPos * 3;
+            aggY = -deltaY / deltaPos * 3;
+        }else{
+            aggX = 0;
+            aggY = 0;
+        }
+
+        switch(this.state) {
+            case "AGRESSIVE_WALK":
+                if(aggX > 0) {
+                    this.facing = "RIGHT";
+                }else{
+                    this.facing = "LEFT";
+                }
+                this.accX += aggX;
+                this.accY += aggY;
+                break;
+            case "ATTACK":
+                attack();
+                break;
+            case "PASSIVE_WALK":
+                if(posX > popX + 300) {
+                    this.facing = "LEFT";
+                }else if(posX < popX - 300){
+                    this.facing = "RIGHT";
+                }
+                if(this.facing == "RIGHT"){
+                    this.accX += this.moveSpeed;
+                }else if(this.facing == "LEFT"){
+                    this.accX -= this.moveSpeed;
+                }
+                break;
+            default:
+                break;
+        }
+
+        // return de l'accélération
+        float[] acc = new float[2];
+        acc[0] = this.accX;
+        acc[1] = this.accY;
+        return acc;
+    }
+
+    @Override
+    public String getState() {
+        //ici, quelle est son statut ? en fonction de la position du joueur etc.
+        if (this.deltaPos < 200 && this.deltaPos >= 50) {
+            return this.state = "AGRESSIVE_WALK";
+        } else if (this.deltaPos < 50) {
+            return this.state = "ATTACK";
+        } else {
+            return this.state = "PASSIVE_WALK";
+        }
     }
 }
