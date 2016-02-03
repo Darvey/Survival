@@ -26,12 +26,13 @@ public class Controller {
 
         this.player = p;
         this.level = level;
-        //Scene home = h;
-        System.out.println("enterControllerClass");
+
+
         home.setOnKeyPressed(keyPressedListener); //clavier pressed
         home.setOnKeyReleased(keyReleasedListener); //clavier released
         //home.setOnKeyReleased(keyListener);
-        home.setOnMousePressed(mouseListener); //souris
+        home.setOnMousePressed(mousePressedListener); //souris
+        home.setOnMouseReleased(mouseReleasedListener); //souris
         home.setOnScroll(scrollListener); //molette souris (wheel)
         home.setOnMouseMoved(mouseMovedListener);
 
@@ -136,7 +137,7 @@ public class Controller {
     /**
      * Set actions when a mouse button is pressed
      */
-    private final EventHandler<MouseEvent> mouseListener = new EventHandler<MouseEvent>(){
+    private final EventHandler<MouseEvent> mousePressedListener = new EventHandler<MouseEvent>(){
         /*
         en jeu :
         clic gauche = tir principal
@@ -161,6 +162,25 @@ public class Controller {
                     break;
                 case MIDDLE :
                     System.out.println("Position clic molette = (x :" + e.getSceneX() + ", y :" + e.getSceneY() + ")");
+                    break;
+                default :
+                    break;
+            }
+        }
+    };
+
+    private final EventHandler<MouseEvent> mouseReleasedListener = new EventHandler<MouseEvent>(){
+        /*
+        en jeu :
+        clic gauche = tir principal
+        clic droit = tir secondaire
+        clic milieu = tir tertiaire
+         */
+        public void handle(MouseEvent e){
+            //sur quel bouton de la souris on appuie ?
+            switch(e.getButton()) {
+                case PRIMARY :
+                    player.updateControl(9);
                     break;
                 default :
                     break;

@@ -230,7 +230,7 @@ public class Level {
                 levelMatrice[i][j][2] = c;
                 levelMatrice[i][j][3] = d;
                 levelTile[i][j] = ""+a+b+c+d;
-                System.out.println(levelTile[i][j]);
+                //System.out.println(levelTile[i][j]);
             }
         }
         return levelTile;

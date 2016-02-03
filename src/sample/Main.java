@@ -13,6 +13,10 @@ public class Main extends Application {
     protected Entity arrayEntities[];
     protected Level level;
 
+    private long lastFpsTime;
+    /** The current number of frames recorded */
+    private int fps;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
 
@@ -55,8 +59,8 @@ public class Main extends Application {
         root.getChildren().add(monster2.getImage());
 
         //les monstres écoutent le joueur
-        player.addListener(monster1);
-        player.addListener(monster2);
+        //player.addListener(monster1);
+        //player.addListener(monster2);
 
         primaryStage.setTitle("Survival");
         primaryStage.setScene(home);
@@ -82,69 +86,56 @@ public class Main extends Application {
 
         boolean runFlag = true;
 
-        //double delta = 0.0166d; //60fps
-        double delta = 0.02d; //50fps
+        long lastLoopTime = System.nanoTime();
+        final int TARGET_FPS = 60;
+        final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
 
-        //startup();
-
-
-        double nextTime = (double)System.nanoTime() / 1000000000.0;
-        double maxTimeDiff = 0.5;
-        int skippedFrames = 1;
-        int maxSkippedFrames = 5;
-        while(runFlag)
+        // keep looping round til the game ends
+        while (runFlag)
         {
-            //fermeture du thread
+            //fermeture du thread à la fermeture du programme
             if(!pPrimaryStage.isShowing()){
                 runFlag = false;
             }
 
+            // work out how long its been since the last update, this
+            // will be used to calculate how far the entities should
+            // move this loop
+            long now = System.nanoTime();
+            long updateLength = now - lastLoopTime;
+            lastLoopTime = now;
+            double delta = updateLength / ((double)OPTIMAL_TIME);
 
+            // update the frame counter
+            lastFpsTime += updateLength;
+            fps++;
 
-            // convert the time to seconds
-            double currTime = (double)System.nanoTime() / 1000000000.0;
-            if((currTime - nextTime) > maxTimeDiff) nextTime = currTime;
-
-            if(true)
-            if(currTime >= nextTime)
+            // update our FPS counter if a second has passed since
+            // we last recorded
+            if (lastFpsTime >= 1000000000)
             {
-                // assign the time for the next update
-                nextTime += delta;
-
-                update();
-                //System.out.println("update");
-
-                if(true)
-                if((currTime < nextTime) || (skippedFrames > maxSkippedFrames))
-                {
-                    display();
-                    //System.out.println("draw");
-
-                    skippedFrames = 1;
-                }
-                else
-                {
-                    skippedFrames++;
-                }
+                System.out.println("(FPS: "+fps+")");
+                lastFpsTime = 0;
+                fps = 0;
             }
-            else
-            {
-                // calculate the time to sleep
-                int sleepTime = (int)(1000.0 * (nextTime - currTime));
-                // sanity check
-                if(sleepTime > 0)
-                {
-                    // sleep until the next update
-                    try
-                    {
-                        Thread.sleep(sleepTime);
-                    }
-                    catch(InterruptedException e)
-                    {
-                        // do nothing
-                    }
-                }
+
+            // update the game logic
+            update();
+
+            // draw everyting
+            display();
+
+            // we want each frame to take 10 milliseconds, to do this
+            // we've recorded when we started the frame. We add 10 milliseconds
+            // to this and then factor in the current time to give
+            // us our final value to wait for
+            // remember this is in ms, whereas our lastLoopTime etc. vars are in ns.
+            try{
+                Thread.sleep( (lastLoopTime-System.nanoTime() + OPTIMAL_TIME)/1000000 );
+            }catch(Exception e){
+
             }
+
         }
     }
     private void update(){
@@ -159,6 +150,5 @@ public class Main extends Application {
         for(Entity entity : this.arrayEntities){
             entity.display();
         }
-
     }
 }

@@ -2,6 +2,8 @@ package sample;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.transform.Scale;
+import javafx.scene.transform.Translate;
 
 public class Entity {
 
@@ -10,6 +12,8 @@ public class Entity {
     // pour tester ( plus tard on utilisera des tableaux pour les animations... )
     protected ImageView image;
     protected Image imagePath;
+    protected Translate translate;
+    protected Scale scale;
 
     protected int health;
     protected float moveSpeed;
@@ -184,6 +188,11 @@ public class Entity {
             }
         }
 
+        //if(this.translate == null) {
+        //    this.translate.setX(posX);
+        //    this.translate.setY(posY);
+        //}
+
 
         /* à déplacer
         //gestion de la souris
@@ -206,21 +215,73 @@ public class Entity {
         }
         weaponPosY = this.posY + 50;
         */
+
+
+        if (this.image.getTransforms().isEmpty()) {
+            if(this.translate == null) {
+
+                this.translate = new Translate(this.posX, this.posY);
+                this.translate.setX(this.posX);
+                this.translate.setY(this.posY);
+                this.image.getTransforms().add(0, this.translate);
+            }
+        } else {
+            this.translate.setX(this.posX);
+            this.translate.setY(this.posY);
+            this.image.getTransforms().set(0, this.translate);
+        }
+
     }
 
 
 
     public void display(){
-
-        //déplacement du personnage
-        image.setTranslateX(posX);
-        image.setTranslateY(posY);
-
-        if(this.facing.equals("RIGHT")) {
-            image.setScaleX(1);
-        }else if(this.facing.equals("LEFT")){
-            image.setScaleX(-1);
+        //System.out.println(this.translate.getX());
+        if(this.translate != null) {
+            if (this.image.getTransforms().isEmpty()) {
+                this.translate.setX(this.posX);
+                this.translate.setY(this.posY);
+                this.image.getTransforms().add(0, this.translate);
+            } else {
+                this.image.getTransforms().set(0, this.translate);
+            }
+        }else{
+            this.translate = new Translate(this.posX, this.posY);
+            this.image.getTransforms().add(0, this.translate);
         }
+
+        int facingInteger;
+        if(this.facing == "RIGHT"){
+            facingInteger = 1;
+        }else{
+            facingInteger = -1;
+        }
+        if(this.scale != null) {
+
+            this.scale.setX(facingInteger);
+            this.scale.setPivotX(20);
+
+            if (this.image.getTransforms().isEmpty()) {
+                this.image.getTransforms().add(1, this.scale);
+            } else {
+                this.image.getTransforms().set(1, this.scale);
+            }
+
+        }else{
+
+            this.scale = new Scale(facingInteger, 1, 20, 0);
+
+            this.image.getTransforms().add(1, this.scale);
+        }
+
+
+        //if(this.facing == "RIGHT") {
+        //    this.image.setScaleX(1);
+        //}else if(this.facing == "LEFT"){
+        //    System.out.println(this.facing);
+        //    //this.image.setScaleX(1);
+        //    this.image.setScaleX(-1);
+        //}
 
 
         animation();

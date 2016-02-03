@@ -11,14 +11,17 @@ import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
 import java.io.*;
+
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 public class EntityPlayer extends Entity{
 
-    Group group;
+    protected Group group;
+    public boolean isUpdating = true;
+    public boolean isDisplaying = true;
 
     // Compétences
     //private int valueCompFire;
@@ -62,7 +65,10 @@ public class EntityPlayer extends Entity{
     //arme affichée
     private ImageView imageWeapon;
     private Image imagePathWeapon;
-    private List<Bullet> bulletList;
+    protected List<Bullet> bulletWaitingList;
+    protected List<Bullet> bulletFiringList;
+    protected Bullet bulletToFire;
+    protected Bullet bulletToWait;
 
 
     //touches
@@ -70,6 +76,7 @@ public class EntityPlayer extends Entity{
     private boolean pressedDown;
     private boolean pressedLeft;
     private boolean pressedRight;
+    private boolean attack = false;
 
     //pour le calcul de fps
     private final long ONE_SECOND = 1000000000;
@@ -110,7 +117,7 @@ public class EntityPlayer extends Entity{
     public EntityPlayer(String name, int s, int a, int d, int c, int i,Level l, Group pRoot) {
 
         this.group = pRoot;
-        bulletList = new ArrayList<>();
+
 
         //attributs principaux
         this.name = name;
@@ -140,6 +147,7 @@ public class EntityPlayer extends Entity{
         image.setImage(imagePath);
         image.setViewport(new Rectangle2D(0, 0, 52, 89));
 
+
         animationWalk = new SpriteAnimation(image, Duration.millis(800), 8, 4, 0, 0, 52, 89);
         animationIdle = new SpriteAnimation(image, Duration.millis(800), 2, 4, 0, 178, 52, 89);
 
@@ -154,15 +162,13 @@ public class EntityPlayer extends Entity{
         //position et initialisation position du perso
         this.posX = 0;
         this.posY = 0;
+        //this.translate = new Translate(this.posX, this.posY);
 
         //collider
         this.colX = 16;
         this.colY = 78;
         this.colWidth = 16;
         this.colHeight = 10;
-
-        image.setTranslateY(posY);
-        image.setTranslateX(posX);
 
         //position, angle et initialisation de l'arme
         imageWeapon.getTransforms().add(0, new Translate(0, 0));
@@ -205,13 +211,26 @@ public class EntityPlayer extends Entity{
         }
         this.inv.setShortcut(1,s1);
         */
+
+        // ----- balles -----
+        this.bulletWaitingList = new ArrayList<>();
+        this.bulletFiringList = new ArrayList<>();
+        for (i = 0; i < 256; i++) {
+            //image et animation
+
+            Bullet bullet = new Bullet(this.posX + 16, this.posY + 50, Math.atan2(mouseDeltaY, mouseDeltaX), false);
+            this.bulletWaitingList.add(bullet);
+            this.group.getChildren().add(bullet.getImage());
+            //System.out.println("Balle créée : "+i);
+            bullet.display();
+        }
     }
 
     // liste des écouteurs du déplacement du joueur
-    private final List<MoveListener> listeners = new ArrayList<>();
-    public void addListener(MoveListener toAdd) {
-        listeners.add(toAdd);
-    }
+    //private final List<MoveListener> listeners = new ArrayList<>();
+    //public void addListener(MoveListener toAdd) {
+    //    listeners.add(toAdd);
+    //}
 
 
     /**
@@ -239,8 +258,8 @@ public class EntityPlayer extends Entity{
      */
     public void updateControl(int dir){
 
-        for (MoveListener hl : listeners)
-            hl.playerIsMoving(this.posX, this.posY);
+        //for (MoveListener hl : listeners)
+        //    hl.playerIsMoving(this.posX, this.posY);
 
         switch(dir){
             case 0 :
@@ -268,7 +287,12 @@ public class EntityPlayer extends Entity{
                 this.pressedRight = false;
                 break;
             case 8 :
+                this.attack = true;
                 this.attack();
+                break;
+            case 9 :
+                this.attack = false;
+                //this.attack();
                 break;
             default :
                 break;
@@ -278,13 +302,18 @@ public class EntityPlayer extends Entity{
     @Override
     public void move(Level level) {
 
+        if(isUpdating) {
+            System.out.println("enter update");
+            isUpdating = false;
+        }
+
         getFps();
 
         super.move(level);
 
         //gestion de la souris
-        this.mouseDeltaX = this.mouseX - this.posX;
-        this.mouseDeltaY = this.mouseY - this.posY;
+        this.mouseDeltaX = this.mouseX - this.posX - 16;
+        this.mouseDeltaY = this.mouseY - this.posY - 50;
         weaponRotation = Math.toDegrees(Math.atan2(this.mouseDeltaY, -this.mouseDeltaX));
 
         //orientation gauche/droite
@@ -303,17 +332,36 @@ public class EntityPlayer extends Entity{
 
 
         //gestion des balles
-        for(int i = 0; i < bulletList.size(); i++) {
-            if (bulletList.get(i).posX > 480 || bulletList.get(i).posX < 0 || bulletList.get(i).posY < 0 || bulletList.get(i).posY > 320) {
-                bulletList.remove(i);
+        for(int i = 0; i < bulletFiringList.size(); i++) {
+
+            if (bulletFiringList.get(i).posX > 480 || bulletFiringList.get(i).posX < 0 || bulletFiringList.get(i).posY < 0 || bulletFiringList.get(i).posY > 320) {
+
+
+                this.bulletToWait = bulletWaitingList.get(i);
+                this.bulletToWait.posX = 0;
+                this.bulletToWait.posY = 0;
+                this.bulletToWait.direction = 0;
+                //this.bulletToWait.vel = 0;
+                this.bulletToWait.getImage().setVisible(false);
+                bulletWaitingList.add(this.bulletToWait);
+                bulletFiringList.remove(i);
             }
         }
 
-        for(int i = 0; i < bulletList.size(); i++){
+        notAttack();
+    }
 
-            bulletList.get(i).update();
+    public synchronized void notAttack(){
+
+        for (int i = 0; i < bulletFiringList.size(); i++) {
+            //System.out.println(bulletList.get(i).translate);
+
+            if(bulletFiringList.get(i) != null) {
+                bulletFiringList.get(i).update();
+            }
         }
 
+        System.out.println("Wait :"+bulletWaitingList.size()+" / Fire : "+bulletFiringList.size());
     }
 
     @Override
@@ -321,18 +369,9 @@ public class EntityPlayer extends Entity{
 
         super.display();
 
-        //application des transformations sur l'arme
-        imageWeapon.getTransforms().set(1, new Scale(weaponScaleX, 1));
-        imageWeapon.getTransforms().set(0, new Translate(weaponPosX, weaponPosY));
-        imageWeapon.getTransforms().set(2, new Rotate(weaponRotation, 43, 6));
-
-
-        for(int i = 0; i < bulletList.size(); i++){
-            bulletList.get(i).display();
-
-        }
 
         animation();
+
 
     }
 
@@ -353,17 +392,20 @@ public class EntityPlayer extends Entity{
         }
     }
 
-    public void attack(){
-        for(int i = 0; i < 8; i++){
-            //image et animation
-
-            double bulletDirection = Math.atan2(mouseDeltaY, mouseDeltaX);
-
-            Bullet bullet = new Bullet(this.posX+16, this.posY+50, bulletDirection);
-            bulletList.add(bullet);
-
-            this.group.getChildren().add(bullet.getImage());
+    public synchronized void attack(){
+        for (int i = 0; i < 8; i++) {
+            if(i >= 0){
+                System.out.println("pop:"+i);
+                this.bulletToFire = bulletWaitingList.get(i);
+                this.bulletToFire.posX = this.posX + 16;
+                this.bulletToFire.posY = this.posY + 50;
+                this.bulletToFire.direction = Math.atan2(mouseDeltaY, mouseDeltaX) + ((Math.random() * 2 - 1) / 20);
+                this.bulletToFire.getImage().setVisible(true);
+                bulletFiringList.add(this.bulletToFire);
+                bulletWaitingList.remove(i);
+            }
         }
+
     }
 
 
