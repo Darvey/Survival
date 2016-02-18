@@ -119,9 +119,11 @@ Les compétences passives se présentent sous la forme de bonus qui perdurent.
  
 Elles sont accessibles via l'arbre de talent (compétences de classes et de spécialisations) et de dévotion (compétences de dévotion).
 
-ex : Oeil du chasseur (Comp. de spécialisation du chasseur) - Augmente de 10% la précision avec les armes à feu et à distance
-ex : Corps de pierre (Comp. de dévotion à l'élément terre) - Augmente les PV de 5% et la resistance aux armes perforantes et tranchantes de 10%
-ex : Hautes Etudes (Comp. de classe du savant) - Augmente la connaissance et l'apprentissage de 20%
+ex : Oeil du chasseur (Comp. de spécialisation du chasseur) - Augmente de 10% la précision avec les armes à feu et à distance.
+
+ex : Corps de pierre (Comp. de dévotion à l'élément terre) - Augmente les PV de 5% et la resistance aux armes perforantes et tranchantes de 10%.
+
+ex : Hautes Etudes (Comp. de classe du savant) - Augmente la connaissance et l'apprentissage de 20%.
 
 ##Compétences actives
 
@@ -129,11 +131,16 @@ Les compétences actives sont des sorts activables grâce aux raccourcis. Une fo
 
 Elles sont accessibles via l'arbre de talent (compétences de classes et de spécialisations) et de dévotion (compétences de dévotion).
 
-ex : Recherche du point faible (Comp. de spécialisation de l'assassin) - La prochaine attaque sera un coup critique qui infligera 250% des dégats
+ex : Recherche du point faible (Comp. de spécialisation de l'assassin) - La prochaine attaque sera un coup critique qui infligera 250% des dégats.
+
 ex : Pose d'une tourelle de niveau I (Comp. de spécialisation de l'ingénieur) - Déploie une tourelle qui attaque automatiquement les ennemis proches.
-ex : Camouflage (Comp. de classe du roublard) - Devient invisible pendant 3 secondes
-ex : Serrage de fesse (Comp. de classe du soldat) - Prévient 25% des dégats pendant 5 secondes
-ex : Pluie revigorante (Comp. de dévotion à l'élément eau) - Fait tomber une pluie qui soigne 10pv chaque seconde les alliés dans une zone autour du lanceur
+
+ex : Camouflage (Comp. de classe du roublard) - Devient invisible pendant 3 secondes.
+
+ex : Serrage de fesse (Comp. de classe du soldat) - Prévient 25% des dégats pendant 5 secondes.
+
+ex : Pluie revigorante (Comp. de dévotion à l'élément eau) - Fait tomber une pluie qui soigne 10pv chaque seconde les alliés dans une zone autour du lanceur.
+
 ex : Projectiles enflammés (Comp. de dévotion à l'élément feu) - Pendant 4 secondes, les projectiles deviennent enflammés et infligent 5 dégats de feu supplémentaires.
 
 ##Arbre de talent
