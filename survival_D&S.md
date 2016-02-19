@@ -27,8 +27,9 @@ Inconvénients de la vue de côté :
 De base les touches utilisées sont :
 * Q : Déplacement à gauche
 * D : Déplacement à droite
-* Z : Saut
-* S : S'accroupir ?
+* Z : Monter 
+* S : Descendre
+* Espace : Sauter
 * E : Touche action (ramasser des objets, ouvrir...)
 * R : Recharger l'arme
 * 1, 2, 3, 4... : Compétences actives
