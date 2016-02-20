@@ -42,6 +42,7 @@
     <entry_points version="2.0">
       <entry_point TYPE="field" FQNAME="sample.EntityPlayer valueCompFire" />
       <entry_point TYPE="field" FQNAME="sample.EntityPlayer valueCompGun" />
+      <entry_point TYPE="field" FQNAME="sample.EntityPlayer modAttackSpeedCacB" />
     </entry_points>
   </component>
   <component name="JavadocGenerationManager">

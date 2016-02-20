@@ -1,238 +1,227 @@
 package sample;
 
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Random;
+
+import org.newdawn.slick.SlickException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
+
 
 /**
- *   Description de la classe :
- *
+ *   class Level :
+ * crée une map à partir de fichiers xml
+ * qui contiennent les différentes informations
+ * de la carte et les tiles sur plusieurs niveaux
+ * (logic pour les collisions et graphic pour
+ * l'affichage).
  */
-
 public class Level {
 
-    // ********** ATTRIBUTES ********** //
+    private int id;
+    private String name;
+    private int width;
+    private int height;
+    private String tileset;
+    private Tile[][] tiles;
 
-    protected final String name;
-    private final Tile[][] tilesMap;
-    private final Item[][] itemMap;
-    private int h;
-    private int l;
-    protected final int width;
-    protected final int height;
-    private final Random random;
+    private boolean hasLogicLayer;
+    private boolean hasGraphicLayer;
 
-    //variables pour les collisions
-    protected Line2D.Double lineUp;
-    protected Line2D.Double lineDown;
-    protected Line2D.Double lineLeft;
-    protected Line2D.Double lineRight;
-    protected Rectangle2D.Double collisionArea;
-
-    // ********** CONSTRUCTORS ********** //
 
     /**
-     * Constructeur
-     *
-     * @param pWidth    largeur de la map
-     * @param pHeight   hauteur de la map
+     * default Constructor
      */
-    public Level(int pWidth,int pHeight) {
+    public Level(){
 
-        this.name = "Premier niveau";
-
-        this.width = pWidth;
-        this.height = pHeight;
-        random = new Random();
-
-        int defInt[][] = new int[this.width][this.height];
-        itemMap = new Item[this.width][this.height];
-
-        //matrice de Int
-        for (int i = 0; i < this.width; i++) {
-            for (int j = 0; j < this.height; j++) {
-                defInt[i][j] = i % 3 + 1;
-            }
-        }
-
-        String levelTile[][] = createLevel();
-
-        // Creation des Tiles avec la matrice de Int
-
-        tilesMap = new Tile[this.width][this.height];
-
-        for (int i = 0; i < this.width; i++) {
-            for (int j = 0; j < this.height; j++) {
-                //tilesMap[i][j] = new Tile(32, 32, 32 * i, 32 * j, 1, defInt[i][j]);
-                tilesMap[i][j] = new Tile(32, 32, 32 * i, 32 * j, 1, levelTile[i][j]);
-            }
-        }
+        this("src/map/mapTest.xml");
     }
+
 
     /**
-     * This methods is launched each time the 'R' key is pressed
-     *
-     * @param player    the player who performed the action
+     * Constructor
+     * @param refMap : url du fichier xml (src/map/tatati.xml)
      */
-    public void action(EntityPlayer player)
-    {
-        int caseX = (int)(player.getImage().getTranslateX()+7)/32;
-        int caseY = (int)(player.getImage().getTranslateY()+10)/32;
-        if(caseX == 3 && caseY == 3){
-            itemMap[3][3].getImage().setTranslateX(0);
-            itemMap[3][3].getImage().setTranslateY(0);
-            itemMap[3][3].getImage().setVisible(false);
-            player.inv.addItem(itemMap[3][3].getName(), itemMap[3][3].getWeight(), true ,itemMap[3][3].getType());
-        }
+    public Level(String refMap){
+
+        this.id = 0;
+        this.name = refMap;
+        this.hasLogicLayer = false;
+        this.hasGraphicLayer = false;
+        this.load(refMap);
     }
 
-    public boolean[] collision(int nX,int nY, int nWidth, int nHeight, int offset)
-    {
-        /* ------- OPTIMISATION -------
-        pour l'instant on check tous les objets (tile pour l'instant) de la map,
-        il faudrait tester uniquement les cases à proximité du joueur
-        donc redéfinir un tableau tileArray avec seulement la case sur laquelle on est
-        et celles qui entourent le perso
-        tilesMap[(int) nX /32][ (int) nY / 32]
-        */
-        boolean col[] = new boolean[4];
-        boolean colUp = false;
-        boolean colDown = false;
-        boolean colLeft = false;
-        boolean colRight = false;
 
-        this.lineUp = new Line2D.Double(nX, nY-offset, nX+nWidth, nY-offset);
-        this.lineDown = new Line2D.Double(nX, nY+nHeight+offset, nX+nWidth, nY+nHeight+offset);
-        this.lineLeft = new Line2D.Double(nX-offset, nY, nX-offset, nY+nHeight);
-        this.lineRight = new Line2D.Double(nX+nWidth+offset, nY, nX+nWidth+offset, nY+nHeight);
+    /**
+     * charge le fichier xml, le parse et envoie les résultats
+     * dans les fonctions de création des layers
+     * @param refMap : url du fichier xml (src/map/tatata.xml)
+     */
+    private void load(String refMap){
 
-        for(Tile tileArray[] : tilesMap){
-            for(Tile elem : tileArray){
-                if(elem.solid){
-                    this.collisionArea = new Rectangle2D.Double(elem.posX+1, elem.posY+1, 30, 30);
-                    if(this.lineUp.intersects(this.collisionArea)){
-                        colUp = true;
+        System.out.println("load");
+        try {
+            /** on charge le fichier xml donné en paramètre */
+            //File mapXmlFile = new File("src/map/mapTest.xml");
+            File mapXmlFile = new File(refMap);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(mapXmlFile);
+
+            /** initialisation des propriétés de la map */
+            this.id = Integer.parseInt(doc.getDocumentElement().getAttribute("id"));
+            this.name = doc.getDocumentElement().getAttribute("name");
+            this.width = Integer.parseInt(doc.getDocumentElement().getAttribute("width"));
+            this.height = Integer.parseInt(doc.getDocumentElement().getAttribute("height"));
+            this.tileset = doc.getDocumentElement().getAttribute("tileset");
+            System.out.println("tileset : "+this.tileset);
+            /** initialisation du tableau qui contiendra les tiles */
+            this.tiles = new Tile[this.width][this.height];
+
+            /** on récupère la liste des noeuds "layer" */
+            NodeList layers = doc.getElementsByTagName("layer");
+
+            /** pour chaque "layer" : logique et graphique */
+            for(int i = 0; i < layers.getLength(); i++){
+
+                Node layer = layers.item(i);
+                if(layer.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) layer;
+
+                    /** si le layer est logic on crée la map logic */
+                    if(Objects.equals(element.getAttribute("name"), "logic")){
+
+                        this.mappingLogicLayer(element.getTextContent());
+                        this.hasLogicLayer = true;
                     }
-                    if(this.lineDown.intersects(this.collisionArea)){
-                        colDown = true;
-                    }
-                    if(this.lineLeft.intersects(this.collisionArea)){
-                        colLeft = true;
-                    }
-                    if(this.lineRight.intersects(this.collisionArea)){
-                        colRight = true;
+
+                    /** si le layer est graphic on crée la map graphic */
+                    if (Objects.equals(element.getAttribute("name"), "graphic")) {
+                        this.mappingGraphicLayer(element.getTextContent());
+                        this.hasGraphicLayer = true;
                     }
                 }
             }
+            if(!hasLogicLayer || !hasGraphicLayer){
+                throw new RuntimeException("Level don't have LogicMap AND GraphicMap");
+            }
+
+        }catch(ParserConfigurationException e){
+            e.printStackTrace();
+        }catch(IOException e){
+            e.printStackTrace();
+        }catch(SAXException e){
+            e.printStackTrace();
         }
-        col[0] = colUp;
-        col[1] = colDown;
-        col[2] = colLeft;
-        col[3] = colRight;
-
-        return col;
     }
 
-    public int getH() {
-        return h;
-    }
 
-    public int getL() {
-        return l;
-    }
+    /**
+     * crée le layer logic de la map utilisé pour
+     * les collisions (si le data est "1", la tile
+     * est "solid"
+     * @param data : "content" du noeud layer logic du fichier xml
+     */
+    private void mappingLogicLayer(String data){
 
-    public Tile getTile(int x,int y){
-        return tilesMap[x][y];
-    }
+        /** tableau contenant un int pour chaque tile */
+        String[] dataTiles = data.split(",");
 
-    public Item getItem(int x,int y){
-        return itemMap[x][y];
-    }
+        /** si le nombre de tile correspond à la hauteur et à la largeur de la map */
+        if(dataTiles.length == (this.width * this.height)) {
 
-    public String[][] createLevel(){
+            /** utilisation d'un autre index car on parcours un tableau 1D */
+            int tileIndex = 0;
 
-        int levelMatrice[][][] = new int[this.width][this.height][4];
-        String levelTile[][] = new String[this.width][this.height];
-        int a;
-        int b;
-        int c;
-        int d;
+            for (int i = 0; i < this.height; i++) {
+                System.out.println(i);
+                for (int j = 0; j < this.width; j++) {
 
-        for(int i = 0; i < this.width; i++) {
-            for(int j = 0; j < this.height; j++) {
-                if(i != 0 && j == 0){
-
-                    if(levelMatrice[i-1][j][1] == 1){
-                        a = 1;
-                    }else{
-                        a = 0;
+                    /** création de la tile (data, posX, posY) */
+                    try {
+                        Tile tile = new Tile(dataTiles[tileIndex], j, i, tileIndex);
+                        this.tiles[j][i] = tile;
+                    }catch(SlickException e){
+                        e.printStackTrace();
                     }
 
-                    b = this.random.nextInt(2);
-
-                    if(levelMatrice[i-1][j][3] == 1){
-                        c = 1;
-                    }else{
-                        c = 0;
-                    }
-
-                    d = this.random.nextInt(2);
-
-                }else if(i == 0 && j != 0){
-
-                    if(levelMatrice[i][j-1][2] == 1){
-                        a = 1;
-                    }else{
-                        a = 0;
-                    }
-
-                    if(levelMatrice[i][j-1][3] == 1){
-                        b = 1;
-                    }else{
-                        b = 0;
-                    }
-
-                    c = this.random.nextInt(2);
-                    d = this.random.nextInt(2);
-
-                }else if(i != 0) {
-
-                    if(levelMatrice[i-1][j][1] == 1){
-                        a = 1;
-                    }else{
-                        a = 0;
-                    }
-
-                    if(levelMatrice[i][j-1][3] == 1){
-                        b = 1;
-                    }else{
-                        b = 0;
-                    }
-
-                    if(levelMatrice[i-1][j][3] == 1){
-                        c = 1;
-                    }else{
-                        c = 0;
-                    }
-
-                    d = this.random.nextInt(2);
-
-                }else{ //  Simplify 'i == 0 && j == 0'
-                    a = this.random.nextInt(2);
-                    b = this.random.nextInt(2);
-                    c = this.random.nextInt(2);
-                    d = this.random.nextInt(2);
-
+                    tileIndex++;
                 }
+            }
+        }else{
 
-                levelMatrice[i][j][0] = a;
-                levelMatrice[i][j][1] = b;
-                levelMatrice[i][j][2] = c;
-                levelMatrice[i][j][3] = d;
-                levelTile[i][j] = ""+a+b+c+d;
-                //System.out.println(levelTile[i][j]);
+            throw new ArrayIndexOutOfBoundsException("tile.length != (width * height)");
+        }
+    }
+
+
+    /**
+     * crée le layer graphic de la map
+     * data renvoie aux images utilisées pour les tiles
+     * l'association se fera via un tileset (
+     * ex : tile/underground/1, 2, 3... .png
+     * ex : tile/plateau/1, 2, 3... .png
+     * le tileset sera contenu dans le fichier xml
+     * @param data : liste des id des tile
+     */
+    private void mappingGraphicLayer(String data){
+
+        /** tableau contenant un int pour chaque tile */
+        String[] dataTiles = data.split(",");
+
+        /** si le nombre de tile correspond à la hauteur et à la largeur de la map */
+        if(dataTiles.length == (this.width * this.height)) {
+
+            /** utilisation d'un autre index car on parcours un tableau 1D */
+            int tileIndex = 0;
+
+            for (int i = 0; i < this.height; i++) {
+                for (int j = 0; j < this.width; j++) {
+
+                    /** création de la partie graphique de la tile */
+                    this.tiles[j][i].initGraphic(dataTiles[tileIndex], this.tileset);
+                    System.out.println(tileIndex);
+                    tileIndex++;
+                }
+            }
+        }else{
+
+            throw new ArrayIndexOutOfBoundsException("tile.length != (width * height)");
+        }
+    }
+
+    /**
+     * rendu graphique des tiles
+     */
+    public void render(){
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
+
+                /** on dessine les tiles */
+                this.tiles[i][j].render();
             }
         }
-        return levelTile;
+    }
+
+
+    /**
+     * renvoie une tile
+     * @param posX : position X en pixel
+     * @param posY : position Y en pixel
+     * @return : la tile qui est à la position posX / posY
+     */
+    public Tile getTile(int posX, int posY){
+
+        return this.tiles[posX / 32][posY / 32];
     }
 }

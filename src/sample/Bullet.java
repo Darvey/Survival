@@ -10,7 +10,8 @@ import javafx.scene.transform.Translate;
 public class Bullet {
 
     private final ImageView image;
-    private final Image imagePath;
+    public final Image imagePath_0;
+    public final Image imagePath_90;
     protected double posX;
     protected double posY;
     protected double direction;
@@ -24,8 +25,9 @@ public class Bullet {
         //this.id = UUID.randomUUID().toString();
 
         this.image = new ImageView();
-        this.imagePath = new Image(Main.class.getResourceAsStream("../img/bullet.png"));
-        image.setImage(imagePath);
+        this.imagePath_0 = new Image(Main.class.getResourceAsStream("../img/bullet.png"));
+        this.imagePath_90 = new Image(Main.class.getResourceAsStream("../img/bullet.png"));
+        image.setImage(imagePath_0);
         double spread = Math.random() * 2 - 1;
         this.posX = pPosX;
         this.posY = pPosY;

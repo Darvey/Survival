@@ -1,163 +1,96 @@
 package sample;
-import javafx.geometry.BoundingBox;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+
+
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.SpriteSheet;
 
 /*
     Description de la classe :
  */
 public class Tile {
 
-    // ********** ATTRIBUTES ********** //
+    private final int id;
+    private static final int WIDTH = 32;                     // largeur de l'image
+    private static final int HEIGHT = 32;                    // hauteur de l'image
+    private final int posX;                             // position en x
+    private final int posY;                             // position en y
 
-    protected int width;                            // largeur de l'image
-    protected int height;                           // hauteur de l'image
-    protected int posX;                             // position en x
-    protected int posY;                             // position en y
-    protected int posZ;                             // position en z
+    protected final boolean solid;                        // true si la tile est solid
+    protected final boolean platform;                     // true si la tile est traversable par le dessous
 
-    protected boolean solid;                        // true if Tile is a solid Element (with a BoundingBox)
 
-    protected ImageView image;
-    protected Image imagePath;
+    private SpriteSheet sprite;                   // optimisation : à changer en image
 
-    protected BoundingBox bbox;
-    
+
     /**
-        Construcor
-
-        @param h    Tile height
-        @param w    Tile width
-        @param x    X position
-        @param y    Y position
-        @param z    Z position
-        @param id   Tile id
+     * constructor
+     * @param data : id de la tile (dans le fichier xml)
+     * @param posX : position X
+     * @param posY : positon Y
+     * @param tileIndex : id de la tile (dans le level)
+     * @throws SlickException
      */
-    public Tile(int h, int w, int x, int y, int z, String id) {
+    public Tile(String data, int posX, int posY, int tileIndex) throws SlickException{
 
-        this.width = w;
-        this.height = h;
-        this.posX = x;
-        this.posY = y;
-        this.posZ = z;
-
-        this.image = new ImageView();
-        this.image.setTranslateX(posX);
-        this.image.setTranslateY(posY);
-        this.image.setTranslateZ(posZ);
-
-
-        switch (id) {
-            case "0000" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_0.png"));
+        this.id = tileIndex;
+        data = data.trim(); //suppression des espaces
+        this.posX = posX;
+        this.posY = posY;
+        
+        switch(data){
+            case "0": // vide
                 this.solid = false;
+                this.platform = false;
                 break;
-            case "0001" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_1.png"));
-                this.solid = false;
-                break;
-            case "0010" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_2.png"));
-                this.solid = false;
-                break;
-            case "0011" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_3.png"));
-                this.solid = false;
-                break;
-            case "0100" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_4.png"));
-                this.solid = false;
-                break;
-            case "0101" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_5.png"));
-                this.solid = false;
-                break;
-            case "0110" :
-                //imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/highGrass.png"));
-                imagePath = new Image(Main.class.getResourceAsStream("../img/collider_32x32.png"));
+            case "1": // solid non traversable par le dessous
                 this.solid = true;
+                this.platform = false;
                 break;
-            case "0111" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_7.png"));
-                this.solid = false;
-                break;
-            case "1000" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_8.png"));
-                this.solid = false;
-                break;
-            case "1001" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_9.png"));
-                this.solid = false;
-                break;
-            case "1010" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_a.png"));
-                this.solid = false;
-                break;
-            case "1011" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_b.png"));
-                this.solid = false;
-                break;
-            case "1100" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_c.png"));
-                this.solid = false;
-                break;
-            case "1101" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_d.png"));
-                this.solid = false;
-                break;
-            case "1110" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_e.png"));
-                this.solid = false;
-                break;
-            case "1111" :
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_f.png"));
-                this.solid = false;
+            case "2": // solid traversable par le dessous (plate-forme)
+                this.solid = true;
+                this.platform = true;
                 break;
             default:
-                imagePath = new Image(Main.class.getResourceAsStream("../img/tile/grass/grass_0.png"));
                 this.solid = false;
+                this.platform = false;
                 break;
         }
-        image.setImage(imagePath);
-        image.setVisible(true);
     }
 
 
-    // ********** SETTERS ********** //
+    /**
+     * init de l'image
+     * @param data : id de la tile dans le tileset
+     * @param tileset : tilet à utiliser (répertoire d'image)
+     */
+    public void initGraphic(String data, String tileset){
+        data = data.trim();
+        System.out.println("img/tile/"+tileset+"/"+data+".png");
+        try {
+            this.sprite = new SpriteSheet("img/tile/"+tileset+"/"+data+".png", 32, 32);
 
-    public void setSolid(boolean b)
-    {
-        this.solid = b;
+
+        }catch(SlickException e){
+            e.printStackTrace();
+        }
     }
 
-    // ********** GETTERS ********** //
 
-    public boolean getSolid()
-    {
-        return solid;
+    /**
+     * rendu graphique
+     */
+    public void render(){
+
+        this.sprite.draw(this.posX * WIDTH, this.posY * HEIGHT);
     }
 
-    public int getWidth() {
-        return width;
-    }
 
-    public int getHeight() {
-        return height;
-    }
+    /**
+     * renvoie l'image de la tile
+     * @return : image de la tile
+     */
+    /* public SpriteSheet getSprite() {
 
-    public int getPosX() {
-        return posX;
-    }
-
-    public int getPosY() {
-        return posY;
-    }
-
-    public int getPosZ() {
-        return posZ;
-    }
-
-    public ImageView getImage() {
-        return image;
-    }
+        return this.sprite;
+    } */
 }

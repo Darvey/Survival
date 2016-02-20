@@ -1,42 +1,30 @@
 package sample;
 
-import javafx.animation.Animation;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Group;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Translate;
-import javafx.util.Duration;
 
+
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.Animation;
 import java.io.*;
 
 
-import java.util.ArrayList;
-import java.util.List;
+
+//import java.util.ArrayList;
+//import java.util.List;
+import java.util.Objects;
 
 
 public class EntityPlayer extends Entity{
 
-    protected Group group;
-    public boolean isUpdating = true;
-    public boolean isDisplaying = true;
-
-    // Compétences
-    //private int valueCompFire;
-    //private int valueCompBow;
-    //private int valueCompGun;
-    //private int valueCompCut;
-
-    // Caractéristiques principales
+    /** car. primaire */
     private int agility;
     private int strength;
     private int constitution;
     private int dexterity;
     private int intelligence;
 
-    //Caractéristiques secondaires
+    //** car. secondaire */
     private int endurance;
     private int modAttackSpeedCacS;
     private int modAttackSpeedCacB;
@@ -55,13 +43,11 @@ public class EntityPlayer extends Entity{
     private int identify;
     private int learn;
 
-    protected Inventory inv;
 
-    // pour tester ( plus tard on utilisera des tableaux pour les animations... )
-    private SpriteAnimation animationWalk;
-    private SpriteAnimation animationIdle;
+    /** inventaire */
+    //private final Inventory inv;
 
-
+    /*
     //arme affichée
     private ImageView imageWeapon;
     private Image imagePathWeapon;
@@ -69,27 +55,28 @@ public class EntityPlayer extends Entity{
     protected List<Bullet> bulletFiringList;
     protected Bullet bulletToFire;
     protected Bullet bulletToWait;
+    */
 
-
-    //touches
+    //** controle : touches */
     private boolean pressedUp;
     private boolean pressedDown;
     private boolean pressedLeft;
     private boolean pressedRight;
-    private boolean attack = false;
+    //private boolean pressedAttack;
+    private int jumpImpulse;
+    private int jumpCount;
+    private int maxJumpCount;
+    //private boolean attack = false;
 
-    //pour le calcul de fps
-    private final long ONE_SECOND = 1000000000;
-    private long currentTime;
-    private long lastTime;
-    private long fps = 0;
-    private long delta = 0;
+    /** controle : position de la souris */
+    private double prevMouseX;
+    private double prevMouseY;
+    private double mouseX;
+    private double mouseY;
 
 
+    /*
 
-    //souris
-    protected double mouseX;
-    protected double mouseY;
     private double mouseDeltaX;
     private double mouseDeltaY;
     private double weaponRotation;
@@ -97,124 +84,107 @@ public class EntityPlayer extends Entity{
     private int weaponPosY;
     private int weaponScaleX;
 
+    //arme
+    private int timeAttack;
+    private int nbBullet;
 
-    /*
-        Default Constructor
-     */
-    public EntityPlayer(){
+    //monstres
+    protected Entity arrayEntities[];
 
-    }
+    */
+
+
     /**
-     *   Player Constructor.
-     *
-     *   @param name nom du joueur
-     *   @param s strength value
-     *   @param a agility value
-     *   @param d dexterity value
-     *   @param c constitution value
-     *   @param i intelligence value
+     * default Constructor
+     * @throws SlickException
      */
-    public EntityPlayer(String name, int s, int a, int d, int c, int i,Level l, Group pRoot) {
+    public EntityPlayer() throws SlickException{
 
-        this.group = pRoot;
+        this("null", 0, 0, 0, 0, 0);
+    }
 
 
-        //attributs principaux
-        this.name = name;
+    /**
+     * Constructor
+     * @param name : nom du joueur
+     * @param strength : force du joueur
+     * @param agility : agilité du joueur
+     * @param dexterity : dextérité du joueur
+     * @param constitution : constitution du joueur
+     * @param intelligence : intelligence du joueur
+     * @throws SlickException
+     */
+    public EntityPlayer(String name, int strength, int agility, int dexterity, int constitution, int intelligence) throws SlickException {
+
+        super(name);
+
+        /** init. du sprite du joueur */
+        this.sprite = new SpriteSheet("img/collider_32x64.png", 32, 64);
+        this.sprite.setCenterOfRotation(16, 16);
+
+        /** init. de l'inventaire */
+        //this.inv = new Inventory(this);
+
+        /** init des var pour l'animation */
+        this.animations = new Animation[1];
         this.state = "IDLE";
         this.facing = "RIGHT";
-        this.level = l;
 
-        //caractéristiques principales
-        this.strength = s;
-        this.agility = a;
-        this.dexterity = d;
-        this.constitution = c;
-        this.intelligence = i;
+        /** compteur du nombre de frame de saut */
+        this.jumpCount = 0;
+        /** temps pendant lequel on peut rester appuyé sur saut pour augmenter la hauteur de celui-ci */
+        this.maxJumpCount = 30;
+        /** impulsion initiale du saut */
+        this.jumpImpulse = 12;
 
-        //compétences
-        //this.valueCompBow = 0;
-        //this.valueCompCut = 0;
-        //this.valueCompFire = 0;
-        //this.valueCompGun = 0;
+        /** crée l'animation */
+        this.animations[0] = loadAnimation(this.sprite, 0, 1, 0);
 
-        //inventaire
-        this.inv = new Inventory(this);
+        /** init. du nom et des car. primaires */
+        this.strength = strength;
+        this.agility = agility;
+        this.dexterity = dexterity;
+        this.constitution = constitution;
+        this.intelligence = intelligence;
 
-        //image et animation
-        image = new ImageView();
-        imagePath = new Image(Main.class.getResourceAsStream("../img/playerWalk.png"));
-        image.setImage(imagePath);
-        image.setViewport(new Rectangle2D(0, 0, 52, 89));
-
-
-        animationWalk = new SpriteAnimation(image, Duration.millis(800), 8, 4, 0, 0, 52, 89);
-        animationIdle = new SpriteAnimation(image, Duration.millis(800), 2, 4, 0, 178, 52, 89);
-
-        animationWalk.setCycleCount(Animation.INDEFINITE);
-        animationIdle.setCycleCount(Animation.INDEFINITE);
-
-        //image arme
-        imageWeapon = new ImageView();
-        imagePathWeapon = new Image(Main.class.getResourceAsStream("../img/item/shotgun.png"));
-        imageWeapon.setImage(imagePathWeapon);
-
-        //position et initialisation position du perso
-        this.posX = 0;
-        this.posY = 0;
-        //this.translate = new Translate(this.posX, this.posY);
-
-        //collider
-        this.colX = 16;
-        this.colY = 78;
-        this.colWidth = 16;
-        this.colHeight = 10;
-
-        //position, angle et initialisation de l'arme
-        imageWeapon.getTransforms().add(0, new Translate(0, 0));
-        imageWeapon.getTransforms().add(1, new Scale(1, 1));
-        imageWeapon.getTransforms().add(2, new Rotate(0, 0, 0));
-
-
-        //variables pour le calcul du fps
-        this.currentTime = System.nanoTime();
-        this.lastTime = System.nanoTime();
-
-        //move
+        /** init. des altérations de déplacement */
         this.accLimit = 3;
-        this.velLimit = 6;
-        this.friction = 0.5f;               //friction du personnage (0.2 = boue/escalier, 0.5 = normal, 0.9 = glace)
+        this.velLimit = 100;
+        this.friction = 0.7f; // friction du personnage (0.2 = boue/escalier, 0.7 = normal, 0.9 = glace)
+
+        /** init des var de déplacement */
         this.accX = 0f;
         this.accY = 0f;
         this.velX = 0f;
         this.velY = 0f;
+
+        /** init des contrôles */
         this.pressedDown = false;
         this.pressedLeft = false;
         this.pressedRight = false;
         this.pressedUp = false;
+        //this.pressedAttack = false;
 
-        //caractéristiques secondaires
+        /** calcul des caractéristiques secondaires */
         calculateSecondarySpecs();
 
-        // Debut test pour inventaire
-        this.inv.addItem("shroom1", 0.2f, true, "consumable");
-        this.inv.addItem("shroom1", 0.2f, true, "consumable");
-        this.inv.addItem("silverCoin", 0.2f, true, "junk");
-        this.inv.addItem("bronzeCoin", 0.1f, true, "tool");
-        this.inv.addItem("shotgun", 5.7f, true, "weapon");
+        /** TEST : inventory  */
+        //this.inv.addItem("shroom1", 0.2f, true, "consumable");
+        //this.inv.addItem("shroom1", 0.2f, true, "consumable");
+        //this.inv.addItem("silverCoin", 0.2f, true, "junk");
+        //this.inv.addItem("bronzeCoin", 0.1f, true, "tool");
+        //this.inv.addItem("shotgun", 5.7f, true, "weapon");
+
+
 
         /*
-        Item tabSilverCoin[] = new Item[100];                       // 100 pieces d'argent
-        for(int cnt=0 ; cnt < 100 ; cnt++){
-            tabSilverCoin[cnt] = new Item("silverCoin",0.05f,true);
-            this.inv.addItem(tabSilverCoin[cnt]);
-        }
-        this.inv.setShortcut(1,s1);
-        */
-
         // ----- balles -----
-        this.bulletWaitingList = new ArrayList<>();
-        this.bulletFiringList = new ArrayList<>();
+        //synchronized (this.bulletWaitingList) {
+            this.bulletWaitingList = new ArrayList<>();
+        //}
+        //synchronized(this.bulletFiringList) {
+            this.bulletFiringList = new ArrayList<>();
+        //}
         for (i = 0; i < 256; i++) {
             //image et animation
 
@@ -223,19 +193,68 @@ public class EntityPlayer extends Entity{
             this.group.getChildren().add(bullet.getImage());
             //System.out.println("Balle créée : "+i);
             bullet.display();
-        }
+        }*/
     }
 
-    // liste des écouteurs du déplacement du joueur
-    //private final List<MoveListener> listeners = new ArrayList<>();
-    //public void addListener(MoveListener toAdd) {
-    //    listeners.add(toAdd);
-    //}
+    /**
+     * charge les images de l'animation
+     * @param spriteSheet : spriteSheet of the player
+     * @param startX : position of the column for start
+     * @param endX : position of the column for end
+     * @param y : position of the line
+     * @return : animation which contains the frames
+     */
+    private Animation loadAnimation(SpriteSheet spriteSheet, int startX, int endX, int y) {
+        Animation animation = new Animation();
+        for (int x = startX; x < endX; x++) {
+            animation.addFrame(spriteSheet.getSprite(x, y), 100);
+        }
+        return animation;
+    }
+
 
 
     /**
-     * create a backup of the player
-     * @param f file name to use for backup
+     * update
+     * @param delta : utilisé pour la loop variable
+     */
+    @Override
+    public void update(int delta){
+
+        super.update(delta);  // updateMove()
+    }
+
+    /**
+     * update du déplacement
+     */
+    @Override
+    public void updateMove(int delta){
+
+        /** variables pour les tests de déplacement / saut */
+        this.moveSpeed = 4;
+        this.jumpImpulse = 10;
+        this.friction = 0.7f;
+        this.gravity = 0.2f;
+
+        super.updateMove(delta);
+    }
+
+
+
+    /**
+     * render
+     * @param g : slick graphics
+     */
+    @Override
+    public void render(Graphics g){
+
+        super.render(g);
+    }
+
+
+    /**
+     * crée une sauvegarde du joueur
+     * @param f : nom du fichier
      */
     public void save(String f){
         try {
@@ -252,64 +271,18 @@ public class EntityPlayer extends Entity{
         }
     }
 
-    /**
-     * move the character in the direction given by parameter
-     * @param dir the direction for the movement
-     */
-    public void updateControl(int dir){
 
-        //for (MoveListener hl : listeners)
-        //    hl.playerIsMoving(this.posX, this.posY);
-
-        switch(dir){
-            case 0 :
-                this.pressedUp = true;
-                break;
-            case 1 :
-                this.pressedDown = true;
-                break;
-            case 2 :
-                this.pressedLeft = true;
-                break;
-            case 3 :
-                this.pressedRight = true;
-                break;
-            case 4 :
-                this.pressedUp = false;
-                break;
-            case 5 :
-                this.pressedDown = false;
-                break;
-            case 6 :
-                this.pressedLeft = false;
-                break;
-            case 7 :
-                this.pressedRight = false;
-                break;
-            case 8 :
-                this.attack = true;
-                this.attack();
-                break;
-            case 9 :
-                this.attack = false;
-                //this.attack();
-                break;
-            default :
-                break;
-        }
-    }
-
-    @Override
+    /*
     public void move(Level level) {
 
         if(isUpdating) {
-            System.out.println("enter update");
+            //System.out.println("enter update");
             isUpdating = false;
         }
 
-        getFps();
+        //getFps();
 
-        super.move(level);
+        //super.move(level);
 
         //gestion de la souris
         this.mouseDeltaX = this.mouseX - this.posX - 16;
@@ -332,7 +305,21 @@ public class EntityPlayer extends Entity{
 
 
         //gestion des balles
+        //System.out.println("GESTION");
         for(int i = 0; i < bulletFiringList.size(); i++) {
+            //System.out.println("ges");
+            for(int j = 0; j < arrayEntities.length; j++){
+                //System.out.println(arrayEntities[j].name);
+                int posColX_left = arrayEntities[j].posX + arrayEntities[j].colX;
+                int posColX_right = arrayEntities[j].posX + arrayEntities[j].colX + arrayEntities[j].colWidth;
+                int posColY_up = arrayEntities[j].posY + arrayEntities[j].colY;
+                int posColY_down = arrayEntities[j].posY + arrayEntities[j].colY + arrayEntities[j].colHeight;
+                if(this.bulletFiringList.get(i).posX > posColX_left && this.bulletFiringList.get(i).posX < posColX_right){
+                    if(this.bulletFiringList.get(i).posY > posColY_up && this.bulletFiringList.get(i).posX < posColY_down){
+                        System.out.println("Ca touche");
+                    }
+                }
+            }
 
             if (bulletFiringList.get(i).posX > 480 || bulletFiringList.get(i).posX < 0 || bulletFiringList.get(i).posY < 0 || bulletFiringList.get(i).posY > 320) {
 
@@ -346,156 +333,193 @@ public class EntityPlayer extends Entity{
                 bulletWaitingList.add(this.bulletToWait);
                 bulletFiringList.remove(i);
             }
+
+        }
+
+        if(this.timeAttack > 0){
+            this.timeAttack--;
+        }
+
+        if(this.pressedAttack){
+            this.attack();
         }
 
         notAttack();
     }
+    */
 
+    /*
     public synchronized void notAttack(){
-
+        //System.out.println("NOT_ATTACK");
         for (int i = 0; i < bulletFiringList.size(); i++) {
             //System.out.println(bulletList.get(i).translate);
-
+            //System.out.println("not");
             if(bulletFiringList.get(i) != null) {
                 bulletFiringList.get(i).update();
             }
         }
 
-        System.out.println("Wait :"+bulletWaitingList.size()+" / Fire : "+bulletFiringList.size());
+        //System.out.println("Wait :"+bulletWaitingList.size()+" / Fire : "+bulletFiringList.size());
     }
-
-    @Override
-    public void display(){
-
-        super.display();
+    */
 
 
-        animation();
 
 
-    }
-
-    public void animation(){
-
-        //on anime le perso en fonction de son état (idle = au repos, walk = marche)
-        switch(this.state){
-            case "IDLE":
-                animationIdle.play();
-                animationWalk.stop();
-                break;
-            case "WALK":
-                animationWalk.play();
-                animationIdle.stop();
-                break;
-            default:
-                break;
-        }
-    }
-
+    /*
     public synchronized void attack(){
-        for (int i = 0; i < 8; i++) {
-            if(i >= 0){
-                System.out.println("pop:"+i);
-                this.bulletToFire = bulletWaitingList.get(i);
-                this.bulletToFire.posX = this.posX + 16;
-                this.bulletToFire.posY = this.posY + 50;
-                this.bulletToFire.direction = Math.atan2(mouseDeltaY, mouseDeltaX) + ((Math.random() * 2 - 1) / 20);
-                this.bulletToFire.getImage().setVisible(true);
-                bulletFiringList.add(this.bulletToFire);
-                bulletWaitingList.remove(i);
+        if(this.timeAttack == 0) {
+            this.timeAttack = 60;
+            //System.out.println("ATTACK");
+            for (int i = 0; i < 8; i++) {
+                //System.out.println("atk");
+                if (i >= 0) {
+                    //System.out.println("pop:" + i);
+                    this.bulletToFire = bulletWaitingList.get(i);
+                    this.bulletToFire.posX = this.posX + 16;
+                    this.bulletToFire.posY = this.posY + 50;
+                    this.bulletToFire.direction = Math.atan2(mouseDeltaY, mouseDeltaX) + ((Math.random() * 2 - 1) / 20);
+                    //System.out.println(this.bulletToFire.direction);
+                    if(this.bulletToFire.direction <= 2.36 && this.bulletToFire.direction > 0.79){
+                        //en haut
+                        this.bulletToFire.getImage().setImage(this.bulletToFire.imagePath_90);
+                    }else if(this.bulletToFire.direction <= 0.79 && this.bulletToFire.direction > -0.79){
+                        //à droite
+                        this.bulletToFire.getImage().setImage(this.bulletToFire.imagePath_0);
+                    }else if(this.bulletToFire.direction <= -0.79 && this.bulletToFire.direction > -2.36){
+                        //en bas
+                        this.bulletToFire.getImage().setImage(this.bulletToFire.imagePath_90);
+                    }else{
+                        //à gauche
+                        this.bulletToFire.getImage().setImage(this.bulletToFire.imagePath_0);
+                    }
+                    this.bulletToFire.getImage().setVisible(true);
+                    bulletFiringList.add(this.bulletToFire);
+                    bulletWaitingList.remove(i);
+                }
             }
+        }else{
+            //System.out.println("RELOAD");
         }
 
     }
+    */
 
 
 
     private void calculateSecondarySpecs(){
 
-        /*
-        str = force physique
-        agi = agilité du corps
-        dextérité = agilité des doigts, manipulation
-        con = endurance / resistance du corps
-        int = intelligence innée / force mental
+        /**
+         * str = force physique
+         * agi = agilité du corps
+         * dextérité = agilité des doigts, manipulation
+         * con = endurance / resistance du corps
+         * int = intelligence innée / force mental
         */
 
-        //-----déplacement-----
-        //vitesse de déplacement (0.22 => 0.55 (si con et agi à 100))
-        //this.moveSpeed = this.acc + ((float)this.constitution / 100) + (float)((float)this.agility / 62.5);
-        this.moveSpeed = 0.5f;
-        //furtivité du personnage
+        /** déplacement */
+        this.moveSpeed = 0.1f;
         this.stealth = Math.round(10 + ((this.agility + 1)/ 2));
-        //endurance
         this.endurance = Math.round(10 + ((this.constitution + 1)/ 2));
 
-        //-----modificateur de défenses-----
-        //vie
+        /** défense */
         this.health = 100 + this.constitution;
-        //esquive
         this.dodge = Math.round(5 + (this.agility / 5));
 
-        //-----modificateur d'attaque-----
-        //vitesse d'attaque avec arme au corps à corps (dague)
-        this.modAttackSpeedCacS = Math.round(this.agility / 5);
-        //vitesse d'attaque avec arme au corps à corps (masse)
-        this.modAttackSpeedCacB = Math.round((this.agility + this.strength) / 9);
-        //vitesse d'attaque avec arme à distance (arc, fronde)
-        this.modAttackSpeedRange = Math.round((this.dexterity + this.agility) / 10);
-        //dégats avec les armes (sauf gun)
+        /** attaque */
+        this.modAttackSpeedCacS = Math.round(this.agility / 5);                         //vitesse d'attaque avec arme au corps à corps (dague)
+        this.modAttackSpeedCacB = Math.round((this.agility + this.strength) / 9);       //vitesse d'attaque avec arme au corps à corps (masse)
+        this.modAttackSpeedRange = Math.round((this.dexterity + this.agility) / 10);    //vitesse d'attaque avec arme à distance (arc, fronde)
         this.modDamageCacS = Math.round(this.dexterity / 6);
         this.modDamageCacB = Math.round(this.strength / 6);
         this.modDamageRange = Math.round(this.strength / 8);
-        //précision des armes
         this.modPrecisionCacS = Math.round((this.dexterity + this.agility) / 11);
         this.modPrecisionCacB = Math.round(this.agility / 9);
         this.modPrecisionRange = Math.round(this.dexterity / 8);
         this.modPrecisionGun = Math.round(this.dexterity / 8);
 
-        //-----resistances-----
-        //resistance à la maladie
+        /** résistance */
         this.resistanceDisease = Math.round(15 + (this.constitution / 4));
-        //resistance au maladie
         this.resistancePoison = Math.round(5 + (this.constitution / 6));
-        //resistance à la fatigue
         this.resistanceTiredness = Math.round(20 + (this.constitution / 4));
-        //resistance mentale
         this.resistancePsy = Math.round(10 + (this.intelligence / 3));
+        //add cut / pierce / blunt
 
-        //-----autre-----
+        /** autre */
+        //add weight
         this.learn = Math.round(this.intelligence / 2);
         this.identify = Math.round(this.intelligence);
     }
 
 
-
+    /**
+     * affichage l'inventaire
+     */
     public void displayInventory(){
 
-        this.inv.display();
+        //this.inv.display();
     }
 
-    /*
-        ------- GETTERS -------
-     */
+
 
     @Override
     protected float[] getAcc(boolean[] col){
 
-        this.moveSpeed = 10;
         if (this.pressedUp) {
-            if(col[0]){
+            /**
+             * si on est WALKING / ON_GROUND, si pressedUP => JUMPING / ON_AIR
+             * jusqu'à ce qu'on lache la touche saut ou jusqu'à la fin du compteur de saut
+             * soit => FALLING / ON_AIR jusqu'à la collision au sol => WALKING / ON_GROUND
+            //  */
+            if((!Objects.equals(this.state, "JUMPING")) && (!Objects.equals(this.state, "FALLING")) && (Objects.equals(this.land, "ON_GROUND"))){
+                if(col[0]){
+                    this.accY = 0;
+                }else {
+                    this.land = "ON_AIR";
+                    this.state = "JUMPING";
+                    this.accY -= this.jumpImpulse;                              //première impulsion / hauteur mini
+                    this.jumpCount++;
+                }
+            }else if(Objects.equals(this.state, "JUMPING")){
+                this.jumpCount++;
+                if(this.jumpCount < this.maxJumpCount) {
+                    if(this.jumpCount != 0) {
+                        this.accY -= (this.maxJumpCount / this.jumpCount);      //effet dégressif du saut
+                    }
+                }else{
+                    this.jumpCount = 0;
+                    this.state = "FALLING";
+                    this.accY = 0;
+                }
+                /** permet de ne pas resauter si on atteint une plateforme en haut de saut / évite le double saut */
+                if(collisionBot()){
+                    this.pressedUp = false;
+                }
+            }else{
+                /** on ne saute pas plusieurs fois si on maintient appuyé */
+                this.pressedUp = false;
+                this.jumpCount = 0;
+            }
+
+        }else{
+            /** quand on relache la touche */
+            if(Objects.equals(this.state, "JUMPING")){
+                this.jumpCount = 0;
+                this.state = "FALLING";
                 this.accY = 0;
-            }else {
-                this.accY -= this.moveSpeed;
             }
         }
-        if (this.pressedDown) {
-            if(col[1]){
+
+        //if (this.pressedDown) {
+            /*if(col[1]){
                 this.accY = 0;
             }else {
                 this.accY += this.moveSpeed;
-            }
-        }
+            }*/
+
+            /** plus tard : pour s'accroupir ? */
+        //}
+
         if (this.pressedLeft) {
             if(col[2]){
                 this.accX = 0;
@@ -503,6 +527,7 @@ public class EntityPlayer extends Entity{
                 this.accX -= this.moveSpeed;
             }
         }
+
         if (this.pressedRight) {
             if(col[3]){
                 this.accX = 0;
@@ -510,6 +535,8 @@ public class EntityPlayer extends Entity{
                 this.accX += this.moveSpeed;
             }
         }
+
+
         float[] acc = new float[2];
         acc[0] = this.accX;
         acc[1] = this.accY;
@@ -517,52 +544,113 @@ public class EntityPlayer extends Entity{
     }
 
     @Override
+    /**
+     * renvoie le statut du joueur
+     */
     public String getState(){
-        //statut du perso
-        if(this.accX != 0 || this.accY != 0){
 
-            this.state = "WALK";
-        }else{
-            this.state = "IDLE";
-        }
         return this.state;
     }
 
-    private void getFps(){
-
-        this.currentTime = System.nanoTime();
-        this.fps++;
-        this.delta += (this.currentTime - this.lastTime);
-        if(this.delta > this.ONE_SECOND) {
-            System.out.println("FPS : "+this.fps);
-            this.delta -= this.ONE_SECOND;
-            this.fps = 0;
+    /**
+     * renvoie l'animation du joueur
+     * @return : l'animation du joueur
+     */
+    public Animation getAnimations(String state){
+        int indexAnimation;
+        switch(state){
+            case "WALK":
+                indexAnimation = 0;
+                break;
+            default:
+                indexAnimation = 0;
+                break;
         }
-        this.lastTime = this.currentTime;
+        return this.animations[indexAnimation];
     }
 
-    public Inventory getIv() {
+
+
+    /*public Inventory getIv() {
 
         return this.inv;
+    }*/
+
+    /**
+     * renvoie le niveau dans lequel est le joueur
+     * @return : le niveau dans lequel est le joueur
+     */
+    public Level getLevel(){
+        return this.level;
     }
 
-    public ImageView getImageWeapon() {
 
-        return this.imageWeapon;
+    /**
+     * définie le niveau dans lequel est le joueur
+     * @param level : le niveau dans lequel est le joueur
+     */
+    public void setLevel(Level level){
+        this.level = level;
     }
+
+
+    public void setPressedUp(){
+
+        this.pressedUp = true;
+    }
+
+    public void setPressedDown(){
+
+        this.pressedDown = true;
+    }
+
+    public void setPressedLeft(){
+
+        this.pressedLeft = true;
+    }
+
+    public void setPressedRight(){
+
+        this.pressedRight = true;
+    }
+
+    public void setReleasedUp(){
+
+        this.pressedUp = false;
+    }
+
+    public void setReleasedDown(){
+
+        this.pressedDown = false;
+    }
+
+    public void setReleasedLeft(){
+
+        this.pressedLeft = false;
+    }
+
+    public void setReleasedRight(){
+
+        this.pressedRight = false;
+    }
+
+    public void setMouse(int oldX, int oldY, int newX, int newY){
+
+        this.mouseX = newX;
+        this.mouseY = newY;
+        this.prevMouseX = oldX;
+        this.prevMouseY = oldY;
+    }
+
+
 
     public int getEndurance(){
+
         return this.endurance;
     }
 
     public int getModAttackSpeedCacS(){
+
         return modAttackSpeedCacS;
     }
-    // ...
-
-
-
-
-
-
 }

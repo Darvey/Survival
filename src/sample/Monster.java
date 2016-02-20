@@ -18,7 +18,7 @@ public class Monster extends Entity implements MoveListener {
     protected int aggressivity; //0 : fuyard, 1 : se défend, 2 : agressif
     protected float attackSpeed;
 
-    protected final SpriteAnimation animationWalk;
+    //protected final SpriteAnimation animationWalk;
 
     //interaction joueur
     protected static float playerPosX;
@@ -42,14 +42,14 @@ public class Monster extends Entity implements MoveListener {
     public Monster(String pName, int pPosX, int pPosY) {
 
         //image et animation
-        image = new ImageView();
-        imagePath = new Image(Main.class.getResourceAsStream("../img/mothaBlue_walk2.png"));
-        image.setImage(imagePath);
-        image.setViewport(new Rectangle2D(0, 0, 52, 89));
+        //image = new ImageView();
+        //imagePath = new Image(Main.class.getResourceAsStream("../img/mothaBlue_walk2.png"));
+        //image.setImage(imagePath);
+        //image.setViewport(new Rectangle2D(0, 0, 52, 89));
 
-        animationWalk = new SpriteAnimation(image, Duration.millis(1200), 17, 4, 0, 0, 31, 29);
-        animationWalk.setCycleCount(Animation.INDEFINITE);
-        animationWalk.play();
+        //animationWalk = new SpriteAnimation(image, Duration.millis(1200), 17, 4, 0, 0, 31, 29);
+        //animationWalk.setCycleCount(Animation.INDEFINITE);
+        //animationWalk.play();
 
 
         this.name = pName;
@@ -60,13 +60,13 @@ public class Monster extends Entity implements MoveListener {
 
         System.out.println(posX);
 
-        this.popX = this.posX;
+        //this.popX = this.posX;
 
         //collider
-        this.colX = 7;
-        this.colY = 10;
-        this.colWidth = 15;
-        this.colHeight = 14;
+        //this.colX = 7;
+        //this.colY = 10;
+        //this.colWidth = 15;
+        //this.colHeight = 14;
 
         //move
         this.accLimit = 3;
@@ -152,9 +152,9 @@ public class Monster extends Entity implements MoveListener {
                 attack();
                 break;
             case "PASSIVE_WALK":
-                if(posX > popX + 300) {
+                if(posX > 0 + 300) {  //0 = popX
                     this.facing = "LEFT";
-                }else if(posX < popX - 300){
+                }else if(posX < 0 - 300){
                     this.facing = "RIGHT";
                 }
                 if(this.facing == "RIGHT"){

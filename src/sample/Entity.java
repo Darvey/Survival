@@ -1,43 +1,63 @@
 package sample;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Translate;
+import org.newdawn.slick.Animation;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SpriteSheet;
 
-public class Entity {
+import java.util.Objects;
 
-    protected String name;
 
-    // pour tester ( plus tard on utilisera des tableaux pour les animations... )
-    protected ImageView image;
-    protected Image imagePath;
-    protected Translate translate;
-    protected Scale scale;
+public abstract class Entity {
 
+    /** id de l'entité */
+    private final long id;
+
+    /** nom */
+    protected final String name;
+
+    /** sprite */
+    protected SpriteSheet sprite;
+
+    /** car. secondaire */
     protected int health;
     protected float moveSpeed;
     protected int dodge;
     protected int stealth;
+
+    /** init des var d'animations */
+    protected Animation[] animations;
     protected String state;
+    protected String land;
     protected String facing;
 
-    // position du joueur sur la carte
+    /** position */
     protected int posX;
     protected int posY;
-    protected int popX;
-    protected int popY;
     private int prevPosX;
     private int prevPosY;
+
+    /** position d'apparition sur la carte */
+    //protected int popX;
+    //protected int popY;
+
+    /** var de déplacement */
     protected float accX;
     protected float accY;
     protected float accLimit;
     protected float velX;
     protected float velY;
     protected float velLimit;
-    private int velXInteger;
-    private int velYInteger;
+    //private int velXInteger;
+    //private int velYInteger;
+    protected float friction;
+    protected float gravity;
+    private float gravityIntensity;
 
+
+    /** niveau dans lequel l'entité est présente */
+    protected Level level;
+
+    /*
     // collider
     protected int colX;
     protected int colY;
@@ -49,36 +69,142 @@ public class Entity {
     protected int hitY;
     protected int hitWidth;
     protected int hitHeight;
+    */
 
-
-    protected float friction;
-
-    //animations
-    private SpriteAnimation animationWalk;
-    private SpriteAnimation animationIdle;
-
-    Level level;
-
+    /**
+     * default Constructor
+     */
     public Entity(){
+        this("null");
+    }
+
+    /**
+     * Constructor
+     */
+    public Entity(String name){
+
+        this.id = 0;
+        this.name = "entity";
 
     }
 
-    public void move(Level l){
 
-        //récupération des collisions en fonction du level
-        boolean[] col = l.collision(this.posX+this.colX, this.posY+this.colY, this.colWidth, this.colHeight, 1);
+    /**
+     * mise à jour
+     * @param delta : delta pour la loop variable
+     */
+    public void update(int delta){
 
-        //à ajouter : récupération des collisions entre Entity
+        this.updateMove(delta);
+    }
 
-        //récupération de l'accélération
+
+    /**
+     * rendu graphique
+     * @param g : slick graphics
+     */
+    public void render(Graphics g){
+
+        g.drawAnimation(this.getAnimations("WALK"), this.posX, this.posY);
+    }
+
+
+    /**
+     * Est-ce qu'il y a une collision en bas ?
+     * @return : true si collision
+     */
+    protected boolean collisionBot(){
+
+        return (this.level.getTile(this.posX + 16, this.posY + 64).solid);
+    }
+
+
+    /**
+     * Est-ce qu'il y a une collision en haut ?
+     * @return : true si collision
+     */
+    private boolean collisionTop(){
+
+        return (this.level.getTile(this.posX + 16, this.posY).solid && !this.level.getTile(this.posX + 16, this.posY).platform);
+    }
+
+
+    /**
+     * Est-ce qu'il y a une collision à gauche ?
+     * @return : true si collision
+     */
+    private boolean collisionLeft(){
+
+        return (this.level.getTile(this.posX, this.posY + 32).solid);
+    }
+
+
+    /**
+     * Est-ce qu'il y a une collision à droite ?
+     * @return : true si collision
+     */
+    private boolean collisionRight(){
+
+        return (this.level.getTile(this.posX + 32, this.posY + 32).solid);
+    }
+
+
+    /**
+     * MAJ du déplacement
+     * Précision :
+     * - accélération : somme des forces qui s'appliquent à l'entité (friction, gravité, impulsion...)
+     * - vélocité : accélération + inertie
+     */
+    public void updateMove(int delta){
+
+
+        // --------------------------- OBSOLETE -----------------------------------
+        boolean[] col = new boolean[4];
+        col[0] = false;
+        col[1] = false;
+        col[2] = false;
+        col[3] = false;
         float[] acc = getAcc(col);
         this.accX = acc[0];
         this.accY = acc[1];
+        // -------------------------------------------------------------------------
 
-        //récupération de l'état (WALK / IDLE...)
+        // --------------------------- A VIRER D'ICI --------------------------------
+        this.accLimit = 1000;
+        this.velLimit = 100;
+        // --------------------------------------------------------------------------
+
+        /** gestion de la gravité */
+        if(!collisionBot()) {
+
+            this.land = "ON_AIR";
+            /** intensité de la gravité pour avoir un effet d'accélération à la chute */
+            this.gravityIntensity += this.gravity;
+            /** application de la gravité */
+            this.accY += this.gravityIntensity;
+        }else{
+
+            this.gravityIntensity = 0;
+            this.land = "ON_GROUND";
+            if(!Objects.equals(this.state, "JUMPING")) {
+                this.accY = 0;
+                this.velY = 0;
+            }
+            this.state = "WALK";
+        }
+
+
+        /** évite de "coller" au plafond quand on saute sous un solid */
+        if(collisionTop() && Objects.equals(this.state, "JUMPING")){
+            this.state = "FALLING";
+        }
+
+
+        /** récupération de l'état (OBSOLETE) */
         this.state = getState();
 
-        //cap de l'accéleration
+
+        /** seuil de l'accélération */
         if (this.accX > this.accLimit)
             this.accX = this.accLimit;
         if (this.accX < -this.accLimit)
@@ -88,17 +214,23 @@ public class Entity {
         if (this.accY < -this.accLimit)
             this.accY = -this.accLimit;
 
-        velX += accX;
-        velY += accY;
 
-        accX = 0;
-        accY = 0;
+        /** ajout de l'accélération à la vélocité */
+        this.velX += this.accX;
+        this.velY += this.accY;
 
-        //application de la friction
-        velX *= this.friction;
-        velY *= this.friction;
 
-        //cap de la velocité
+        /** reinit de l'accélération */
+        this.accX = 0;
+        this.accY = 0;
+
+
+        /** application de la friction */
+        this.velX *= this.friction;
+        this.velY *= this.friction;
+
+
+        /** seuil de la vélocité */
         if (this.velX > this.velLimit)
             this.velX = this.velLimit;
         if (this.velX < -this.velLimit)
@@ -108,237 +240,155 @@ public class Entity {
         if (this.velY < -this.velLimit)
             this.velY = -this.velLimit;
 
-        //arrondi à zero quand la valeur est très petite (ex : 0.000658 = 0)
-        velX = approximatelyZero(velX);
-        velY = approximatelyZero(velY);
 
-        velXInteger = Math.round(velX); // nombre de pixel pour le déplacement
-        velYInteger = Math.round(velY);
+        /** fonction d'arrondi */
+        velX = approximatelyZero(velX, 0.01f);
+        velY = approximatelyZero(velY, 0.01f);
+
+
+        /** on parse en entier pour que la vélocité correspond à un nombre de pixel */
+        int velXInteger = Math.round(velX);
+        int velYInteger = Math.round(velY);
+
+
+        /** on stocke la dernière valeur */
         prevPosX = posX;
         prevPosY = posY;
 
-        //déplacement vers le haut
-        if(velY < 0){
-            //il vaut mieux faire un while du coup
-            while(posY > prevPosY + velYInteger){
-                /*
-                ------- OPTIMISATION -------
-                pour ne pas rechecker la map entière à chaque itération
-                il faut qu'au check initial, au lieu de retourner false/true
-                retourner l'ID de la tile à check pour ne faire le test que sur
-                elle
-                 */
-                col = l.collision(posX+colX, posY+colY, colWidth, colHeight, 1);
-                if(col[0]) {
 
+        /**
+         * Algorithmes de déplacements :
+         * on déplace dans la direction donnée pixel par pixel
+         * grâce à la boucle qui indente directement la position
+         * actuelle jusqu'à la position voulue.
+         * si il y a collision, on sort de la boucle.
+         */
+
+        /** move to the up */
+        if(velY < 0){
+            while(posY > prevPosY + velYInteger){
+
+                if(collisionTop()){
                     break;
                 }
                 posY--;
             }
         }
-        //déplacement vers le bas
+
+
+        /** déplacement vers le bas */
         if(velY > 0) {
             while(posY < prevPosY + velYInteger){
-                /*
-                ------- OPTIMISATION -------
-                pour ne pas rechecker la map entière à chaque itération
-                il faut qu'au check initial, au lieu de retourner false/true
-                retourner l'ID de la tile à check pour ne faire le test que sur
-                elle
-                 */
-                col = l.collision(posX+colX, posY+colY, colWidth, colHeight, 1);
-                if(col[1]) {
+
+                if(collisionBot()){
                     break;
                 }
                 posY++;
             }
         }
-        //déplacement vers la gauche
+
+
+        /** déplacement vers la gauche */
         if(velX < 0){
             while(posX > prevPosX + velXInteger){
-                /*
-                ------- OPTIMISATION -------
-                pour ne pas rechecker la map entière à chaque itération
-                il faut qu'au check initial, au lieu de retourner false/true
-                retourner l'ID de la tile à check pour ne faire le test que sur
-                elle
-                 */
-                col = l.collision(posX+colX, posY+colY, colWidth, colHeight, 1);
-                if(col[2]) {
+
+                if (collisionLeft()) {
                     break;
                 }
                 posX--;
             }
         }
-        //déplacement vers la droite
+
+
+        /** déplacement vers la droite */
         if(velX > 0) {
             while(posX < prevPosX + velXInteger) {
-                /*
-                ------- OPTIMISATION -------
-                pour ne pas rechecker la map entière à chaque itération
-                il faut qu'au check initial, au lieu de retourner false/true
-                retourner l'ID de la tile à check pour ne faire le test que sur
-                elle
-                 */
-                col = l.collision(posX+colX, posY+colY, colWidth, colHeight, 1);
-                if(col[3]) {
+                if (collisionRight()) {
                     break;
                 }
                 posX++;
             }
         }
 
-        //if(this.translate == null) {
-        //    this.translate.setX(posX);
-        //    this.translate.setY(posY);
-        //}
 
-
-        /* à déplacer
-        //gestion de la souris
-        this.mouseDeltaX = this.mouseX - this.posX;
-        this.mouseDeltaY = this.mouseY - this.posY;
-        weaponRotation = Math.toDegrees(Math.atan2(this.mouseDeltaY, -this.mouseDeltaX));
-
-
-        //orientation gauche/droite
-        if(mouseX > posX){
-            this.facing = "RIGHT";
-            weaponRotation += 180;
-            weaponPosX = this.posX + 60;
-            weaponScaleX = -1;
-        }else{
-            this.facing = "LEFT";
-            weaponRotation *= -1;
-            weaponPosX = this.posX - 8;
-            weaponScaleX = 1;
+        /**
+         * évite d'être coincé au milieu d'une plateforme
+         * donne l'effet que le perso s'aggripe pour monter plus haut
+         */
+        while(collisionBot() && (Objects.equals(this.state, "JUMPING"))){
+            posY--;
         }
-        weaponPosY = this.posY + 50;
-        */
-
-
-        if (this.image.getTransforms().isEmpty()) {
-            if(this.translate == null) {
-
-                this.translate = new Translate(this.posX, this.posY);
-                this.translate.setX(this.posX);
-                this.translate.setY(this.posY);
-                this.image.getTransforms().add(0, this.translate);
-            }
-        } else {
-            this.translate.setX(this.posX);
-            this.translate.setY(this.posY);
-            this.image.getTransforms().set(0, this.translate);
-        }
-
     }
 
 
+    /**
+     * arrondi à zero quand la valeur est très faible
+     * @param toRound : nombre à arrondir
+     * @param roundLimit : seuil d'arrondi
+     * @return : nombre arrondi
+     */
+    private float approximatelyZero(float toRound, float roundLimit){
 
-    public void display(){
-        //System.out.println(this.translate.getX());
-        if(this.translate != null) {
-            if (this.image.getTransforms().isEmpty()) {
-                this.translate.setX(this.posX);
-                this.translate.setY(this.posY);
-                this.image.getTransforms().add(0, this.translate);
-            } else {
-                this.image.getTransforms().set(0, this.translate);
-            }
-        }else{
-            this.translate = new Translate(this.posX, this.posY);
-            this.image.getTransforms().add(0, this.translate);
-        }
+        float f = toRound;
+        if(f > 0f && f < roundLimit)
+            f = 0f;
+        if(f < 0f && f > -roundLimit)
+            f = 0f;
 
-        int facingInteger;
-        if(this.facing == "RIGHT"){
-            facingInteger = 1;
-        }else{
-            facingInteger = -1;
-        }
-        if(this.scale != null) {
-
-            this.scale.setX(facingInteger);
-            this.scale.setPivotX(20);
-
-            if (this.image.getTransforms().isEmpty()) {
-                this.image.getTransforms().add(1, this.scale);
-            } else {
-                this.image.getTransforms().set(1, this.scale);
-            }
-
-        }else{
-
-            this.scale = new Scale(facingInteger, 1, 20, 0);
-
-            this.image.getTransforms().add(1, this.scale);
-        }
-
-
-        //if(this.facing == "RIGHT") {
-        //    this.image.setScaleX(1);
-        //}else if(this.facing == "LEFT"){
-        //    System.out.println(this.facing);
-        //    //this.image.setScaleX(1);
-        //    this.image.setScaleX(-1);
-        //}
-
-
-        animation();
+        return f;
     }
 
-    public void animation(){
 
-        //on anime le perso en fonction de son état (idle = au repos, walk = marche)
-        switch(this.state){
-            case "IDLE":
-                animationIdle.play();
-                animationWalk.stop();
-                break;
+    /**
+     * renvoie l'animation de l'entité
+     * @return : animation de l'entité
+     */
+    public Animation getAnimations(String state){
+
+        int indexAnimation;
+        switch(state){
             case "WALK":
-                animationWalk.play();
-                animationIdle.stop();
+                indexAnimation = 0;
+                break;
+            case "JUMPING":
+                indexAnimation = 0;
                 break;
             default:
+                indexAnimation = 0;
                 break;
         }
+        return this.animations[indexAnimation];
     }
 
 
-
-    private float approximatelyZero(float f){
-
-        float rF = f;
-        if(rF > 0f && rF < 0.1f)
-            rF = 0f;
-        if(rF < 0f && rF > -0.1f)
-            rF = 0f;
-
-        return rF;
-    }
-
-
-    /*
-        ------- GETTERS -------
+    /**
+     * renvoie l'accélération de l'entité
+     * @param col : OBSOLETE
+     * @return : l'accélération
      */
-
     protected float[] getAcc(boolean[] col){
 
-        //calcul de l'accélération
-
-        // return de l'accélération
         float[] acc = new float[2];
         acc[0] = this.accX;
         acc[1] = this.accY;
         return acc;
     }
 
+
+    /**
+     * renvoie l'état de l'entité (OBSOLETE)
+     * @return : l'état de l'entité
+     */
     public String getState(){
-        return "";
+
+        return this.state;
     }
 
-    public ImageView getImage() {
+    /**
+     * renvoie l'image de l'entité
+     */
+    /* public SpriteSheet getSprite() {
 
-        return this.image;
-    }
+        return this.sprite;
+    }*/
 }
