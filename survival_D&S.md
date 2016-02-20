@@ -97,13 +97,13 @@ On peut donc soulever plusieurs axes principaux :
 * Intelligence (INT) : Intelligence innée, capacité de réflexion, d'apprentissag
 
 ###Car. secondaires
-* points de vie [con]
-* esquive [agi]
-* vitesse de déplacement [agi]
-* endurance (temps pour sprinter) [con]
-* mod. vitesse des armes lourdes au corps à corps (massue) [str, agi]
-* mod. vitesse des armes légères au corps à corps (poignard) [agi, dex]
-* mod. vitesse des armes à distance (arc) [dex]
+* points de vie [con] : 100 => 2000
+* esquive [agi] : 0 => 20%
+* vitesse de déplacement [agi] 3 ou 4 => 5 ou 6
+* endurance (temps pour sprinter) [con] // à voir l'utilité de cette car.
+* mod. vitesse des armes lourdes au corps à corps (massue) [str, agi] : 1 => 4
+* mod. vitesse des armes légères au corps à corps (poignard) [agi, dex] : 1 => 4
+* mod. vitesse des armes à distance (arc) [dex] : 1 = 5
 * mod. précision des armes lourdes au corps à corps [str, agi]
 * mod. précision des armes légères au corps à corps [dex, agi]
 * mod. précision des armes à distance [dex]
@@ -112,7 +112,7 @@ On peut donc soulever plusieurs axes principaux :
 * mod. dégat des armes légères au corps à corps [str, dex]
 * mod. dégat des armes à distance [dex]
 * poids que l'on peut porter [str]
-* discretion [agi]
+* discretion [agi] // à voir l'utilité de cette car.
 * resistance à la maladie [con]
 * resistance au poison [con]
 * resistance à la fatigue [con]
@@ -122,6 +122,17 @@ On peut donc soulever plusieurs axes principaux :
 * resistance aux dégats contondants [-]
 * connaissance [int]
 * apprentissage [int]
+
+Note :
+La précision des armes à distance va jouer sur le "spread", soit l'angle dans lequel les munitions vont se répartir. A voir si on oriente ensuite le gameplay sur le côté RPG ou Arcade. Par exemple, si je mets un coup d'épée et que le sprite de l'épée touche celui de l'ennemi, l'ennemi est-il forcément touché ? L'inverse est vrai également et peut remettre en question l'utilisation de car. comme "esquive". On peut tout simplement considérer que si un projectile ou une tatane nous touche, on est touché point barre. Mais en même temps, si un joueur a plein d'agilité et de dextérité, il peut s'attendre à avoir un avantage, par rapport à la précision, sur les autres joueurs. Il faudra bien réfléchir au ratio RPG / Arcade.
+
+Au final, les caractéristiques qui jouent sur l'arcade sont :
+- précision pour les armes à distance
+- toutes les vitesses d'armes
+- la vitesse de déplacement
+Tout le reste est, pour l'instant, vu que des % de réussite ou des calculs.
+
+On peut ajouter genre "bloquer", qui ne serait calculé que si on appuie sur un bouton. Et la précision pourra jouer sur les coups critiques.
 
 ###Compétences passives
 
