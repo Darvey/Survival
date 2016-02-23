@@ -4,12 +4,21 @@ package sample;
 import org.newdawn.slick.*;
 
 
+/**
+ * Main Class
+ *
+ * ******* TODO *******
+ * - déplacer la gestion des contrôles dans une classe Controle
+ * qui utilise l'interface Slick des contrôles
+ */
 public class Main extends BasicGame {
 
     private GameContainer container;
     private EntityPlayer player;
     //private Entity arrayEntities[];
     private Level level;
+    Monster monster1;
+    Monster monster2;
 
 
     /**
@@ -21,7 +30,7 @@ public class Main extends BasicGame {
 
         AppGameContainer appGC;
         try {
-            appGC = new AppGameContainer(new Main(), 640, 480, false); // 20t / 15t
+            appGC = new AppGameContainer(new Main(), 640, 480, false); // 20tiles / 15tiles
             appGC.setTargetFrameRate(60);
             appGC.start();
         } catch (SlickException e) {
@@ -33,7 +42,7 @@ public class Main extends BasicGame {
      * default constructor
      */
     private Main() {
-        super("test");
+        super("Version 0.0.2");
     }
 
 
@@ -51,18 +60,30 @@ public class Main extends BasicGame {
         /** initialisation du joueur */
         this.player = new EntityPlayer(
                 "Bernard",  // nom
-                16,         // force
-                100,        // agilité
-                55,         // dextérité
-                100,        // constitution
-                12          // intelligence
+                0,         // force
+                0,        // agilité
+                0,         // dextérité
+                0,        // constitution
+                0          // intelligence
         );
+        System.out.println(this.player.toString());
 
         /** initialisation du premier niveau */
         this.level = new Level("src/map/mapTest.xml");
 
         /** envoie de la carte au joueur */
         this.player.setLevel(this.level);
+        this.player.setPosition(64, 64);
+
+        this.monster1 = new Blob();
+        this.monster1.setLevel(this.level);
+        this.monster1.setPosition(300, 300);
+        this.monster1.setPlayer(this.player);
+
+        this.monster2 = new Blob();
+        this.monster2.setLevel(this.level);
+        this.monster2.setPosition(320, 64);
+        this.monster2.setPlayer(this.player);
     }
 
 
@@ -75,8 +96,9 @@ public class Main extends BasicGame {
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
 
-        System.out.println(delta);
         this.player.update(delta);
+        this.monster1.update(delta);
+        this.monster2.update(delta);
     }
 
 
@@ -91,6 +113,45 @@ public class Main extends BasicGame {
 
         this.level.render();
         this.player.render(g);
+        this.monster1.render(g);
+        this.monster2.render(g);
+    }
+
+
+    /**
+     * récupération des boutons appuyés de la souris
+     * @param button : 0 = gauche, 1 = droit, 2 = molette
+     * @param x : coordonné x du click
+     * @param y : coordonné y du click
+     */
+    @Override
+    public void mousePressed(int button, int x, int y){
+
+        switch(button){
+            case 0:
+                this.player.getWeapon().setPressedMouseLeft();
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    /**
+     * récupération du bouton relaché de la souris
+     * @param button
+     * @param x
+     * @param y
+     */
+    public void mouseReleased(int button, int x, int y){
+
+        switch(button){
+            case 0:
+                this.player.getWeapon().setReleasedMouseLeft();
+                break;
+            default:
+                break;
+        }
     }
 
 
@@ -114,6 +175,9 @@ public class Main extends BasicGame {
             case Input.KEY_D:
                 this.player.setPressedRight();
                 break;
+            case Input.KEY_SPACE:
+                this.player.setPressedUp(); // setPressedSpace
+                break;
             default:
                 break;
         }
@@ -129,7 +193,6 @@ public class Main extends BasicGame {
     public void keyReleased(int key, char c) {
         switch (key) {
             case Input.KEY_Z:
-                System.out.println("tris");
                 this.player.setReleasedUp();
                 break;
             case Input.KEY_S:
@@ -156,6 +219,19 @@ public class Main extends BasicGame {
      */
     @Override
     public void mouseMoved(int oldX, int oldY, int newX, int newY) {
+
+        this.player.setMouse(oldX, oldY, newX, newY);
+    }
+
+    /**
+     * controle : déplacement de la souris quand on a clické
+     * @param oldX
+     * @param oldY
+     * @param newX
+     * @param newY
+     */
+    @Override
+    public void mouseDragged(int oldX, int oldY, int newX, int newY) {
 
         this.player.setMouse(oldX, oldY, newX, newY);
     }

@@ -19,7 +19,7 @@ import java.util.Objects;
 
 
 /**
- *   class Level :
+ * Class qui gère le niveau et les tiles qui le compose
  * crée une map à partir de fichiers xml
  * qui contiennent les différentes informations
  * de la carte et les tiles sur plusieurs niveaux
@@ -84,7 +84,7 @@ public class Level {
             this.width = Integer.parseInt(doc.getDocumentElement().getAttribute("width"));
             this.height = Integer.parseInt(doc.getDocumentElement().getAttribute("height"));
             this.tileset = doc.getDocumentElement().getAttribute("tileset");
-            System.out.println("tileset : "+this.tileset);
+            //System.out.println("tileset : "+this.tileset);
             /** initialisation du tableau qui contiendra les tiles */
             this.tiles = new Tile[this.width][this.height];
 
@@ -144,7 +144,7 @@ public class Level {
             int tileIndex = 0;
 
             for (int i = 0; i < this.height; i++) {
-                System.out.println(i);
+                //System.out.println(i);
                 for (int j = 0; j < this.width; j++) {
 
                     /** création de la tile (data, posX, posY) */
@@ -190,7 +190,7 @@ public class Level {
 
                     /** création de la partie graphique de la tile */
                     this.tiles[j][i].initGraphic(dataTiles[tileIndex], this.tileset);
-                    System.out.println(tileIndex);
+                    //System.out.println(tileIndex);
                     tileIndex++;
                 }
             }

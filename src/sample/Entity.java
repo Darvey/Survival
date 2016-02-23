@@ -2,21 +2,26 @@ package sample;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
 import java.util.Objects;
+import java.util.UUID;
 
 
+/**
+ * Class abstraite qui gère les entités (joueur, monstres...)
+ */
 public abstract class Entity {
 
     /** id de l'entité */
-    private final long id;
+    private final String id;
 
     /** nom */
     protected final String name;
 
     /** sprite */
-    protected SpriteSheet sprite;
+    protected final SpriteSheet sprite;
 
     /** car. secondaire */
     protected int health;
@@ -30,15 +35,17 @@ public abstract class Entity {
     protected String land;
     protected String facing;
 
-    /** position */
+    /** position et taille */
     protected int posX;
     protected int posY;
-    private int prevPosX;
-    private int prevPosY;
+    protected int prevPosX;
+    protected int prevPosY;
+    protected int width;
+    protected int height;
 
     /** position d'apparition sur la carte */
-    //protected int popX;
-    //protected int popY;
+    protected int popX;
+    protected int popY;
 
     /** var de déplacement */
     protected float accX;
@@ -51,7 +58,7 @@ public abstract class Entity {
     //private int velYInteger;
     protected float friction;
     protected float gravity;
-    private float gravityIntensity;
+    protected float gravityIntensity;
 
 
     /** niveau dans lequel l'entité est présente */
@@ -74,18 +81,24 @@ public abstract class Entity {
     /**
      * default Constructor
      */
-    public Entity(){
-        this("null");
+    public Entity() throws SlickException{
+
+        this(null, "null", 0, 0, 0, 0);
     }
+
 
     /**
      * Constructor
      */
-    public Entity(String name){
+    public Entity(SpriteSheet sprite, String name, int posX, int posY, int width, int height) throws SlickException{
 
-        this.id = 0;
-        this.name = "entity";
-
+        this.id = UUID.randomUUID().toString();
+        this.sprite = sprite;
+        this.name = name;
+        this.posX = posX;
+        this.posY = posY;
+        this.width = width;
+        this.height = height;
     }
 
 
@@ -115,7 +128,7 @@ public abstract class Entity {
      */
     protected boolean collisionBot(){
 
-        return (this.level.getTile(this.posX + 16, this.posY + 64).solid);
+        return (this.level.getTile(this.posX + (this.width / 2), this.posY + this.height).solid);
     }
 
 
@@ -123,9 +136,9 @@ public abstract class Entity {
      * Est-ce qu'il y a une collision en haut ?
      * @return : true si collision
      */
-    private boolean collisionTop(){
+    protected boolean collisionTop(){
 
-        return (this.level.getTile(this.posX + 16, this.posY).solid && !this.level.getTile(this.posX + 16, this.posY).platform);
+        return (this.level.getTile(this.posX + (this.width / 2), this.posY).solid && !this.level.getTile(this.posX + 16, this.posY).platform);
     }
 
 
@@ -133,9 +146,9 @@ public abstract class Entity {
      * Est-ce qu'il y a une collision à gauche ?
      * @return : true si collision
      */
-    private boolean collisionLeft(){
+    protected boolean collisionLeft(){
 
-        return (this.level.getTile(this.posX, this.posY + 32).solid);
+        return (this.level.getTile(this.posX, this.posY + (this.height / 2)).solid);
     }
 
 
@@ -143,9 +156,9 @@ public abstract class Entity {
      * Est-ce qu'il y a une collision à droite ?
      * @return : true si collision
      */
-    private boolean collisionRight(){
+    protected boolean collisionRight(){
 
-        return (this.level.getTile(this.posX + 32, this.posY + 32).solid);
+        return (this.level.getTile(this.posX + this.width, this.posY + (this.height / 2)).solid);
     }
 
 
@@ -156,7 +169,6 @@ public abstract class Entity {
      * - vélocité : accélération + inertie
      */
     public void updateMove(int delta){
-
 
         // --------------------------- OBSOLETE -----------------------------------
         boolean[] col = new boolean[4];
@@ -182,6 +194,7 @@ public abstract class Entity {
             this.gravityIntensity += this.gravity;
             /** application de la gravité */
             this.accY += this.gravityIntensity;
+
         }else{
 
             this.gravityIntensity = 0;
@@ -190,13 +203,13 @@ public abstract class Entity {
                 this.accY = 0;
                 this.velY = 0;
             }
-            this.state = "WALK";
+            //this.state = "WALK"; // => uniquement pour le joueur
         }
 
 
         /** évite de "coller" au plafond quand on saute sous un solid */
         if(collisionTop() && Objects.equals(this.state, "JUMPING")){
-            this.state = "FALLING";
+            //this.state = "FALLING"; // => uniquement pour le joueur
         }
 
 
@@ -242,8 +255,8 @@ public abstract class Entity {
 
 
         /** fonction d'arrondi */
-        velX = approximatelyZero(velX, 0.01f);
-        velY = approximatelyZero(velY, 0.01f);
+        this.velX = approximatelyZero(this.velX, 0.01f);
+        this.velY = approximatelyZero(this.velY, 0.01f);
 
 
         /** on parse en entier pour que la vélocité correspond à un nombre de pixel */
@@ -252,8 +265,8 @@ public abstract class Entity {
 
 
         /** on stocke la dernière valeur */
-        prevPosX = posX;
-        prevPosY = posY;
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
 
 
         /**
@@ -265,59 +278,55 @@ public abstract class Entity {
          */
 
         /** move to the up */
-        if(velY < 0){
-            while(posY > prevPosY + velYInteger){
+        if(this.velY < 0){
+            while(this.posY > this.prevPosY + velYInteger){
 
                 if(collisionTop()){
                     break;
                 }
-                posY--;
+                this.posY--;
             }
         }
 
 
         /** déplacement vers le bas */
-        if(velY > 0) {
-            while(posY < prevPosY + velYInteger){
+        if(this.velY > 0) {
+            while(this.posY < this.prevPosY + velYInteger){
 
                 if(collisionBot()){
                     break;
                 }
-                posY++;
+                this.posY++;
             }
         }
 
 
         /** déplacement vers la gauche */
-        if(velX < 0){
-            while(posX > prevPosX + velXInteger){
+        if(this.velX < 0){
+            while(this.posX > this.prevPosX + velXInteger){
 
                 if (collisionLeft()) {
                     break;
                 }
-                posX--;
+                this.posX--;
             }
         }
 
 
         /** déplacement vers la droite */
-        if(velX > 0) {
-            while(posX < prevPosX + velXInteger) {
+        if(this.velX > 0) {
+
+            while(this.posX < this.prevPosX + velXInteger) {
                 if (collisionRight()) {
+
                     break;
                 }
-                posX++;
+                this.posX++;
             }
         }
 
 
-        /**
-         * évite d'être coincé au milieu d'une plateforme
-         * donne l'effet que le perso s'aggripe pour monter plus haut
-         */
-        while(collisionBot() && (Objects.equals(this.state, "JUMPING"))){
-            posY--;
-        }
+
     }
 
 
@@ -327,7 +336,7 @@ public abstract class Entity {
      * @param roundLimit : seuil d'arrondi
      * @return : nombre arrondi
      */
-    private float approximatelyZero(float toRound, float roundLimit){
+    protected float approximatelyZero(float toRound, float roundLimit){
 
         float f = toRound;
         if(f > 0f && f < roundLimit)
@@ -391,4 +400,18 @@ public abstract class Entity {
 
         return this.sprite;
     }*/
+
+    /**
+     * définie le niveau dans lequel est le joueur
+     * @param level : le niveau dans lequel est le joueur
+     */
+    public void setLevel(Level level){
+
+        this.level = level;
+    }
+
+    public void setPosition(int posX, int posY){
+        this.posX = posX;
+        this.posY = posY;
+    }
 }

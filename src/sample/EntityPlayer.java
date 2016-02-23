@@ -15,6 +15,9 @@ import java.io.*;
 import java.util.Objects;
 
 
+/**
+ * Class qui gère le joueur
+ */
 public class EntityPlayer extends Entity{
 
     /** car. primaire */
@@ -40,9 +43,12 @@ public class EntityPlayer extends Entity{
     private int resistancePoison;
     private int resistanceTiredness;
     private int resistancePsy;
+    private int resistanceCut;
+    private int resistancePierce;
+    private int resistanceBlunt;
     private int identify;
     private int learn;
-
+    private int weigth;
 
     /** inventaire */
     //private final Inventory inv;
@@ -73,6 +79,8 @@ public class EntityPlayer extends Entity{
     private double prevMouseY;
     private double mouseX;
     private double mouseY;
+
+    private Weapon weapon;
 
 
     /*
@@ -116,19 +124,30 @@ public class EntityPlayer extends Entity{
      */
     public EntityPlayer(String name, int strength, int agility, int dexterity, int constitution, int intelligence) throws SlickException {
 
-        super(name);
+        super(
+                new SpriteSheet("img/collider_32x64.png", 32, 64),
+                name,   // nom
+                0,      // posX
+                0,      // posY
+                32,     // largeur
+                64      // hauteur
+        );
 
-        /** init. du sprite du joueur */
-        this.sprite = new SpriteSheet("img/collider_32x64.png", 32, 64);
-        this.sprite.setCenterOfRotation(16, 16);
+        /** init de l'arme */
+        weapon = new Weapon(this);
+
 
         /** init. de l'inventaire */
         //this.inv = new Inventory(this);
 
+        /** ------- TO ENTITY -------
         /** init des var pour l'animation */
         this.animations = new Animation[1];
         this.state = "IDLE";
         this.facing = "RIGHT";
+        /** crée l'animation */
+        this.animations[0] = loadAnimation(this.sprite, 0, 1, 0);
+        /** ------------------------- */
 
         /** compteur du nombre de frame de saut */
         this.jumpCount = 0;
@@ -136,9 +155,6 @@ public class EntityPlayer extends Entity{
         this.maxJumpCount = 30;
         /** impulsion initiale du saut */
         this.jumpImpulse = 12;
-
-        /** crée l'animation */
-        this.animations[0] = loadAnimation(this.sprite, 0, 1, 0);
 
         /** init. du nom et des car. primaires */
         this.strength = strength;
@@ -222,7 +238,9 @@ public class EntityPlayer extends Entity{
     public void update(int delta){
 
         super.update(delta);  // updateMove()
+        weapon.update(this.posX, this.posY, this.mouseX, this.mouseY);
     }
+
 
     /**
      * update du déplacement
@@ -236,9 +254,169 @@ public class EntityPlayer extends Entity{
         this.friction = 0.7f;
         this.gravity = 0.2f;
 
-        super.updateMove(delta);
-    }
+        // --------------------------- OBSOLETE -----------------------------------
+        boolean[] col = new boolean[4];
+        col[0] = false;
+        col[1] = false;
+        col[2] = false;
+        col[3] = false;
+        float[] acc = getAcc(col);
+        this.accX = acc[0];
+        this.accY = acc[1];
+        // -------------------------------------------------------------------------
 
+        // --------------------------- A VIRER D'ICI --------------------------------
+        this.accLimit = 1000;
+        this.velLimit = 100;
+        // --------------------------------------------------------------------------
+
+        /** gestion de la gravité */
+        if(!collisionBot()) {
+
+            this.land = "ON_AIR";
+            /** intensité de la gravité pour avoir un effet d'accélération à la chute */
+            this.gravityIntensity += this.gravity;
+            /** application de la gravité */
+            this.accY += this.gravityIntensity;
+
+            //System.out.println(this.gravityIntensity);
+        }else{
+
+            this.gravityIntensity = 0;
+            this.land = "ON_GROUND";
+            if(!Objects.equals(this.state, "JUMPING")) {
+                this.accY = 0;
+                this.velY = 0;
+            }
+            this.state = "WALK";
+        }
+
+
+        /** évite de "coller" au plafond quand on saute sous un solid */
+        if(collisionTop() && Objects.equals(this.state, "JUMPING")){
+            this.state = "FALLING";
+        }
+
+
+        /** récupération de l'état (OBSOLETE) */
+        this.state = getState();
+
+
+        /** seuil de l'accélération */
+        if (this.accX > this.accLimit)
+            this.accX = this.accLimit;
+        if (this.accX < -this.accLimit)
+            this.accX = -this.accLimit;
+        if (this.accY > this.accLimit)
+            this.accY = this.accLimit;
+        if (this.accY < -this.accLimit)
+            this.accY = -this.accLimit;
+
+
+        /** ajout de l'accélération à la vélocité */
+        this.velX += this.accX;
+        this.velY += this.accY;
+
+
+        /** reinit de l'accélération */
+        this.accX = 0;
+        this.accY = 0;
+
+
+        /** application de la friction */
+        this.velX *= this.friction;
+        this.velY *= this.friction;
+
+
+        /** seuil de la vélocité */
+        if (this.velX > this.velLimit)
+            this.velX = this.velLimit;
+        if (this.velX < -this.velLimit)
+            this.velX = -this.velLimit;
+        if (this.velY > this.velLimit)
+            this.velY = this.velLimit;
+        if (this.velY < -this.velLimit)
+            this.velY = -this.velLimit;
+
+
+        /** fonction d'arrondi */
+        this.velX = approximatelyZero(this.velX, 0.01f);
+        this.velY = approximatelyZero(this.velY, 0.01f);
+
+
+        /** on parse en entier pour que la vélocité correspond à un nombre de pixel */
+        int velXInteger = Math.round(velX);
+        int velYInteger = Math.round(velY);
+
+
+        /** on stocke la dernière valeur */
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+
+
+        /**
+         * Algorithmes de déplacements :
+         * on déplace dans la direction donnée pixel par pixel
+         * grâce à la boucle qui indente directement la position
+         * actuelle jusqu'à la position voulue.
+         * si il y a collision, on sort de la boucle.
+         */
+
+        /** move to the up */
+        if(this.velY < 0){
+            while(this.posY > this.prevPosY + velYInteger){
+
+                if(collisionTop()){
+                    break;
+                }
+                this.posY--;
+            }
+        }
+
+
+        /** déplacement vers le bas */
+        if(this.velY > 0) {
+            while(this.posY < this.prevPosY + velYInteger){
+
+                if(collisionBot()){
+                    break;
+                }
+                this.posY++;
+            }
+        }
+
+
+        /** déplacement vers la gauche */
+        if(this.velX < 0){
+            while(this.posX > this.prevPosX + velXInteger){
+
+                if (collisionLeft()) {
+                    break;
+                }
+                this.posX--;
+            }
+        }
+
+
+        /** déplacement vers la droite */
+        if(this.velX > 0) {
+            while(this.posX < this.prevPosX + velXInteger) {
+                if (collisionRight()) {
+                    break;
+                }
+                this.posX++;
+            }
+        }
+
+
+        /**
+         * évite d'être coincé au milieu d'une plateforme
+         * donne l'effet que le perso s'aggripe pour monter plus haut
+         */
+        while(collisionBot() && (Objects.equals(this.state, "JUMPING"))){
+            this.posY--;
+        }
+    }
 
 
     /**
@@ -249,6 +427,7 @@ public class EntityPlayer extends Entity{
     public void render(Graphics g){
 
         super.render(g);
+        weapon.render(g);
     }
 
 
@@ -412,7 +591,7 @@ public class EntityPlayer extends Entity{
         /**
          * str = force physique
          * agi = agilité du corps
-         * dextérité = agilité des doigts, manipulation
+         * dex = agilité des doigts, manipulation
          * con = endurance / resistance du corps
          * int = intelligence innée / force mental
         */
@@ -438,17 +617,19 @@ public class EntityPlayer extends Entity{
         this.modPrecisionRange = Math.round(this.dexterity / 8);
         this.modPrecisionGun = Math.round(this.dexterity / 8);
 
-        /** résistance */
+        /** résistances en pourcentage */
         this.resistanceDisease = Math.round(15 + (this.constitution / 4));
         this.resistancePoison = Math.round(5 + (this.constitution / 6));
         this.resistanceTiredness = Math.round(20 + (this.constitution / 4));
         this.resistancePsy = Math.round(10 + (this.intelligence / 3));
-        //add cut / pierce / blunt
+        this.resistanceCut = 0;
+        this.resistancePierce = 0;
+        this.resistanceBlunt = 0;
 
         /** autre */
-        //add weight
         this.learn = Math.round(this.intelligence / 2);
         this.identify = Math.round(this.intelligence);
+        this.weigth = Math.round(20 + this.strength);
     }
 
 
@@ -581,17 +762,17 @@ public class EntityPlayer extends Entity{
      * @return : le niveau dans lequel est le joueur
      */
     public Level getLevel(){
+
         return this.level;
     }
 
+    public Weapon getWeapon(){
 
-    /**
-     * définie le niveau dans lequel est le joueur
-     * @param level : le niveau dans lequel est le joueur
-     */
-    public void setLevel(Level level){
-        this.level = level;
+        return this.weapon;
     }
+
+
+
 
 
     public void setPressedUp(){
@@ -652,5 +833,41 @@ public class EntityPlayer extends Entity{
     public int getModAttackSpeedCacS(){
 
         return modAttackSpeedCacS;
+    }
+
+    public String toString(){
+
+        //** car. secondaire */
+        /** car. primaire */
+        return "CARACTERISTIQUES PRIMAIRES"+
+        "\nagility : "+this.agility+
+        "\nstrength : "+this.strength+
+        "\nconstitution : "+this.constitution+
+        "\ndexterity : "+this.dexterity+
+        "\nintelligence : "+this.intelligence+
+        "\nCARACTERISTIQUES SECONDAIRE"+
+        "\nendurance : "+this.endurance+
+        "\nmodAttackSpeedCacS : "+this.modAttackSpeedCacS+
+        "\nmodAttackSpeedCacB : "+this.modAttackSpeedCacB+
+        "\nmodAttackSpeedRange : "+this.modAttackSpeedRange+
+        "\nmodDamageCacS : "+this.modDamageCacS+
+        "\nmodDamageCacB : "+this.modDamageCacB+
+        "\nmodDamageRange : "+this.modDamageRange+
+        "\nmodPrecisionCacS : "+this.modPrecisionCacS+
+        "\nmodPrecisionCacB : "+this.modPrecisionCacB+
+        "\nmodPrecisionRange : "+this.modPrecisionRange+
+        "\nmodPrecisionGun : "+this.modPrecisionGun+
+        "\nresistanceDisease : "+this.resistanceDisease+
+        "\nresistancePoison : "+this.resistancePoison+
+        "\nresistanceTiredness : "+this.resistanceTiredness+
+        "\nresistancePsy : "+this.resistancePsy+
+        "\nresistanceCut : "+this.resistanceCut+
+        "\nresistancePierce : "+this.resistancePierce+
+        "\nresistanceBlunt : "+this.resistanceBlunt+
+        "\nidentify : "+this.identify+
+        "\nlearn : "+this.learn+
+        "\nweigth : "+this.weigth;
+
+
     }
 }

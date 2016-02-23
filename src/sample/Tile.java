@@ -4,8 +4,8 @@ package sample;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
-/*
-    Description de la classe :
+/**
+ * Class qui gère une tile
  */
 public class Tile {
 
@@ -64,8 +64,9 @@ public class Tile {
      * @param tileset : tilet à utiliser (répertoire d'image)
      */
     public void initGraphic(String data, String tileset){
+
         data = data.trim();
-        System.out.println("img/tile/"+tileset+"/"+data+".png");
+
         try {
             this.sprite = new SpriteSheet("img/tile/"+tileset+"/"+data+".png", 32, 32);
 
