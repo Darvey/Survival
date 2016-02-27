@@ -13,12 +13,21 @@ import org.newdawn.slick.*;
  */
 public class Main extends BasicGame {
 
+    /** container du jeu */
     private GameContainer container;
+
+    /** joueur */
     private EntityPlayer player;
-    //private Entity arrayEntities[];
+
+    /** niveau */
     private Level level;
+
+    /** quelques monstres de test */
     Monster monster1;
     Monster monster2;
+    Monster monster3;
+
+    //private Entity arrayEntities[];
 
 
     /**
@@ -38,11 +47,12 @@ public class Main extends BasicGame {
         }
     }
 
+
     /**
      * default constructor
      */
     private Main() {
-        super("Version 0.0.2");
+        super("Version 0.0.3");
     }
 
 
@@ -54,7 +64,6 @@ public class Main extends BasicGame {
     @Override
     public void init(GameContainer container) throws SlickException {
 
-        /** container du jeu */
         this.container = container;
 
         /** initialisation du joueur */
@@ -84,6 +93,12 @@ public class Main extends BasicGame {
         this.monster2.setLevel(this.level);
         this.monster2.setPosition(320, 64);
         this.monster2.setPlayer(this.player);
+
+        this.monster3 = new Motha();
+        this.monster3.setLevel(this.level);
+        this.monster3.setPosition(0, 32);
+        this.monster3.setPlayer(this.player);
+        this.monster3.init();
     }
 
 
@@ -99,6 +114,7 @@ public class Main extends BasicGame {
         this.player.update(delta);
         this.monster1.update(delta);
         this.monster2.update(delta);
+        this.monster3.update(delta);
     }
 
 
@@ -112,9 +128,12 @@ public class Main extends BasicGame {
     public void render(GameContainer container, Graphics g) throws SlickException {
 
         this.level.render();
+        this.level.renderFront();
         this.player.render(g);
         this.monster1.render(g);
         this.monster2.render(g);
+        this.monster3.render(g);
+
     }
 
 
@@ -222,6 +241,7 @@ public class Main extends BasicGame {
 
         this.player.setMouse(oldX, oldY, newX, newY);
     }
+
 
     /**
      * controle : déplacement de la souris quand on a clické

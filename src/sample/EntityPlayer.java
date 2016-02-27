@@ -10,8 +10,6 @@ import java.io.*;
 
 
 
-//import java.util.ArrayList;
-//import java.util.List;
 import java.util.Objects;
 
 
@@ -53,26 +51,11 @@ public class EntityPlayer extends Entity{
     /** inventaire */
     //private final Inventory inv;
 
-    /*
-    //arme affichée
-    private ImageView imageWeapon;
-    private Image imagePathWeapon;
-    protected List<Bullet> bulletWaitingList;
-    protected List<Bullet> bulletFiringList;
-    protected Bullet bulletToFire;
-    protected Bullet bulletToWait;
-    */
-
-    //** controle : touches */
+    //** contrôles : touches */
     private boolean pressedUp;
     private boolean pressedDown;
     private boolean pressedLeft;
     private boolean pressedRight;
-    //private boolean pressedAttack;
-    private int jumpImpulse;
-    private int jumpCount;
-    private int maxJumpCount;
-    //private boolean attack = false;
 
     /** controle : position de la souris */
     private double prevMouseX;
@@ -80,26 +63,13 @@ public class EntityPlayer extends Entity{
     private double mouseX;
     private double mouseY;
 
+    /** variables du saut */
+    private int jumpImpulse;
+    private int jumpCount;
+    private int maxJumpCount;
+
+    /** arme équipée */
     private Weapon weapon;
-
-
-    /*
-
-    private double mouseDeltaX;
-    private double mouseDeltaY;
-    private double weaponRotation;
-    private int weaponPosX;
-    private int weaponPosY;
-    private int weaponScaleX;
-
-    //arme
-    private int timeAttack;
-    private int nbBullet;
-
-    //monstres
-    protected Entity arrayEntities[];
-
-    */
 
 
     /**
@@ -146,7 +116,7 @@ public class EntityPlayer extends Entity{
         this.state = "IDLE";
         this.facing = "RIGHT";
         /** crée l'animation */
-        this.animations[0] = loadAnimation(this.sprite, 0, 1, 0);
+        this.animations[0] = loadAnimation(this.sprite, 0, 1, 0, 100);
         /** ------------------------- */
 
         /** compteur du nombre de frame de saut */
@@ -179,7 +149,6 @@ public class EntityPlayer extends Entity{
         this.pressedLeft = false;
         this.pressedRight = false;
         this.pressedUp = false;
-        //this.pressedAttack = false;
 
         /** calcul des caractéristiques secondaires */
         calculateSecondarySpecs();
@@ -191,43 +160,7 @@ public class EntityPlayer extends Entity{
         //this.inv.addItem("bronzeCoin", 0.1f, true, "tool");
         //this.inv.addItem("shotgun", 5.7f, true, "weapon");
 
-
-
-        /*
-        // ----- balles -----
-        //synchronized (this.bulletWaitingList) {
-            this.bulletWaitingList = new ArrayList<>();
-        //}
-        //synchronized(this.bulletFiringList) {
-            this.bulletFiringList = new ArrayList<>();
-        //}
-        for (i = 0; i < 256; i++) {
-            //image et animation
-
-            Bullet bullet = new Bullet(this.posX + 16, this.posY + 50, Math.atan2(mouseDeltaY, mouseDeltaX), false);
-            this.bulletWaitingList.add(bullet);
-            this.group.getChildren().add(bullet.getImage());
-            //System.out.println("Balle créée : "+i);
-            bullet.display();
-        }*/
     }
-
-    /**
-     * charge les images de l'animation
-     * @param spriteSheet : spriteSheet of the player
-     * @param startX : position of the column for start
-     * @param endX : position of the column for end
-     * @param y : position of the line
-     * @return : animation which contains the frames
-     */
-    private Animation loadAnimation(SpriteSheet spriteSheet, int startX, int endX, int y) {
-        Animation animation = new Animation();
-        for (int x = startX; x < endX; x++) {
-            animation.addFrame(spriteSheet.getSprite(x, y), 100);
-        }
-        return animation;
-    }
-
 
 
     /**
@@ -237,7 +170,7 @@ public class EntityPlayer extends Entity{
     @Override
     public void update(int delta){
 
-        super.update(delta);  // updateMove()
+        super.update(delta); // updateMove()
         weapon.update(this.posX, this.posY, this.mouseX, this.mouseY);
     }
 
@@ -279,7 +212,6 @@ public class EntityPlayer extends Entity{
             /** application de la gravité */
             this.accY += this.gravityIntensity;
 
-            //System.out.println(this.gravityIntensity);
         }else{
 
             this.gravityIntensity = 0;
@@ -451,141 +383,9 @@ public class EntityPlayer extends Entity{
     }
 
 
-    /*
-    public void move(Level level) {
-
-        if(isUpdating) {
-            //System.out.println("enter update");
-            isUpdating = false;
-        }
-
-        //getFps();
-
-        //super.move(level);
-
-        //gestion de la souris
-        this.mouseDeltaX = this.mouseX - this.posX - 16;
-        this.mouseDeltaY = this.mouseY - this.posY - 50;
-        weaponRotation = Math.toDegrees(Math.atan2(this.mouseDeltaY, -this.mouseDeltaX));
-
-        //orientation gauche/droite
-        if(mouseX > posX){
-            this.facing = "RIGHT";
-            weaponRotation += 180;
-            weaponPosX = this.posX + 60;
-            weaponScaleX = -1;
-        }else{
-            this.facing = "LEFT";
-            weaponRotation *= -1;
-            weaponPosX = this.posX - 8;
-            weaponScaleX = 1;
-        }
-        weaponPosY = this.posY + 50;
-
-
-        //gestion des balles
-        //System.out.println("GESTION");
-        for(int i = 0; i < bulletFiringList.size(); i++) {
-            //System.out.println("ges");
-            for(int j = 0; j < arrayEntities.length; j++){
-                //System.out.println(arrayEntities[j].name);
-                int posColX_left = arrayEntities[j].posX + arrayEntities[j].colX;
-                int posColX_right = arrayEntities[j].posX + arrayEntities[j].colX + arrayEntities[j].colWidth;
-                int posColY_up = arrayEntities[j].posY + arrayEntities[j].colY;
-                int posColY_down = arrayEntities[j].posY + arrayEntities[j].colY + arrayEntities[j].colHeight;
-                if(this.bulletFiringList.get(i).posX > posColX_left && this.bulletFiringList.get(i).posX < posColX_right){
-                    if(this.bulletFiringList.get(i).posY > posColY_up && this.bulletFiringList.get(i).posX < posColY_down){
-                        System.out.println("Ca touche");
-                    }
-                }
-            }
-
-            if (bulletFiringList.get(i).posX > 480 || bulletFiringList.get(i).posX < 0 || bulletFiringList.get(i).posY < 0 || bulletFiringList.get(i).posY > 320) {
-
-
-                this.bulletToWait = bulletWaitingList.get(i);
-                this.bulletToWait.posX = 0;
-                this.bulletToWait.posY = 0;
-                this.bulletToWait.direction = 0;
-                //this.bulletToWait.vel = 0;
-                this.bulletToWait.getImage().setVisible(false);
-                bulletWaitingList.add(this.bulletToWait);
-                bulletFiringList.remove(i);
-            }
-
-        }
-
-        if(this.timeAttack > 0){
-            this.timeAttack--;
-        }
-
-        if(this.pressedAttack){
-            this.attack();
-        }
-
-        notAttack();
-    }
-    */
-
-    /*
-    public synchronized void notAttack(){
-        //System.out.println("NOT_ATTACK");
-        for (int i = 0; i < bulletFiringList.size(); i++) {
-            //System.out.println(bulletList.get(i).translate);
-            //System.out.println("not");
-            if(bulletFiringList.get(i) != null) {
-                bulletFiringList.get(i).update();
-            }
-        }
-
-        //System.out.println("Wait :"+bulletWaitingList.size()+" / Fire : "+bulletFiringList.size());
-    }
-    */
-
-
-
-
-    /*
-    public synchronized void attack(){
-        if(this.timeAttack == 0) {
-            this.timeAttack = 60;
-            //System.out.println("ATTACK");
-            for (int i = 0; i < 8; i++) {
-                //System.out.println("atk");
-                if (i >= 0) {
-                    //System.out.println("pop:" + i);
-                    this.bulletToFire = bulletWaitingList.get(i);
-                    this.bulletToFire.posX = this.posX + 16;
-                    this.bulletToFire.posY = this.posY + 50;
-                    this.bulletToFire.direction = Math.atan2(mouseDeltaY, mouseDeltaX) + ((Math.random() * 2 - 1) / 20);
-                    //System.out.println(this.bulletToFire.direction);
-                    if(this.bulletToFire.direction <= 2.36 && this.bulletToFire.direction > 0.79){
-                        //en haut
-                        this.bulletToFire.getImage().setImage(this.bulletToFire.imagePath_90);
-                    }else if(this.bulletToFire.direction <= 0.79 && this.bulletToFire.direction > -0.79){
-                        //à droite
-                        this.bulletToFire.getImage().setImage(this.bulletToFire.imagePath_0);
-                    }else if(this.bulletToFire.direction <= -0.79 && this.bulletToFire.direction > -2.36){
-                        //en bas
-                        this.bulletToFire.getImage().setImage(this.bulletToFire.imagePath_90);
-                    }else{
-                        //à gauche
-                        this.bulletToFire.getImage().setImage(this.bulletToFire.imagePath_0);
-                    }
-                    this.bulletToFire.getImage().setVisible(true);
-                    bulletFiringList.add(this.bulletToFire);
-                    bulletWaitingList.remove(i);
-                }
-            }
-        }else{
-            //System.out.println("RELOAD");
-        }
-
-    }
-    */
-
-
-
+    /**
+     * calcul les caractéristiques secondaires à partir des primaires
+     */
     private void calculateSecondarySpecs(){
 
         /**
@@ -724,6 +524,7 @@ public class EntityPlayer extends Entity{
         return acc;
     }
 
+
     @Override
     /**
      * renvoie le statut du joueur
@@ -732,6 +533,7 @@ public class EntityPlayer extends Entity{
 
         return this.state;
     }
+
 
     /**
      * renvoie l'animation du joueur
@@ -751,12 +553,6 @@ public class EntityPlayer extends Entity{
     }
 
 
-
-    /*public Inventory getIv() {
-
-        return this.inv;
-    }*/
-
     /**
      * renvoie le niveau dans lequel est le joueur
      * @return : le niveau dans lequel est le joueur
@@ -766,12 +562,15 @@ public class EntityPlayer extends Entity{
         return this.level;
     }
 
+
+    /**
+     * renvoie l'arme équipée
+     * @return : l'arme équipée
+     */
     public Weapon getWeapon(){
 
         return this.weapon;
     }
-
-
 
 
 
@@ -837,8 +636,6 @@ public class EntityPlayer extends Entity{
 
     public String toString(){
 
-        //** car. secondaire */
-        /** car. primaire */
         return "CARACTERISTIQUES PRIMAIRES"+
         "\nagility : "+this.agility+
         "\nstrength : "+this.strength+
@@ -867,7 +664,5 @@ public class EntityPlayer extends Entity{
         "\nidentify : "+this.identify+
         "\nlearn : "+this.learn+
         "\nweigth : "+this.weigth;
-
-
     }
 }

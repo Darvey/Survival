@@ -1,10 +1,11 @@
 package sample;
 
-import org.lwjgl.Sys;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
+
+import java.util.Objects;
 
 /**
  * Class Blob
@@ -18,9 +19,6 @@ import org.newdawn.slick.SpriteSheet;
  * quand il est au niveau du joueur
  */
 public class Blob extends Monster {
-
-    private boolean isJumping = false;
-    private Animation[] animations = new Animation[3];
 
 
     /**
@@ -48,33 +46,19 @@ public class Blob extends Monster {
                 14
         );
 
-        //this.animations = new Animation[1];
+        this.animations = new Animation[3];
         this.state = "IDLE";
         this.facing = "RIGHT";
-        /** crée l'animation */
+        this.isFlying = false;
+
+        this.health = 3;
+
         /** IDLE */
-        this.animations[0] = loadAnimation(this.sprite, 0, 6, 0);
+        this.animations[0] = this.loadAnimation(this.sprite, 0, 6, 0, 100);
         /** JUMP */
-        this.animations[1] = loadAnimation(this.sprite, 0, 1, 1);
-        /** WALK (OBSOLETE) */
-        this.animations[2] = loadAnimation(this.sprite, 0, 6, 0);
-    }
-
-
-    /**
-     * charge les images de l'animation
-     * @param spriteSheet : spriteSheet of the player
-     * @param startX : position of the column for start
-     * @param endX : position of the column for end
-     * @param y : position of the line
-     * @return : animation which contains the frames
-     */
-    private Animation loadAnimation(SpriteSheet spriteSheet, int startX, int endX, int y) {
-        Animation animation = new Animation();
-        for (int x = startX; x < endX; x++) {
-            animation.addFrame(spriteSheet.getSprite(x, y), 100);
-        }
-        return animation;
+        this.animations[1] = this.loadAnimation(this.sprite, 0, 1, 1, 100);
+        /** DYING */
+        this.animations[2] = this.loadAnimation(this.sprite, 0, 6, 2, 100);
     }
 
 
@@ -92,7 +76,7 @@ public class Blob extends Monster {
             case "JUMPING":
                 indexAnimation = 1;
                 break;
-            case "WALK":
+            case "DYING":
                 indexAnimation = 2;
                 break;
             default:
@@ -102,9 +86,10 @@ public class Blob extends Monster {
         return this.animations[indexAnimation];
     }
 
+
     /**
      * mise à jour du monstre
-     * @param delta
+     * @param delta : pour la loop variable
      */
     public void update(int delta){
 
@@ -113,66 +98,70 @@ public class Blob extends Monster {
         this.friction = 0.7f;
         this.gravity = 0.2f;
 
-
         super.update(delta);
     }
 
 
     /**
      * mise à jour des déplacements du monstre
-     * @param delta
+     * @param delta : pour la loop variable
      */
     @Override
     public void updateMove(int delta){
-
-        if(this.state == "IDLE"){
-            /** à l'image où le blob est "haut" */
-            if(this.getAnimations("IDLE").getFrame() == 5){
-                if(isAggro) {
-                    if (Math.round(Math.random() * 4) == 0) {
-                        this.state = "JUMPING";
+        if(this.isDead){
+            this.state = "DYING";
+        }
+        if(Objects.equals(this.state, "DYING")){
+            if (this.getAnimations("DYING").getFrame() == 5) {
+                this.getAnimations("DYING").stop();
+            }
+        }else {
+            if (Objects.equals(this.state, "IDLE")) {
+                /** à l'image où le blob est "haut" */
+                if (this.getAnimations("IDLE").getFrame() == 5) {
+                    if (isAggro) {
+                        if (Math.round(Math.random() * 4) == 0) {
+                            this.state = "JUMPING";
+                        }
+                    } else {
+                        if (Math.round(Math.random() * 40) == 0) {
+                            this.state = "JUMPING";
+                        }
                     }
-                }else{
-                    if (Math.round(Math.random() * 40) == 0) {
-                        this.state = "JUMPING";
+                }
+            }
+
+            if (Objects.equals(this.state, "JUMPING")) {
+
+                /** direction du saut */
+                if (Objects.equals(this.facing, "RIGHT")) {
+                    this.accX = 1;
+                } else {
+                    this.accX = -1;
+                }
+                /** hauteur du saut */
+                this.accY -= 2 + Math.random();
+
+                /**
+                 * vérification de si le blob est en train de sauter
+                 * pour ne pas interferer avec la collisionBot à la
+                 * première frame de saut
+                 */
+                if (!isJumping) {
+                    isJumping = true;
+                } else {
+                    if (this.collisionBot()) {
+                        this.state = "IDLE";
+                        /** pour revenir à la première frame du IDLE (effet d'écrasement) */
+                        this.getAnimations("IDLE").restart();
+                        isJumping = false;
                     }
                 }
             }
         }
 
-        if(this.state == "JUMPING"){
-
-            /** direction du saut */
-            if(this.facing == "RIGHT"){
-                this.accX = 1;
-            }else{
-                this.accX = -1;
-            }
-            /** hauteur du saut */
-            this.accY -= 2 + Math.random();
-
-            /**
-             * vérification de si le blob est en train de sauter
-             * pour ne pas interferer avec la collisionBot à la
-             * première frame de saut
-             */
-            if(!isJumping) {
-                isJumping = true;
-            }else{
-                if (this.collisionBot()) {
-                    this.state = "IDLE";
-                    /** pour revenir à la première frame du IDLE (effet d'écrasement) */
-                    this.getAnimations("IDLE").restart();
-                    isJumping = false;
-                }
-            }
-
-        }
-
-        /** calcul de la distance avec le joueur */
-        int deltaXPlayer = Math.abs(this.posX - this.player.posX);
-        int deltaYPlayer = Math.abs(this.posY - this.player.posY);
-        int deltaPlayer = (int) Math.sqrt(Math.pow(deltaXPlayer, 2) + Math.pow(deltaYPlayer, 2));
+        /** distance avec le joueur */
+        int deltaPlayer = this.getDeltaPlayer();
 
         /** gestion de l'agressivité */
         if(deltaPlayer < 200){
@@ -195,23 +184,12 @@ public class Blob extends Monster {
 
         super.updateMove(delta);
     }
-    
-
-    /**
-     * rendu graphique
-     * @param g : slick graphics
-     */
-    @Override
-    public void render(Graphics g){
-
-        g.drawAnimation(getAnimations(this.state), this.posX, this.posY);
-    }
 
 
     /**
      * OBSOLETE
      * @param col : OBSOLETE
-     * @return
+     * @return : col
      */
     @Override
     protected float[] getAcc(boolean[] col){

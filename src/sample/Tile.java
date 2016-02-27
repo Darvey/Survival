@@ -6,20 +6,28 @@ import org.newdawn.slick.SpriteSheet;
 
 /**
  * Class qui gère une tile
+ *
+ * ******** OPTIMISATION ********
+ * - modifier le sprite en image
+ * (à moins de faire un environnement qui bouge)
  */
 public class Tile {
 
+    /** identifiant */
     private final int id;
-    private static final int WIDTH = 32;                     // largeur de l'image
-    private static final int HEIGHT = 32;                    // hauteur de l'image
-    private final int posX;                             // position en x
-    private final int posY;                             // position en y
 
-    protected final boolean solid;                        // true si la tile est solid
-    protected final boolean platform;                     // true si la tile est traversable par le dessous
+    /** élément graphique */
+    private SpriteSheet sprite;
 
+    /** position et dimensions */
+    private final int posX;
+    private final int posY;
+    private static final int WIDTH = 32;
+    private static final int HEIGHT = 32;
 
-    private SpriteSheet sprite;                   // optimisation : à changer en image
+    /** caractéristiques de la tile */
+    protected final boolean solid;
+    protected final boolean platform; // true si la tile est traversable par le dessous
 
 
     /**
@@ -66,11 +74,54 @@ public class Tile {
     public void initGraphic(String data, String tileset){
 
         data = data.trim();
+        String sData = "";
+        switch(data){
+            case "0":
+                sData = "deep";
+                break;
+            case "1":
+                sData = "underground";
+                break;
+            case "2":
+                sData = "ground1";
+                break;
+            case "3":
+                sData = "ground2";
+                break;
+            case "4":
+                sData = "block1";
+                break;
+            case "5":
+                sData = "block2";
+                break;
+            case "6":
+                sData = "block3";
+                break;
+            case "7":
+                sData = "block4";
+                break;
+            case "8":
+                sData = "block5";
+                break;
+            case "9":
+                sData = "block6";
+                break;
+            case "a":
+                sData = "block7";
+                break;
+            case "b":
+                sData = "block8";
+                break;
+            case "c":
+                sData = "underground2";
+                break;
+            default:
+                sData = "deep";
+                break;
+        }
 
         try {
-            this.sprite = new SpriteSheet("img/tile/"+tileset+"/"+data+".png", 32, 32);
-
-
+            this.sprite = new SpriteSheet("img/tile/"+tileset+"/"+sData+".png", 32, 32);
         }catch(SlickException e){
             e.printStackTrace();
         }
@@ -84,14 +135,4 @@ public class Tile {
 
         this.sprite.draw(this.posX * WIDTH, this.posY * HEIGHT);
     }
-
-
-    /**
-     * renvoie l'image de la tile
-     * @return : image de la tile
-     */
-    /* public SpriteSheet getSprite() {
-
-        return this.sprite;
-    } */
 }

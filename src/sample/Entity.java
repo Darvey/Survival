@@ -4,6 +4,7 @@ import org.newdawn.slick.Animation;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.util.pathfinding.Mover;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -14,14 +15,13 @@ import java.util.UUID;
  */
 public abstract class Entity {
 
-    /** id de l'entité */
+    /** identifiants */
     private final String id;
-
-    /** nom */
     protected final String name;
 
-    /** sprite */
+    /** élément graphique */
     protected final SpriteSheet sprite;
+    protected Animation[] animations;
 
     /** car. secondaire */
     protected int health;
@@ -30,12 +30,11 @@ public abstract class Entity {
     protected int stealth;
 
     /** init des var d'animations */
-    protected Animation[] animations;
     protected String state;
     protected String land;
     protected String facing;
 
-    /** position et taille */
+    /** position et dimensions */
     protected int posX;
     protected int posY;
     protected int prevPosX;
@@ -59,24 +58,12 @@ public abstract class Entity {
     protected float friction;
     protected float gravity;
     protected float gravityIntensity;
+    protected boolean isFlying;
 
 
     /** niveau dans lequel l'entité est présente */
     protected Level level;
 
-    /*
-    // collider
-    protected int colX;
-    protected int colY;
-    protected int colWidth;
-    protected int colHeight;
-
-    //hitbox
-    protected int hitX;
-    protected int hitY;
-    protected int hitWidth;
-    protected int hitHeight;
-    */
 
     /**
      * default Constructor
@@ -93,8 +80,10 @@ public abstract class Entity {
     public Entity(SpriteSheet sprite, String name, int posX, int posY, int width, int height) throws SlickException{
 
         this.id = UUID.randomUUID().toString();
-        this.sprite = sprite;
         this.name = name;
+
+        this.sprite = sprite;
+
         this.posX = posX;
         this.posY = posY;
         this.width = width;
@@ -128,7 +117,7 @@ public abstract class Entity {
      */
     protected boolean collisionBot(){
 
-        return (this.level.getTile(this.posX + (this.width / 2), this.posY + this.height).solid);
+        return (this.level.getTile(this.posX + (this.width / 2), this.posY + this.height - 3).solid);
     }
 
 
@@ -190,16 +179,19 @@ public abstract class Entity {
         if(!collisionBot()) {
 
             this.land = "ON_AIR";
-            /** intensité de la gravité pour avoir un effet d'accélération à la chute */
-            this.gravityIntensity += this.gravity;
-            /** application de la gravité */
-            this.accY += this.gravityIntensity;
+
+            if(!this.isFlying) {
+                /** intensité de la gravité pour avoir un effet d'accélération à la chute */
+                this.gravityIntensity += this.gravity;
+                /** application de la gravité */
+                this.accY += this.gravityIntensity;
+            }
 
         }else{
 
             this.gravityIntensity = 0;
             this.land = "ON_GROUND";
-            if(!Objects.equals(this.state, "JUMPING")) {
+            if(!Objects.equals(this.state, "JUMPING") && !this.isFlying) {
                 this.accY = 0;
                 this.velY = 0;
             }
@@ -371,6 +363,23 @@ public abstract class Entity {
 
 
     /**
+     * charge les images de l'animation
+     * @param spriteSheet : spriteSheet of the player
+     * @param startX : position of the column for start
+     * @param endX : position of the column for end
+     * @param y : position of the line
+     * @return : animation which contains the frames
+     */
+    protected Animation loadAnimation(SpriteSheet spriteSheet, int startX, int endX, int y, int duration) {
+        Animation animation = new Animation();
+        for (int x = startX; x < endX; x++) {
+            animation.addFrame(spriteSheet.getSprite(x, y), duration);
+        }
+        return animation;
+    }
+
+
+    /**
      * renvoie l'accélération de l'entité
      * @param col : OBSOLETE
      * @return : l'accélération
@@ -393,13 +402,6 @@ public abstract class Entity {
         return this.state;
     }
 
-    /**
-     * renvoie l'image de l'entité
-     */
-    /* public SpriteSheet getSprite() {
-
-        return this.sprite;
-    }*/
 
     /**
      * définie le niveau dans lequel est le joueur

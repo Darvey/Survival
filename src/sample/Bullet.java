@@ -1,39 +1,43 @@
 package sample;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.transform.Translate;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
-//import java.util.UUID;
+
 
 
 public class Bullet {
 
+    /** identifiant */
+    private String id;
 
+    /** élément graphique */
     private SpriteSheet sprite;
+
+    /** position de la balle */
     protected int posX;
     protected int posY;
+    protected int lastPosX;
+    protected int lastPosY;
+
+    /** direction de la balle */
     protected double direction;
-    protected boolean visibility;
+
+    /** vitesse de la balle */
     private final double vel;
-    private String id;
+
+    /** pour compter le nombre total de balle */
     private static int number = 0;
 
 
     public Bullet(Weapon weapon, double deltaX, double deltaY) throws SlickException{
-        //this.id = UUID.randomUUID().toString();
 
         this.sprite = new SpriteSheet("img/bullet.png", 32, 32);
-        this.number++; //2400!
-        //double spread = Math.random() * 2 - 1;
+        this.number++; // jusqu'à environ 2400 en simultané
         this.posX = weapon.getPosX();
         this.posY = weapon.getPosY();
         this.direction = Math.atan2(deltaY, deltaX) + ((Math.random() * 2 - 1) / 10);
         this.vel = 20 + (Math.random()*2-1);
-
-        //this.image.setVisible(pVisibility);
     }
 
     /**
@@ -42,9 +46,13 @@ public class Bullet {
      */
     public void update(){
 
+        this.lastPosX = this.posX;
+        this.lastPosX = this.posY;
+
         this.posX += Math.cos(this.direction) * this.vel;
         this.posY += Math.sin(this.direction) * this.vel;
     }
+
 
     /**
      * rendu graphique de la balle

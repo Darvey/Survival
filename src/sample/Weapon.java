@@ -10,26 +10,32 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+
 /**
- * Created by Administrateur on 22/02/2016.
+ * Class weapon
+ * gère l'arme et son affichage ainsi
+ * que les balles envoyées par celle-ci
  */
 public class Weapon {
 
+    /** identifiants de l'arme */
     private String id;
     private String name;
-    private SpriteSheet sprite;
 
+    /** éléments et caractéristiques graphiques */
+    private SpriteSheet sprite;
+    private double rotation;
+    private String facing;
+
+    /** position et dimension */
     private int posX;
     private int posY;
     private int width;
     private int height;
     private int offsetCenterX;
     private int offsetCenterY;
-    private double rotation;
-    private String facing;
 
-    private int timeAttack;
-
+    /** contrôle : clic gauche */
     private boolean pressedMouseLeft;
 
     /** caractéristiques de l'arme */
@@ -39,8 +45,13 @@ public class Weapon {
     private float spread;
     private int nBullet;
 
+    /** compteur utilisé pour la vitesse d'attaque */
+    private int timeAttack;
+
+    /** joueur qui a l'arme équipé */
     EntityPlayer player;
 
+    /** liste des balles et iterateur pour les suppressions propres */
     private List<Bullet> bulletList;
     private Iterator<Bullet> iterator;
 
@@ -49,8 +60,10 @@ public class Weapon {
      * default Constructor
      */
     public Weapon() throws SlickException{
+
         this(null);
     }
+
 
     /**
      * Constructor
@@ -61,9 +74,10 @@ public class Weapon {
 
         this.id = UUID.randomUUID().toString();
         this.name = "shotgun";
+
         this.sprite = new SpriteSheet("img/item/shotgun.png", 32, 32);
         this.sprite.setCenterOfRotation(24, 5);
-        this.player = player;
+        this.rotation = 0d;
         this.facing = "RIGHT";
 
         this.width = 67;
@@ -71,15 +85,14 @@ public class Weapon {
         this.offsetCenterX = 24;
         this.offsetCenterY = 5;
 
-        /** controle : clic gauche de la souris */
         this.pressedMouseLeft = false;
 
-        /** caractéristiques */
         this.timeAttack = 0;
         this.attackSpeedBase = 60;
         this.nBullet = 8;
 
-        /** list des balles */
+        this.player = player;
+
         this.bulletList = new ArrayList<>();
         this.iterator = this.bulletList.iterator();
 
@@ -113,7 +126,7 @@ public class Weapon {
 
 
     /**
-     * recharge de l'arme
+     * rechargement de l'arme
      */
     private void reload(){
 
@@ -129,7 +142,6 @@ public class Weapon {
      */
     public void update(int posX, int posY, double mouseX, double mouseY){
 
-
         this.posX = posX;
         this.posY = posY;
 
@@ -137,7 +149,7 @@ public class Weapon {
         double deltaY = mouseY - this.posY - (this.player.height / 2);
         this.rotation = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
-        if(mouseX > posX){
+        if(mouseX > posX + (this.player.width / 2)){
             this.facing = "RIGHT";
         }else{
             this.facing = "LEFT";
@@ -153,9 +165,10 @@ public class Weapon {
             this.fire(deltaX, deltaY);
         }
 
-        this.iterator = this.bulletList.iterator();
+
 
         /** update des balles et suppression */
+        this.iterator = this.bulletList.iterator();
         while(iterator.hasNext()){
             Bullet bullet = iterator.next();
             bullet.update();
@@ -172,10 +185,6 @@ public class Weapon {
      */
     public void render(Graphics g){
 
-        //this.sprite.setCenterOfRotation(24, 5);
-        //this.sprite.setRotation((float)this.rotation);
-        //this.sprite.setFilter(this.sprite.FILTER_LINEAR);
-
         Image image;
 
         if(this.facing == "RIGHT") {
@@ -190,7 +199,7 @@ public class Weapon {
         }
         this.posY += (this.player.height / 2) - this.offsetCenterY;
 
-        image.setFilter(1);
+        image.setFilter(1); // FILTER_LINEAR
         image.setRotation((float) this.rotation);
         image.draw(this.posX, this.posY);
 
@@ -244,5 +253,15 @@ public class Weapon {
     public int getPosY(){
 
         return this.posY + (this.player.height / 2);
+    }
+
+
+    /**
+     * renvoie la liste des balles
+     * @return
+     */
+    public List<Bullet> getBulletList(){
+
+        return this.bulletList;
     }
 }
