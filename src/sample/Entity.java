@@ -12,6 +12,15 @@ import java.util.UUID;
 
 /**
  * Class abstraite qui gère les entités (joueur, monstres...)
+ *
+ * ******* TODO *******
+ * pour l'instant les entités ne peuvent pas se déplacer
+ * de moins de 1px par frame. Il faudrait mettre en place un système qui
+ * retient le reste d'un déplacement inférieur à 1px pour mettre à jour
+ * à la fram d'après
+ * ex :
+ * - frame 1 : je me déplace de 0.5px => pas de déplacement
+ * - frame 2 : je me déplace de 0.5px => déplacement de 1px
  */
 public abstract class Entity {
 
