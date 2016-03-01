@@ -4,6 +4,10 @@ package sample;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 /**
  * Class qui gère une tile
  *
@@ -28,6 +32,10 @@ public class Tile {
     /** caractéristiques de la tile */
     protected final boolean solid;
     protected final boolean platform; // true si la tile est traversable par le dessous
+    protected boolean containItem;
+
+    /** liste des objets contenus dans la tile */
+    protected List<Item> itemList;
 
 
     /**
@@ -63,6 +71,8 @@ public class Tile {
                 this.platform = false;
                 break;
         }
+
+        this.containItem = false;
     }
 
 
@@ -134,5 +144,57 @@ public class Tile {
     public void render(){
 
         this.sprite.draw(this.posX * WIDTH, this.posY * HEIGHT);
+
+        if(this.containItem) {
+            for (int i = 0; i < this.itemList.size(); i++) {
+                this.itemList.get(i).render(this.posX * WIDTH, this.posY * HEIGHT);
+            }
+        }
+    }
+
+
+    /**
+     * ajoute un objet dans la tile
+     * @param name :
+     * @throws SlickException
+     */
+    public void addItem(String name, String type) throws SlickException{
+
+        if(!containItem) {
+            this.containItem = true;
+            this.itemList = new ArrayList<>();
+        }
+        Item item;
+        switch(type){
+            case "object":
+                item = new ItemJunk(name, this);
+                break;
+            case "consumable":
+                item = new ItemConsumable(name, this);
+                break;
+            case "junk":
+                item = new ItemJunk(name, this);
+                break;
+            case "tool":
+                item = new ItemTool(name, this);
+                break;
+            default:
+                item = new ItemJunk(name, this);
+                break;
+        }
+
+        this.itemList.add(item);
+    }
+
+
+
+
+    /**
+     * enlève un objet dans la tile
+     * @param object :
+     * @throws SlickException
+     */
+    public void removeObject(Item object) {
+        this.itemList.remove(object);
     }
 }

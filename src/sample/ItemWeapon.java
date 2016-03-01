@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import org.newdawn.slick.SlickException;
 
 /**
  * Created by Administrateur on 24/01/2016.
@@ -25,23 +26,13 @@ public class ItemWeapon extends Item {
     protected String associateItem;         // item associé pour l'utilisation (balles / flèche...)
 
 
-    public ItemWeapon(String pName,
-                      float pWeight,
-                      String pDescription,
-                      boolean pHaveThumbnail,
-                      String pType,
-                      String pFamily,
-                      Inventory pInventory,
-                      int pStrenghtNeeded,
-                      int pDexterityNeeded,
-                      int pIntelligenceNeeded,
-                      int pPrecision,
-                      int pDamage,
-                      int pSpeed,
-                      String pDamageType,
-                      String pAssociateItem)
+    public ItemWeapon() throws SlickException {
 
-    {
+        this.type = "weapon";
+
+    }
+        /*
+    }
         this.nbr = 1;
         this.name = pName;
         this.weight = pWeight;
@@ -58,63 +49,9 @@ public class ItemWeapon extends Item {
         this.speed = pSpeed;
         this.damageType = pDamageType;
         this.associateItem = pAssociateItem;
+        */
 
 
-        if(pHaveThumbnail) {
-            // Image de l'item
-            this.itemView = new ImageView();
-            this.itemImg = new Image(Main.class.getResourceAsStream("../img/item/"+name+".png"));
-            this.itemView.setImage(itemImg);
-            // Miniature de l'item
-            this.thumbnailView = new ImageView();
-            this.thumbnailImg = new Image(Main.class.getResourceAsStream("../img/item/thumbnail/"+name+".png"));
-            this.thumbnailView.setImage(thumbnailImg);
-            // clic dans l'inventaire
-            this.thumbnailView.setOnMouseClicked(mouseListener);
-        }else{
-            // Image de l'item
-            this.itemView = new ImageView();
-            this.itemImg = new Image(Main.class.getResourceAsStream("../img/item/"+name+".png"));
-            this.itemView.setImage(itemImg);
-        }
-    }
 
-    /**
-     * Action for a thumbnail leftclic
-     */
-    final EventHandler<MouseEvent> mouseListener = new EventHandler<MouseEvent>(){
-        public void handle(MouseEvent e) {
-
-            switch(e.getButton()){
-                case PRIMARY:
-                    //affichage de la description
-                    txtItemOnclic.setText(toStringItem());
-                    break;
-                case SECONDARY:
-                    //utilisation de l'arme (équippement)
-                    use();
-                    break;
-            }
-
-            //System.out.println(inventory.player.constitution);
-            //System.out.println(nbr);
-            //inventory.player.constitution++;
-            //nbr = 12;
-            //inventory.deleteItem(getName());
-        }
-    };
-
-    public void use(){
-
-        System.out.println("Equippement de l'arme depuis ItemWeapon");
-        // l'arme n'est pas consommé
-        /*this.setNbr(this.getNbr()-1);
-        this.inventory.labelMap.get(this.getName()).setText(Integer.toString(this.getNbr()));
-        this.inventory.refreshItemList();*/
-
-        // => effet de l'arme
-
-
-    }
 
 }

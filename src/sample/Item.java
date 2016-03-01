@@ -5,86 +5,109 @@ package sample;
  * peu aussi représenter un groupe d'items identiques du moment que l'attribut 'nbr' dépasse 1.
  */
 
-import javafx.event.EventHandler;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.SpriteSheet;
+
+import java.util.Objects;
 
 abstract class Item {
 
-    // ********** ATTRIBUTES ********** //
 
-    protected static Label txtItemOnclic = new Label();
 
-    protected String name;                  // nom de l'item
-    protected String description;           // déscription de l'item
+    //protected static Label txtItemOnclic = new Label();
+
+    /** général */
+    protected String name;
+    protected boolean onMap;
+
+    /** on map */
+    protected SpriteSheet sprite;
+    protected Tile tile;
+
+    /** on inventory */
+    protected Image thumbnail;
+    protected String description;           // description de l'item
     protected float weight;                 // poid de l'item
     protected int nbr;                      // nombre de cet Item présent dans le groupe
-
-    protected ImageView itemView;           // node de l'item
-    protected Image itemImg;                // image de l'item
-
-    protected ImageView thumbnailView;      // thumbnail node
-    protected Image thumbnailImg;           // thumbnail image
-
     protected String type;                  // type de l'item (food / drink...)
     protected String family;                // famille de l'item (champignon / herbe / médicament / potion...)
 
     protected Inventory inventory;          // inventaire qui contient l'item
+    protected int index;
+    protected int gridPosX;
+    protected int gridPosY;
 
-    // ********** CONSTRUCTORS ********** //
 
     /**
-    * Constructor
-    * @param pName              the name of the item
-    * @param pWeight            the weight of the item
-    * @param pHaveThumbnail     if the item has a thumbnail
-    * @param pType              type of the item (weapon / consumable / tool / junk)
-    * @param pInventory         inventory which contains the item
-    */
-    public Item(String pName,
-                float pWeight,
-                boolean pHaveThumbnail,
-                String pType,
-                Inventory pInventory)
-    {
+     * default Constructor
+     * @throws SlickException
+     */
+    public Item() throws SlickException{
+
+    }
+
+
+    /**
+     * Constructor pour la  carte
+     * @param name
+     * @param tile
+     * @throws SlickException
+     */
+    public Item(String name, Tile tile) throws SlickException{
+
+        this();
+
+        this.onMap = true;
+
+        this.name = name;
+        this.sprite = new SpriteSheet("img/tile/earth/object/"+name+".png", 32, 32);
+        this.thumbnail = new Image("img/item/thumbnail/"+name+".png");
+        this.tile = tile;
+
+        /** ici charge les infos depuis le fichier xml */
         this.nbr = 1;
-        this.name = pName;
-        this.weight = pWeight;
-        this.description = "";
-        this.inventory = pInventory;
-        this.type = pType;
-
-        if(pHaveThumbnail) {
-            // Image de l'item
-            this.itemView = new ImageView();
-            this.itemImg = new Image(Main.class.getResourceAsStream("../img/item/"+name+".png"));
-            this.itemView.setImage(itemImg);
-            // Miniature de l'item
-            this.thumbnailView = new ImageView();
-            this.thumbnailImg = new Image(Main.class.getResourceAsStream("../img/item/thumbnail/"+name+".png"));
-            this.thumbnailView.setImage(thumbnailImg);
-            // clic dans l'inventaire
-            this.thumbnailView.setOnMouseClicked(mouseListener);
-        }else{
-            // Image de l'item
-            this.itemView = new ImageView();
-            this.itemImg = new Image(Main.class.getResourceAsStream("../img/item/"+name+".png"));
-            this.itemView.setImage(itemImg);
+        this.name = name;
+        this.weight = 12;
+        if(Objects.equals(this.name, "mushroom")){
+            this.description = "Champi!";
+        }else {
+            this.description = "Description en attente";
         }
+
+
+    }
+
+    public void render(int posX, int posY){
+
+        this.sprite.draw(posX, posY);
+    }
+
+    public Position added(Inventory inventory){
+
+        this.onMap = false;
+        this.inventory = inventory;
+
+        Position position;
+        for(int j = 0; j < 2; j++) {
+            for (int i = 0; i < 4; i++) {
+                if(this.inventory.getGrid()[i][j].isEmpty){
+                    position = this.inventory.getGrid()[i][j].addItem(this);
+                    this.gridPosX = position.getX();
+                    this.gridPosY = position.getY();
+                    return position;
+                }
+            }
+        }
+        this.gridPosX = -1;
+        this.gridPosY = -1;
+        return position = new Position(-1, -1);
     }
 
 
-    // ********** METHODES ********** //
 
 
-    /**
-    * Default Constructor
-    */
-    public Item(){
-
-    }
 
     /**
      * Method that returns the name, description, and the weight of an item as a string
@@ -97,44 +120,29 @@ abstract class Item {
                         "poids : "+ this.weight;
     }
 
-    /**
-     * Action for a thumbnail leftclic
-     */
-    final EventHandler<MouseEvent> mouseListener = e -> {
 
-        switch(e.getButton()){
-            case PRIMARY:
-                //affichage de la description
-                txtItemOnclic.setText(toStringItem());
-                break;
-            case SECONDARY:
-                //utilisation de l'item
-                use();
-                break;
-        }
-    };
 
-    public void use(){
+    public boolean use(){
         type = this.getType();
         switch(type){
             case "weapon":
                 System.out.println("Equippement de l'arme");
-                break;
+                return false;
             case "tool":
                 System.out.println("Utilisation de l'outil");
-                break;
+                return false;
             case "consumable":
-                System.out.println("Consommation du consommable");
+                System.out.println("Consommation de : "+this.name);
+                return true;
                 // fonction effet()
-                this.setNbr(this.getNbr()-1);
-                this.inventory.labelMap.get(this.getName()).setText(Integer.toString(this.getNbr()));
-                this.inventory.refreshItemList();
-                break;
+                //this.setNbr(this.getNbr()-1);
+                //this.inventory.labelMap.get(this.getName()).setText(Integer.toString(this.getNbr()));
+                //this.inventory.refreshItemList();
             case "junk":
                 System.out.println("Putain ça sert à rien ce truc");
-                break;
+                return false;
             default:
-                break;
+                return false;
         }
     }
 
@@ -150,9 +158,6 @@ abstract class Item {
         return this.type;
     }
 
-    public static Label getTxtItemOnclic() {
-        return txtItemOnclic;
-    }
 
     public String getName() {
         return this.name;
@@ -170,12 +175,6 @@ abstract class Item {
         return this.nbr;
     }
 
-    public ImageView getImage() {
-        return this.itemView;
-    }
 
-    public ImageView getThumbnail(){
-        return this.thumbnailView;
-    }
 
 }

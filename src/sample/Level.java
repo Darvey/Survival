@@ -73,7 +73,7 @@ public class Level implements TileBasedMap {
         this.hasGraphicLayer = false;
         this.load(refMap);
         this.background = new Image("img/background/backgroundSky.png");
-        this.grass = new Image("img/tile/earth/objectGrass.png");
+        //this.grass = new Image("img/tile/earth/objectGrass.png");
     }
 
 
@@ -130,6 +130,33 @@ public class Level implements TileBasedMap {
             /** on vérifie que la carte a bien un calque logique et graphiue */
             if(!hasLogicLayer || !hasGraphicLayer){
                 throw new RuntimeException("Level don't have LogicMap AND GraphicMap");
+            }
+
+
+            /** **********************************
+             * chargement de la liste des objets *
+             ********************************** */
+
+            /** on récupère la liste des objets */
+            NodeList items = doc.getElementsByTagName("item");
+
+            /** pour chaque "layer" : logique et graphique */
+            for(int i = 0; i < items.getLength(); i++){
+
+                Node item = items.item(i);
+
+                if(item.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) item;
+
+                    try {
+                        getTile(
+                                Integer.parseInt(element.getAttribute("posX")) * 32,
+                                Integer.parseInt(element.getAttribute("posY")) * 32
+                        ).addItem(element.getAttribute("name"), element.getAttribute("type"));
+                    }catch(SlickException e){
+                        e.printStackTrace();
+                    }
+                }
             }
 
         }catch(ParserConfigurationException e){
@@ -240,11 +267,11 @@ public class Level implements TileBasedMap {
      */
     public void renderFront(){
 
-        this.grass.draw(32, 352);
-        this.grass.draw(64, 352);
+        //this.grass.draw(32, 352);
+        //this.grass.draw(64, 352);
 
-        this.grass.draw(224, 288);
-        this.grass.draw(256, 288);
+        //this.grass.draw(224, 288);
+        //this.grass.draw(256, 288);
     }
 
 

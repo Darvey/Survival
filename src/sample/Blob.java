@@ -1,9 +1,6 @@
 package sample;
 
-import org.newdawn.slick.Animation;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.*;
 
 import java.util.Objects;
 
@@ -52,6 +49,10 @@ public class Blob extends Monster {
         this.isFlying = false;
 
         this.health = 3;
+
+        this.moveSound = new Sound("sound/blobMove.ogg");
+        this.dyingSound = new Sound("sound/blobDying.ogg");
+        this.jumpingSound = new Sound("sound/blobJumping.ogg");
 
         /** IDLE */
         this.animations[0] = this.loadAnimation(this.sprite, 0, 6, 0, 100);
@@ -108,15 +109,29 @@ public class Blob extends Monster {
      */
     @Override
     public void updateMove(int delta){
+
         if(this.isDead){
+
             this.state = "DYING";
+        }else{
+
         }
         if(Objects.equals(this.state, "DYING")){
+            this.moveSound.stop();
+            this.dyingSound.play();
             if (this.getAnimations("DYING").getFrame() == 5) {
                 this.getAnimations("DYING").stop();
+                this.dyingSound.stop();
             }
         }else {
             if (Objects.equals(this.state, "IDLE")) {
+
+                if(!this.moveSound.playing()) {
+                    this.moveSound.play();
+                    this.moveSound.loop();
+                    this.jumpingSound.stop();
+                }
+
                 /** à l'image où le blob est "haut" */
                 if (this.getAnimations("IDLE").getFrame() == 5) {
                     if (isAggro) {
@@ -132,6 +147,11 @@ public class Blob extends Monster {
             }
 
             if (Objects.equals(this.state, "JUMPING")) {
+
+                if(!this.jumpingSound.playing()) {
+                    this.jumpingSound.play();
+                    this.moveSound.stop();
+                }
 
                 /** direction du saut */
                 if (Objects.equals(this.facing, "RIGHT")) {

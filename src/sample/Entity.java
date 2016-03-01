@@ -12,15 +12,6 @@ import java.util.UUID;
 
 /**
  * Class abstraite qui gère les entités (joueur, monstres...)
- *
- * ******* TODO *******
- * pour l'instant les entités ne peuvent pas se déplacer
- * de moins de 1px par frame. Il faudrait mettre en place un système qui
- * retient le reste d'un déplacement inférieur à 1px pour mettre à jour
- * à la fram d'après
- * ex :
- * - frame 1 : je me déplace de 0.5px => pas de déplacement
- * - frame 2 : je me déplace de 0.5px => déplacement de 1px
  */
 public abstract class Entity {
 
@@ -61,6 +52,8 @@ public abstract class Entity {
     protected float accLimit;
     protected float velX;
     protected float velY;
+    protected float cutVelX;
+    protected float cutVelY;
     protected float velLimit;
     //private int velXInteger;
     //private int velYInteger;
@@ -125,7 +118,7 @@ public abstract class Entity {
      * @return : true si collision
      */
     protected boolean collisionBot(){
-
+        //(this.level.getTile(this.posX + (this.width / 2), this.posY + this.height - 3).platform && this.isOnLadder);
         return (this.level.getTile(this.posX + (this.width / 2), this.posY + this.height - 3).solid);
     }
 
@@ -146,7 +139,8 @@ public abstract class Entity {
      */
     protected boolean collisionLeft(){
 
-        return (this.level.getTile(this.posX, this.posY + (this.height / 2)).solid);
+        return (this.level.getTile(this.posX, this.posY + (this.height / 2)).solid
+        && !this.level.getTile(this.posX, this.posY + (this.height / 2)).platform);
     }
 
 
@@ -156,7 +150,8 @@ public abstract class Entity {
      */
     protected boolean collisionRight(){
 
-        return (this.level.getTile(this.posX + this.width, this.posY + (this.height / 2)).solid);
+        return (this.level.getTile(this.posX + this.width, this.posY + (this.height / 2)).solid
+        && !this.level.getTile(this.posX + this.width, this.posY + (this.height / 2)).platform);
     }
 
 
@@ -261,8 +256,24 @@ public abstract class Entity {
 
 
         /** on parse en entier pour que la vélocité correspond à un nombre de pixel */
-        int velXInteger = Math.round(velX);
-        int velYInteger = Math.round(velY);
+        int velXInteger = (int) velX;
+        int velYInteger = (int) velY;
+
+        /** on stocke ce qui a été perdu de l'arrondi */
+        this.cutVelX += this.velX - velXInteger;
+        this.cutVelY += this.velY - velYInteger;
+
+        /** quand ce stockage peut être reconverti en entier */
+        if(this.cutVelX >= 1){
+            /** on ajoute un pixel de déplacement */
+            velXInteger++;
+            this.cutVelX--;
+        }
+        if(this.cutVelY >= 1){
+            /** on ajoute un pixel de déplacement */
+            velYInteger++;
+            this.cutVelY--;
+        }
 
 
         /** on stocke la dernière valeur */

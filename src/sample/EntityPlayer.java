@@ -9,12 +9,31 @@ import org.newdawn.slick.Animation;
 import java.io.*;
 
 
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
 /**
  * Class qui gère le joueur
+ *
+ * ******* TODO *******
+ *
+ * - pour l'instant on peut monter l'échelle mais
+ * pas la descendre : à corriger
+ * - optimisations
+ *
+ * ******* OPTIMISATION *******
+ *
+ * - pour l'instant on RECUPERE la liste des objets
+ * de la tile à chaque frame, il faudrait ne le faire
+ * qu'une seule fois au moment où on change de tile
+ *
+ * - on PARCOURT le tableau des objets à chaque frame
+ * en attendant de voir si le joueur appuie sur action,
+ * il faudrait faire l'inverse : quand le joueur appuie
+ * sur action, on parcourt le tableau des objets
+ *
  */
 public class EntityPlayer extends Entity{
 
@@ -56,6 +75,8 @@ public class EntityPlayer extends Entity{
     private boolean pressedDown;
     private boolean pressedLeft;
     private boolean pressedRight;
+    private boolean pressedJump;
+    private boolean pressedAction;
 
     /** controle : position de la souris */
     private double prevMouseX;
@@ -68,8 +89,17 @@ public class EntityPlayer extends Entity{
     private int jumpCount;
     private int maxJumpCount;
 
+    /** est-il sur une échelle ? */
+    protected boolean isOnLadder;
+
     /** arme équipée */
     private Weapon weapon;
+
+    /** inventaire */
+    protected Inventory inventory;
+
+    /** liste des objets à proximité */
+    protected List<Item> itemBehindList;
 
 
     /**
@@ -106,11 +136,10 @@ public class EntityPlayer extends Entity{
         /** init de l'arme */
         weapon = new Weapon(this);
 
-
         /** init. de l'inventaire */
-        //this.inv = new Inventory(this);
+        this.inventory = new Inventory(this);
 
-        /** ------- TO ENTITY -------
+        /** ------- TO ENTITY ------- */
         /** init des var pour l'animation */
         this.animations = new Animation[1];
         this.state = "IDLE";
@@ -124,7 +153,7 @@ public class EntityPlayer extends Entity{
         /** temps pendant lequel on peut rester appuyé sur saut pour augmenter la hauteur de celui-ci */
         this.maxJumpCount = 30;
         /** impulsion initiale du saut */
-        this.jumpImpulse = 12;
+        this.jumpImpulse = 4;
 
         /** init. du nom et des car. primaires */
         this.strength = strength;
@@ -137,12 +166,16 @@ public class EntityPlayer extends Entity{
         this.accLimit = 3;
         this.velLimit = 100;
         this.friction = 0.7f; // friction du personnage (0.2 = boue/escalier, 0.7 = normal, 0.9 = glace)
+        this.moveSpeed = 2; // plus tard, sera calculé avec les caractéristiques primaires
+        this.gravity = 0.2f;
 
         /** init des var de déplacement */
         this.accX = 0f;
         this.accY = 0f;
         this.velX = 0f;
         this.velY = 0f;
+        this.cutVelX = 0f;
+        this.cutVelY = 0f;
 
         /** init des contrôles */
         this.pressedDown = false;
@@ -153,12 +186,9 @@ public class EntityPlayer extends Entity{
         /** calcul des caractéristiques secondaires */
         calculateSecondarySpecs();
 
-        /** TEST : inventory  */
-        //this.inv.addItem("shroom1", 0.2f, true, "consumable");
-        //this.inv.addItem("shroom1", 0.2f, true, "consumable");
-        //this.inv.addItem("silverCoin", 0.2f, true, "junk");
-        //this.inv.addItem("bronzeCoin", 0.1f, true, "tool");
-        //this.inv.addItem("shotgun", 5.7f, true, "weapon");
+        this.isOnLadder = false;
+        this.itemBehindList = new ArrayList<>();
+
 
     }
 
@@ -181,11 +211,39 @@ public class EntityPlayer extends Entity{
     @Override
     public void updateMove(int delta){
 
+        /** récupère la liste des objets de la tile sur laquelle est le joueur */
+        this.getItemBehind();
+
+        this.isOnLadder = false;
+
+        /** si il y a des objets dans la tile */
+        if(this.itemBehindList.size() > 0){
+            /** on parcourt les objets de la tile */
+            for(int i = 0; i < this.itemBehindList.size(); i++){
+
+                /**
+                 * si c'est une échelle, on considère qu'on est dessus
+                 * sinon on vérifie si on appuie sur la touche action
+                 * pour ramasser les objets
+                 */
+                if(Objects.equals(this.itemBehindList.get(i).name, "ladder")){
+                    this.isOnLadder = true;
+                }else{
+                    if(this.pressedAction) {
+                        System.out.println("Je ramasse " + this.itemBehindList.get(i).name);
+                        this.itemBehindList.get(i).tile.removeObject(this.itemBehindList.get(i));
+                        this.inventory.addItem(this.itemBehindList.get(i));
+                    }
+                }
+            }
+        }
+
+
         /** variables pour les tests de déplacement / saut */
-        this.moveSpeed = 4;
-        this.jumpImpulse = 10;
-        this.friction = 0.7f;
-        this.gravity = 0.2f;
+        //this.moveSpeed = 2;
+        //this.jumpImpulse = 4;
+        //this.friction = 0.7f;
+        //this.gravity = 0.2f;
 
         // --------------------------- OBSOLETE -----------------------------------
         boolean[] col = new boolean[4];
@@ -196,6 +254,8 @@ public class EntityPlayer extends Entity{
         float[] acc = getAcc(col);
         this.accX = acc[0];
         this.accY = acc[1];
+
+
         // -------------------------------------------------------------------------
 
         // --------------------------- A VIRER D'ICI --------------------------------
@@ -203,36 +263,42 @@ public class EntityPlayer extends Entity{
         this.velLimit = 100;
         // --------------------------------------------------------------------------
 
-        /** gestion de la gravité */
-        if(!collisionBot()) {
+        /** gestion de la gravité sur une échelle ou non */
+        if(isOnLadder){
 
-            this.land = "ON_AIR";
-            /** intensité de la gravité pour avoir un effet d'accélération à la chute */
-            this.gravityIntensity += this.gravity;
-            /** application de la gravité */
-            this.accY += this.gravityIntensity;
+            this.gravity = 0;
 
         }else{
 
-            this.gravityIntensity = 0;
-            this.land = "ON_GROUND";
-            if(!Objects.equals(this.state, "JUMPING")) {
-                this.accY = 0;
-                this.velY = 0;
-            }
-            this.state = "WALK";
-        }
+            this.gravity = 0.2f;
+            if(!collisionBot()) {
 
+                this.land = "ON_AIR";
+                /** intensité de la gravité pour avoir un effet d'accélération à la chute */
+                this.gravityIntensity += this.gravity;
+                /** application de la gravité */
+                this.accY += this.gravityIntensity;
+
+            }else{
+
+                this.gravityIntensity = 0;
+                this.land = "ON_GROUND";
+                if (!Objects.equals(this.state, "JUMPING")) {
+                    this.accY = 0;
+                    this.velY = 0;
+                }
+                this.state = "WALK";
+
+            }
+        }
 
         /** évite de "coller" au plafond quand on saute sous un solid */
         if(collisionTop() && Objects.equals(this.state, "JUMPING")){
             this.state = "FALLING";
         }
 
-
         /** récupération de l'état (OBSOLETE) */
         this.state = getState();
-
 
         /** seuil de l'accélération */
         if (this.accX > this.accLimit)
@@ -244,21 +310,17 @@ public class EntityPlayer extends Entity{
         if (this.accY < -this.accLimit)
             this.accY = -this.accLimit;
 
-
         /** ajout de l'accélération à la vélocité */
         this.velX += this.accX;
         this.velY += this.accY;
-
 
         /** reinit de l'accélération */
         this.accX = 0;
         this.accY = 0;
 
-
         /** application de la friction */
         this.velX *= this.friction;
         this.velY *= this.friction;
-
 
         /** seuil de la vélocité */
         if (this.velX > this.velLimit)
@@ -270,16 +332,30 @@ public class EntityPlayer extends Entity{
         if (this.velY < -this.velLimit)
             this.velY = -this.velLimit;
 
-
         /** fonction d'arrondi */
         this.velX = approximatelyZero(this.velX, 0.01f);
         this.velY = approximatelyZero(this.velY, 0.01f);
 
-
         /** on parse en entier pour que la vélocité correspond à un nombre de pixel */
-        int velXInteger = Math.round(velX);
-        int velYInteger = Math.round(velY);
+        int velXInteger = (int) velX;
+        int velYInteger = (int) velY;
 
+        /** on stocke ce qui a été perdu de l'arrondi */
+        this.cutVelX += this.velX - velXInteger;
+        this.cutVelY += this.velY - velYInteger;
+
+        /** quand ce stockage peut être reconverti en entier */
+        if(this.cutVelX >= 1){
+            /** on ajoute un pixel de déplacement */
+            velXInteger++;
+            this.cutVelX--;
+        }
+
+        if(this.cutVelY >= 1){
+            /** on ajoute un pixel de déplacement */
+            velYInteger++;
+            this.cutVelY--;
+        }
 
         /** on stocke la dernière valeur */
         this.prevPosX = this.posX;
@@ -305,7 +381,6 @@ public class EntityPlayer extends Entity{
             }
         }
 
-
         /** déplacement vers le bas */
         if(this.velY > 0) {
             while(this.posY < this.prevPosY + velYInteger){
@@ -317,18 +392,17 @@ public class EntityPlayer extends Entity{
             }
         }
 
-
         /** déplacement vers la gauche */
         if(this.velX < 0){
             while(this.posX > this.prevPosX + velXInteger){
 
                 if (collisionLeft()) {
+                    System.out.println("ACCELERATION : "+velXInteger);
                     break;
                 }
                 this.posX--;
             }
         }
-
 
         /** déplacement vers la droite */
         if(this.velX > 0) {
@@ -339,7 +413,6 @@ public class EntityPlayer extends Entity{
                 this.posX++;
             }
         }
-
 
         /**
          * évite d'être coincé au milieu d'une plateforme
@@ -359,7 +432,8 @@ public class EntityPlayer extends Entity{
     public void render(Graphics g){
 
         super.render(g);
-        weapon.render(g);
+        this.weapon.render(g);
+        this.inventory.render(g);
     }
 
 
@@ -397,7 +471,7 @@ public class EntityPlayer extends Entity{
         */
 
         /** déplacement */
-        this.moveSpeed = 0.1f;
+        //this.moveSpeed = 0.1f;
         this.stealth = Math.round(10 + ((this.agility + 1)/ 2));
         this.endurance = Math.round(10 + ((this.constitution + 1)/ 2));
 
@@ -433,20 +507,10 @@ public class EntityPlayer extends Entity{
     }
 
 
-    /**
-     * affichage l'inventaire
-     */
-    public void displayInventory(){
-
-        //this.inv.display();
-    }
-
-
-
     @Override
     protected float[] getAcc(boolean[] col){
 
-        if (this.pressedUp) {
+        if (this.pressedJump) {
             /**
              * si on est WALKING / ON_GROUND, si pressedUP => JUMPING / ON_AIR
              * jusqu'à ce qu'on lache la touche saut ou jusqu'à la fin du compteur de saut
@@ -491,15 +555,19 @@ public class EntityPlayer extends Entity{
             }
         }
 
-        //if (this.pressedDown) {
-            /*if(col[1]){
-                this.accY = 0;
-            }else {
-                this.accY += this.moveSpeed;
-            }*/
+        if (this.pressedDown) {
 
-            /** plus tard : pour s'accroupir ? */
-        //}
+            this.accY += this.moveSpeed / 2;
+        }
+
+
+
+        if(this.pressedUp){
+
+            this.accY -= this.moveSpeed / 2;
+        }
+
+
 
         if (this.pressedLeft) {
             if(col[2]){
@@ -573,47 +641,85 @@ public class EntityPlayer extends Entity{
     }
 
 
+    /**
+     * récupère la liste des objets sous le personnage
+     */
+    public void getItemBehind() {
 
+        Tile tileBehind = this.level.getTile(this.posX + 16, this.posY + 60);
+        itemBehindList = new ArrayList<>();
+        if (tileBehind.containItem) {
+
+            for (int i = 0; i < tileBehind.itemList.size(); i++) {
+                itemBehindList.add(tileBehind.itemList.get(i));
+            }
+        }
+    }
+
+
+    /**
+     * ******* setPressed *******
+     */
     public void setPressedUp(){
 
         this.pressedUp = true;
     }
-
     public void setPressedDown(){
 
         this.pressedDown = true;
     }
-
     public void setPressedLeft(){
 
         this.pressedLeft = true;
     }
-
     public void setPressedRight(){
 
         this.pressedRight = true;
     }
+    public void setPressedJump(){
 
+        this.pressedJump = true;
+    }
+    public void setPressedAction(){
+
+        this.pressedAction = true;
+    }
+
+    /**
+     * ******* setReleased *******
+     */
     public void setReleasedUp(){
 
         this.pressedUp = false;
     }
-
     public void setReleasedDown(){
 
         this.pressedDown = false;
     }
-
     public void setReleasedLeft(){
 
         this.pressedLeft = false;
     }
-
     public void setReleasedRight(){
 
         this.pressedRight = false;
     }
+    public void setReleasedJump(){
 
+        this.pressedJump = false;
+    }
+    public void setReleasedAction(){
+
+        this.pressedAction = false;
+    }
+
+    /**
+     * récupère la position de la souris
+     * @param oldX : dernière position X
+     * @param oldY : dernière position Y
+     * @param newX : position X
+     * @param newY : position Y
+     */
     public void setMouse(int oldX, int oldY, int newX, int newY){
 
         this.mouseX = newX;

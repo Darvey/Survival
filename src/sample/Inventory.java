@@ -1,304 +1,258 @@
 package sample;
 
 
-import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+
+/**
+ * Classe qui gère l'inventaire, son affichage et
+ * l'affichage des items/cellules qu'il contient
+ *
+ * ******* TODO *******
+ * -drag and drop sur les items
+ */
 public class Inventory {
 
-    protected EntityPlayer player;
-    protected boolean isOpen = false;                   // est-ce que l'inventaire est ouvert ou non
-    private int maxItem;                                // nombre d'item maximum
-    private int maxWeight;                              // poid maximum supporté
-    private float weight;                               // poid total de l'inventaire
+    /** image de l'inventaire vide */
+    private Image image;
 
-    private int nbrBoxOnX = 4;                          // nombre de cases en X
-    private int nbrBoxOnY = 2;                          // nombre de cases en Y
+    /** image de la sélection */
+    private Image selectedCellImage;
 
-    private ImageView boxMap[];                         // Images des box vides
-    private Label infosItem;                           // Label pour stocker la description d'un item
+    /** est-ce qu'on affichage l'inventaire ou non */
+    protected boolean isDisplayed;
 
-    private HashMap<String,Item> itemMap;               // liste d'items
-    private HashMap<String,Position> posMap;            // lie un item avec une position dans l'inventaire
-    protected HashMap<String,Label> labelMap;             // liste des labels contenant le nombre de chaque item
+    /** est-ce qu'un item est sélectionné ? */
+    protected boolean isSelected;
 
-    private Group group;
+    /** liste des items */
+    private List<Item> itemList;
+    private InventoryCell[][] grid;
 
-    private boolean gridMat[][];                        // représente la présence d'un element sur la grille
-    private Scene scene;                                // scene pour contenir les differents node
-    private Stage stage;                                // fenetre de l'inventaire
+    /** marge de gauche */
+    private int OFFSET_X = 13;
+    /** marge du haut */
+    private int OFFSET_Y = 5;
+    /** espace entre chaque case */
+    private int PADDING = 5;
 
-    private ImageView closeView;                      // node du bouton de fermeture
-    private Image closeImage;                         // image du bouton de fermeture
-    private final Font font;                          // pixel police
+    /** position de l'inventaire */
+    private int posX = 150;
+    private int posY = 150;
 
-    private Color fontColor = Color.rgb(242,242,242,0.8);
-    private Color sceneColor = Color.rgb(178,148,112);
+    /** position de la selection */
+    private int selectionPosX;
+    private int selectionPosY;
 
-    private Item shortcuts[];                         // tableau de racourcis
+
+    /**
+     * default Constructor
+     * @throws SlickException
+     */
+    public Inventory() throws SlickException{
+        this(null);
+    }
+
 
     /**
     * Constructor
     */
-    public Inventory(EntityPlayer pPlayer) {
+    public Inventory(EntityPlayer player) throws SlickException {
 
-        this.player = pPlayer;
-        this.maxItem = 4*2;
-        this.setMaxSize(20);
-        font = Font.loadFont(Inventory.class.getResource("slkscr.ttf").toExternalForm(), 11);
+        this.image = new Image("img/emptyInventory.png");
+        this.selectedCellImage = new Image("img/selectedCell.png");
+        this.isDisplayed = false;
+        this.isSelected = false;
+        this.itemList = new ArrayList<>();
 
-        shortcuts = new Item[10];
-
-        this.itemMap = new HashMap<String, Item>();
-        this.posMap = new HashMap<String, Position>();
-        this.labelMap = new HashMap<String,Label>();
-
-        this.group = new Group();
-
-        this.initGrid();
-
-
-        // BOUTON DE FERMETURE
-        this.closeView = new ImageView();
-        this.closeImage = new Image(Main.class.getResourceAsStream("../img/item/closeButton.png"));
-        this.closeView.setImage(closeImage);
-        this.closeView.setTranslateX(2);
-        this.closeView.setTranslateY(2);
-        this.group.getChildren().add(closeView);
-
-        // PARTIE DESCRIPTION D'ITEM
-        this.infosItem = Item.getTxtItemOnclic();
-        this.infosItem.setTranslateX(10);
-        this.infosItem.setTranslateY(120);
-        this.infosItem.setFont(font);
-        this.infosItem.setTextFill(fontColor);
-
-        this.group.getChildren().add(infosItem);
-
-
-        // SCENE ET STAGE
-        this.scene = new Scene(group, 152, 200, sceneColor);
-        this.stage = new Stage();
-        this.stage.initStyle(StageStyle.UNDECORATED);
-        this.stage.setScene(scene);
-
-        this.setBtnAction();
-
-        System.out.println(player.name);
+        initGrid();
     }
 
-    /**
-     *  Défini l'action sur les différents boutons de l'inventaire
-     */
-    public void setBtnAction(){
-        closeView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                display();
-            }
-        });
-    }
-    /**
-     * Display the Inventory on screen
-     */
-    public void display()
-    {
-        System.out.print(stage.isShowing());
-        if(stage.isShowing())
-        {
-            this.isOpen = false;
-            stage.close();
-            System.out.println("CLOSE INVENTAIRE");
-        }else
-        {
-            this.isOpen = true;
-            System.out.println("OPEN INVENTAIRE");
-            stage.show();
-        }
-    }
 
     /**
-     * add an item into the inventory
-     * @param pName name
-     * @param pWeigth weigth
+     * initialisation de la grille de l'inventaire
      */
-    //public void addItem(Item item) {
-    public void addItem(String pName, float pWeigth, boolean pHaveThumbnail, String pType) {
+    public void initGrid(){
+        this.grid = new InventoryCell[4][2];
 
-        Item item;
-
-        switch(pType){
-            case "consumable" :
-                item = new ItemConsumable(pName, pWeigth, "description", pHaveThumbnail, "type", "famille", this, "descriptionAlt", 12);
-                break;
-            case "weapon" :
-                item = new ItemWeapon(pName, pWeigth, "description", pHaveThumbnail, "type", "famille", this, 12, 14, 16, 78, 2, 4, "damageType", "associateItem");
-                break;
-            case "tool" :
-                item = new ItemTool(pName, pWeigth, "description", pHaveThumbnail, "type", "famille", this, 12, 14, 16);
-                break;
-            default :
-                item = new ItemJunk(pName, pWeigth, "description", pHaveThumbnail, "type", "famille", this, "descriptionAlt", 12);
-                break;
-        }
-
-
-        // Si l'objet est déjà présent dans l'inventaire
-        if (this.itemMap.containsKey(item.getName()))
-        {
-            // ajout du nombre d'item récupérés au nombre d'item déjà présent dans l'inventaire
-            this.itemMap.get(item.getName()).setNbr(
-                    itemMap.get(item.getName()).getNbr() + item.getNbr()
-            );
-            // modification label
-            this.labelMap.get(item.getName()).setText(Integer.toString(
-                    itemMap.get(item.getName()).getNbr()));
-            this.weight = this.weight + item.getWeight();
-        }
-        else
-        {
-            // ajout item dans liste
-            this.itemMap.put(item.name,item);
-
-            // ajout label dans liste
-            this.labelMap.put(item.name,new Label(Integer.toString(item.getNbr())));
-            this.labelMap.get(item.getName()).setFont(font);
-            this.labelMap.get(item.getName()).setTextFill(fontColor);
-
-            // recherche une place dans l'inventaire
-            Position p = searchFreeBox();
-
-            // ajout dans le tableau d'association "item/Position"
-            this.posMap.put(item.getName(), p);
-
-            // ajout de la miniature et son label au pane
-
-            itemMap.get(item.getName()).getThumbnail().setTranslateX(p.getX()*37+4);
-            itemMap.get(item.getName()).getThumbnail().setTranslateY(p.getY()*37+4+20);
-            labelMap.get(item.getName()).setTranslateX(p.getX()*37+5);
-            labelMap.get(item.getName()).setTranslateY(p.getY()*37+4+20);
-
-            this.group.getChildren().add(itemMap.get(item.getName()).getThumbnail());
-            this.group.getChildren().add(labelMap.get(item.getName()));
-
-            this.weight = this.weight + item.getWeight();
-        }
-    }
-    /**
-     * Supprime de la liste les items dont l'attribut "nbr" est à 0
-     */
-    public void refreshItemList()
-    {
-        for(Map.Entry<String,Item> entry : itemMap.entrySet())
-        {
-            if(entry.getValue().getNbr() == 0)
-            {
-                // supprime l'item de la liste
-                this.itemMap.get(entry.getKey()).getThumbnail().setVisible(false);
-                this.itemMap.remove(entry.getKey());
-                // supprime le label
-                this.labelMap.get(entry.getKey()).setVisible(false);
-                this.labelMap.remove(entry.getKey());
-                // libère la place sur la grille d'affichage
-                int x = posMap.get(entry.getKey()).getX();
-                int y = posMap.get(entry.getKey()).getY();
-                this.gridMat[x][y] = false;
-                // supprime sa position
-                this.posMap.remove(entry.getKey());
+        for(int j = 0; j < 2; j++) {
+            for (int i = 0; i < 4; i++) {
+                if(i == 2 && j == 1) {
+                    /** la case de 2:1 */
+                    this.grid[i][j] = new InventoryCell(true, 64, 32, i, j, false);
+                }else if(i == 3 && j == 1){
+                    /** la case empiétée par celle de 2:1 */
+                    this.grid[i][j] = new InventoryCell(true, 0, 0, i, j, true);
+                }else{
+                    /** les cases de 1:1 */
+                    this.grid[i][j] = new InventoryCell(true, 32, 32, i, j, false);
+                }
 
             }
         }
+    }
 
-    }
-    /**
-     *    delete an item of the inventory
-     *    @param item to delete
-     */
-    public void deleteItem(Item item)
-    {
-        this.itemMap.remove(item.getName());
-    }
-    /**
-     *   @return the quantity of an item included in the inventory
-     */
-    public int getItemQuantity(Item item)
-    {
-        return this.itemMap.get(item.getName()).getNbr();
-    }
-    /**
-     *   set the maximum size of the inventory
-     */
-    public void setMaxSize(int maxItem)
-    {
-        this.maxItem = maxItem;
-    }
-    /**
-     *  @return postition de la première case libre dans l'inventaire
-     */
-    public Position searchFreeBox()
-    {
-        Position p = null;
 
-        for (int y = 0; y < nbrBoxOnY; y++)
-        {
-            for (int x = 0; x < nbrBoxOnX; x++)
-            {
-                if (!this.gridMat[x][y])
-                {
-                    this.gridMat[x][y] = true;
-                    return p = new Position(x,y);
+    /**
+     * renvoie la grille de l'inventaire
+     * @return : tableau 2D de cellule de grille
+     */
+    public InventoryCell[][] getGrid(){
+
+        return this.grid;
+    }
+
+
+    /**
+     * rendu de l'inventaire et des items qu'il contient
+     * @param g : slick graphics
+     */
+    public void render(Graphics g){
+
+        if(this.isDisplayed) {
+
+            /** on affichage l'inventaire */
+            //this.image.draw(this.posX, this.posY);
+            g.drawImage(this.image, this.posX, (float) this.posY);
+
+
+            /** on affichage les items */
+            if(itemList.size() > 0) {
+                for (int i = 0; i < itemList.size(); i++){
+                    itemList.get(i).thumbnail.draw(
+                            this.posX + OFFSET_X + ((32 + PADDING) * itemList.get(i).gridPosX),
+                            this.posY + OFFSET_Y + ((32 + PADDING) * itemList.get(i).gridPosY)
+                    );
+                }
+            }
+
+            if(this.isSelected){
+                this.selectedCellImage.draw(
+                        this.posX + OFFSET_X + ((32 + PADDING) * this.selectionPosX - 1),
+                        this.posY + OFFSET_Y + ((32 + PADDING) * this.selectionPosY - 1)
+                );
+            }
+        }else{
+            /** enlève la selection de l'item */
+            this.isSelected = false;
+        }
+    }
+
+
+    /**
+     * ajoute une item à l'inventaire
+     * @param item : un item provenant de la carte (pour l'instant)
+     */
+    public void addItem(Item item) {
+
+        /** on ajoute à la liste d'item */
+        this.itemList.add(item);
+        /** puis depuis Item pour initialiser sa position dans l'inventaire, l'enlever de la carte ... */
+        item.added(this);
+    }
+
+
+    /**
+     * affiche la description de l'item sur lequel on clique
+     * @param x : position x de la souris
+     * @param y : position y de la souris
+     */
+    public void onClick(int x, int y){
+
+        /** si l'inventaire est bien affiché (ouvert) */
+        if(this.isDisplayed) {
+
+            /** calcul de la position dans la grille d'item par rapport à la position de la souris */
+            int colIndex = ((x - this.posX - this.OFFSET_X) / (32 + this.PADDING));
+            int modIndex = ((y - this.posY - this.OFFSET_Y) / (32 + this.PADDING)) % 4;
+            int index = colIndex + (modIndex * 4);
+            Item item = this.getItemByGridIndex(index);
+
+            /** index dans la liste */
+            int indexOnList = itemList.indexOf(item);
+
+            /** TODO : ici il faudra vérifier si on clique bien dans l'inventaire (? < x < ? && ? < y < ?) */
+
+            /** on évite les "outOfBound" */
+            if ((indexOnList < itemList.size()) && (indexOnList >= 0)) {
+
+                /** on affiche la description */
+                System.out.println(this.getItemByGridIndex(index).getDescription());
+                /** on signale que l'item est selectionné */
+                this.isSelected = true;
+                this.selectionPosX = colIndex;
+                this.selectionPosY = modIndex;
+
+            } else {
+
+                System.out.println("Y-a rien à cette position");
+            }
+        }
+    }
+
+
+    /**
+     * utilise ou non l'item sur lequel on double-clique
+     * @param x : position x de la souris
+     * @param y : position y de la souris
+     */
+    public void onDoubleClick(int x, int y){
+
+        /** si l'inventaire est bien affiché (ouvert) */
+        if(this.isDisplayed){
+
+            /** calcul de la position dans la grille d'item par rapport à la position de la souris */
+            int colIndex = ((x - this.posX - this.OFFSET_X) / (32 + this.PADDING));
+            int modIndex = ((y - this.posY - this.OFFSET_Y) / (32 + this.PADDING)) % 4;
+            int index = colIndex + (modIndex * 4);
+            Item item = this.getItemByGridIndex(index);
+
+            /** index dans la liste */
+            int indexOnList = itemList.indexOf(item);
+
+            /** TODO : ici il faudra vérifier si on clique bien dans l'inventaire (? < x < ? && ? < y < ?) */
+
+            /** on évite les "outOfBound" */
+            if( ( indexOnList < itemList.size() ) && ( indexOnList >= 0 ) && ( colIndex < 4 ) ) {
+
+                /** on utilise l'item, et on a en retour le fait qu'il soit consumable ou non => remove */
+                if(item.use()) {
+                    /** enlève l'item de la liste */
+                    itemList.remove(itemList.indexOf(item));
+                    /** libère l'espace dans la grille */
+                    this.getGrid()[item.gridPosX][item.gridPosY].isEmpty = true;
+                    /** enlève la selection de l'item */
+                    this.isSelected = false;
+                }
+
+            }else{
+
+                System.out.println("Y-a rien à cette position");
+
+            }
+        }
+    }
+
+
+    /**
+     * retour l'item en fonction de l'index de la grille : 0, 1, 2, 3 // 4, 5, 6, 7
+     * @param index : index dans la grille
+     * @return : item
+     */
+    public Item getItemByGridIndex(int index){
+
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 2; j++) {
+                if (this.getGrid()[i][j].getIndex() == index) {
+                    return this.getGrid()[i][j].getItem();
                 }
             }
         }
-        return p;
-    }
-
-    public void initGrid()
-    {
-
-        int cnt = 0;
-        this.boxMap = new ImageView[maxItem];
-
-        this.gridMat = new boolean[nbrBoxOnX][nbrBoxOnY];
-        for (int i = 0; i < nbrBoxOnX; i++)
-        {
-            for (int j = 0; j < nbrBoxOnY; j++)
-            {
-                this.gridMat[i][j] = false;
-                boxMap[cnt] = new ImageView();
-                boxMap[cnt].setImage(new Image(Main.class.getResourceAsStream("../img/item/emptyItemBox.png")));
-
-                boxMap[cnt].setTranslateX(i*37+2);
-                boxMap[cnt].setTranslateY(j*37+2+20);
-                group.getChildren().add(boxMap[cnt]);
-            }
-        }
-    }
-
-    /**
-     * Set a shortcut
-     * @param n represent the number of [0-9] of the shortcuts
-     * @param item the item for add on the shortcut
-     */
-    public void setShortcut(int n,Item item){
-        shortcuts[n] = itemMap.get(item.getName());
-        System.out.println(shortcuts[n].getName());
-    }
-
-    public void useShortcut(int n){
-        shortcuts[n].setNbr(shortcuts[n].getNbr()-1);
-        labelMap.get(shortcuts[n].getName()).setText(Integer.toString(shortcuts[n].getNbr()));
-        refreshItemList();
+        return null;
     }
 }

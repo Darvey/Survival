@@ -1,9 +1,6 @@
 package sample;
 
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,6 +41,7 @@ public class Weapon {
     private float spreadBase;
     private float spread;
     private int nBullet;
+    protected int damage;
 
     /** compteur utilisé pour la vitesse d'attaque */
     private int timeAttack;
@@ -55,11 +53,13 @@ public class Weapon {
     private List<Bullet> bulletList;
     private Iterator<Bullet> iterator;
 
+    private Sound shotSound;
+
 
     /**
      * default Constructor
      */
-    public Weapon() throws SlickException{
+    public Weapon() throws SlickException {
 
         this(null);
     }
@@ -88,13 +88,16 @@ public class Weapon {
         this.pressedMouseLeft = false;
 
         this.timeAttack = 0;
-        this.attackSpeedBase = 60;
-        this.nBullet = 8;
+        this.attackSpeedBase = 50;
+        this.nBullet = 1;
+        this.damage = 5;
 
         this.player = player;
 
         this.bulletList = new ArrayList<>();
         this.iterator = this.bulletList.iterator();
+
+        this.shotSound = new  Sound("sound/prrrfff.ogg");
 
         /** calcul des caractéristiques de l'arme en fonction des modificateurs du joueur */
         this.calculateFeatures();
@@ -112,6 +115,7 @@ public class Weapon {
         if(this.timeAttack == 0){
 
             this.timeAttack = this.attackSpeed;
+            this.shotSound.play();
 
             for(int i = 0; i < nBullet; i++) {
                 try {
@@ -145,8 +149,8 @@ public class Weapon {
         this.posX = posX;
         this.posY = posY;
 
-        double deltaX = mouseX - this.posX - (this.player.width / 2);
-        double deltaY = mouseY - this.posY - (this.player.height / 2);
+        double deltaX = mouseX - this.player.posX - (this.player.width / 2);
+        double deltaY = mouseY - this.player.posY - (this.player.height / 2);
         this.rotation = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
         if(mouseX > posX + (this.player.width / 2)){

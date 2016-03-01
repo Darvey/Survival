@@ -1,10 +1,7 @@
 package sample;
 
 
-import org.newdawn.slick.Animation;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.*;
 import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
@@ -28,6 +25,10 @@ public abstract class Monster extends Entity {
     protected double hitDirection; // recul du monstre quand il est touché (même direction que les balles)
 
     protected Rectangle hitBox;
+
+    protected Sound moveSound;
+    protected Sound dyingSound;
+    protected Sound jumpingSound;
 
 
     /**
@@ -62,10 +63,11 @@ public abstract class Monster extends Entity {
         this.hitBox.setX(this.posX);
         this.hitBox.setY(this.posY);
 
+
         hit();
         if(isHit){
-            this.accX = (float) Math.cos(hitDirection) * 2;
-            this.accY = (float) Math.sin(hitDirection) * 2;
+            this.accX = (float) Math.cos(hitDirection) * 8;
+            this.accY = (float) Math.sin(hitDirection) * 8;
             isHit = false;
             System.out.println("Name : "+this.name+" / PV : "+this.health+" / isDead? "+this.isDead);
         }
@@ -126,7 +128,9 @@ public abstract class Monster extends Entity {
 
 
             if(line.intersects(this.hitBox)){
-                this.health--;
+                System.out.println("BULLET : "+bullet.lastPosX+", "+bullet.lastPosY+", "+bullet.posX+", "+bullet.posY);
+                System.out.println("HITBOX : "+this.hitBox.getX()+", "+this.hitBox.getY()+", "+this.hitBox.getWidth()+", "+this.hitBox.getHeight());
+                this.health -= bullet.damage;
                 this.isHit = true;
                 this.hitDirection = bullet.direction;
                 iterator.remove();

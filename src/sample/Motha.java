@@ -2,6 +2,7 @@ package sample;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.util.pathfinding.*;
 
@@ -73,12 +74,16 @@ public class Motha extends Monster implements Mover {
         this.posToIdleList = new ArrayList<String>();
         this.health = 8;
 
+        this.moveSound = new Sound("sound/mothaMove.ogg");
+        this.dyingSound = new Sound("sound/mothaDying.ogg");
+
+
 
         /** IDLE */
         this.animations[0] = this.loadAnimation(this.sprite, 7, 8, 0, 70);
         /** WALK */
         this.animations[1] = this.loadAnimation(this.sprite, 0, 16, 0, 70);
-        /** WALK */
+        /** DYING */
         this.animations[2] = this.loadAnimation(this.sprite, 0, 1, 1, 70);
     }
 
@@ -97,11 +102,17 @@ public class Motha extends Monster implements Mover {
 
         if(this.isDead){
             this.state = "DYING";
+
         }
 
         if(Objects.equals(this.state, "DYING")){
             this.isFlying = false;
+            this.moveSound.stop();
         }else {
+            if(!this.moveSound.playing()) {
+                this.moveSound.play();
+            }
+
 
 
             /** si il est posé sur un solid en IDLE */
@@ -179,7 +190,6 @@ public class Motha extends Monster implements Mover {
         this.moveSpeed = 4;
         this.friction = 0.7f;
         this.gravity = 0.2f;
-
 
         super.update(delta);
     }

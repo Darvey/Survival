@@ -27,6 +27,8 @@ public class Main extends BasicGame {
     Monster monster2;
     Monster monster3;
 
+    Music music;
+
     //private Entity arrayEntities[];
 
 
@@ -52,7 +54,7 @@ public class Main extends BasicGame {
      * default constructor
      */
     private Main() {
-        super("Version 0.0.3");
+        super("Version 0.0.4");
     }
 
 
@@ -99,6 +101,10 @@ public class Main extends BasicGame {
         this.monster3.setPosition(0, 32);
         this.monster3.setPlayer(this.player);
         this.monster3.init();
+
+        /** test musique => ça marche */
+        //this.music = new Music("sound/music.ogg");
+        //this.music.play();
     }
 
 
@@ -115,6 +121,8 @@ public class Main extends BasicGame {
         this.monster1.update(delta);
         this.monster2.update(delta);
         this.monster3.update(delta);
+
+
     }
 
 
@@ -149,6 +157,31 @@ public class Main extends BasicGame {
         switch(button){
             case 0:
                 this.player.getWeapon().setPressedMouseLeft();
+                if(this.player.inventory.isDisplayed){
+                    this.player.inventory.onClick(x, y);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    /**
+     * récupération des boutons appuyés de la souris
+     * @param button : 0 = gauche, 1 = droit, 2 = molette
+     * @param x : coordonné x du click
+     * @param y : coordonné y du click
+     */
+    @Override
+    public void mouseClicked(int button, int x, int y, int clickCount){
+
+        switch(button){
+            case 0:
+                //this.player.getWeapon().setPressedMouseLeft();
+                if(this.player.inventory.isDisplayed && clickCount == 2){
+                    this.player.inventory.onDoubleClick(x, y);
+                }
                 break;
             default:
                 break;
@@ -195,7 +228,17 @@ public class Main extends BasicGame {
                 this.player.setPressedRight();
                 break;
             case Input.KEY_SPACE:
-                this.player.setPressedUp(); // setPressedSpace
+                this.player.setPressedJump();
+                break;
+            case Input.KEY_I:
+                if(this.player.inventory.isDisplayed) {
+                    this.player.inventory.isDisplayed = false;
+                }else{
+                    this.player.inventory.isDisplayed = true;
+                }
+                break;
+            case Input.KEY_E:
+                this.player.setPressedAction();
                 break;
             default:
                 break;
@@ -222,6 +265,12 @@ public class Main extends BasicGame {
                 break;
             case Input.KEY_D:
                 this.player.setReleasedRight();
+                break;
+            case Input.KEY_SPACE:
+                this.player.setReleasedJump();
+                break;
+            case Input.KEY_E:
+                this.player.setReleasedAction();
                 break;
             default:
                 break;
