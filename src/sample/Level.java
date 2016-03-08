@@ -18,6 +18,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -51,6 +53,8 @@ public class Level implements TileBasedMap {
     private boolean hasLogicLayer;
     private boolean hasGraphicLayer;
 
+    private List<Entity> entityList;
+
 
     /**
      * default Constructor
@@ -73,6 +77,7 @@ public class Level implements TileBasedMap {
         this.hasGraphicLayer = false;
         this.load(refMap);
         this.background = new Image("img/background/backgroundSky.png");
+        this.entityList = new ArrayList<>();
         //this.grass = new Image("img/tile/earth/objectGrass.png");
     }
 
@@ -272,6 +277,21 @@ public class Level implements TileBasedMap {
 
         //this.grass.draw(224, 288);
         //this.grass.draw(256, 288);
+    }
+
+
+    /**
+     * envoie la liste des entités présentes dans le niveau
+     * @param entityList
+     */
+    public void setEntityList(List entityList){
+
+        this.entityList = entityList;
+    }
+
+    public List<Entity> getEntityList(){
+
+        return this.entityList;
     }
 
 

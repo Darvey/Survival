@@ -101,6 +101,9 @@ public class EntityPlayer extends Entity{
     /** liste des objets à proximité */
     protected List<Item> itemBehindList;
 
+    protected Skill heal;
+    protected Skill bolt;
+
 
     /**
      * default Constructor
@@ -153,7 +156,7 @@ public class EntityPlayer extends Entity{
         /** temps pendant lequel on peut rester appuyé sur saut pour augmenter la hauteur de celui-ci */
         this.maxJumpCount = 30;
         /** impulsion initiale du saut */
-        this.jumpImpulse = 4;
+        this.jumpImpulse = 5;
 
         /** init. du nom et des car. primaires */
         this.strength = strength;
@@ -188,6 +191,9 @@ public class EntityPlayer extends Entity{
 
         this.isOnLadder = false;
         this.itemBehindList = new ArrayList<>();
+
+        this.heal = new Heal(this);
+        this.bolt = new Bolt(this);
 
 
     }
@@ -418,9 +424,9 @@ public class EntityPlayer extends Entity{
          * évite d'être coincé au milieu d'une plateforme
          * donne l'effet que le perso s'aggripe pour monter plus haut
          */
-        while(collisionBot() && (Objects.equals(this.state, "JUMPING"))){
-            this.posY--;
-        }
+        //while(collisionBot() && (Objects.equals(this.state, "JUMPING"))){
+        //    this.posY--;
+        //}
     }
 
 
@@ -433,7 +439,7 @@ public class EntityPlayer extends Entity{
 
         super.render(g);
         this.weapon.render(g);
-        this.inventory.render(g);
+        //this.inventory.render(g);
     }
 
 
@@ -538,12 +544,13 @@ public class EntityPlayer extends Entity{
                 }
                 /** permet de ne pas resauter si on atteint une plateforme en haut de saut / évite le double saut */
                 if(collisionBot()){
-                    this.pressedUp = false;
+                    this.pressedJump = false;
                 }
             }else{
                 /** on ne saute pas plusieurs fois si on maintient appuyé */
-                this.pressedUp = false;
+                this.pressedJump = false;
                 this.jumpCount = 0;
+
             }
 
         }else{
@@ -658,6 +665,27 @@ public class EntityPlayer extends Entity{
 
 
     /**
+     * récupère l'entité qui est sous la souris
+     */
+    public Entity getEntityUnderMouse(){
+
+        if(this.level.getEntityList().size() > 0) {
+            for (int i = 0; i < this.level.getEntityList().size(); i++) {
+                Entity entity = this.level.getEntityList().get(i);
+
+                if( (this.mouseX > entity.posX) && (this.mouseX < (entity.posX + entity.width)) ){
+                    if( (this.mouseY > entity.posY) && (this.mouseY < (entity.posY + entity.height)) ){
+                        System.out.println(entity.name);
+                        return entity;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+    /**
      * ******* setPressed *******
      */
     public void setPressedUp(){
@@ -683,6 +711,14 @@ public class EntityPlayer extends Entity{
     public void setPressedAction(){
 
         this.pressedAction = true;
+    }
+    public void setPressedSkill1(){
+
+        this.heal.use();
+    }
+    public void setPressedSkill2(){
+
+        this.bolt.use();
     }
 
     /**

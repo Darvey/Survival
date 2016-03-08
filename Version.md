@@ -26,8 +26,19 @@ Version 0.0.1 :
 *utilisation ou non d'items dans l'inventaire
 *affichage du cadre de sélection de l'item
 
+#Version 0.0.5 :
+
+##Collision
+*les collisions sont faites sur 3 points (2 extremités + milieu) au lieu d'un (milieu)
+##Caméra
+*ajout du scrolling de la caméra + reset du scrolling pour l'inventaire (reste en place)
+##Compétences
+*ajout de la classe Skill
+*test de la compétence Heal : soigne un joueur
+*test de la compétence Bolt : inflige des dégats à une entité
+
 #Version 0.0.5 (TODO) :
-*revoir les collisions
+*~~revoir les collisions~~
 *effets de l'utilisation des items
 *hud
 *utilisation des compétences (passive pour commencer)

@@ -3,6 +3,9 @@ package sample;
 
 import org.newdawn.slick.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Main Class
@@ -29,6 +32,11 @@ public class Main extends BasicGame {
 
     Music music;
 
+    private int scrollX;
+    private int scrollY;
+
+    private List<Entity> entityList;
+
     //private Entity arrayEntities[];
 
 
@@ -54,7 +62,7 @@ public class Main extends BasicGame {
      * default constructor
      */
     private Main() {
-        super("Version 0.0.4");
+        super("Version 0.0.5");
     }
 
 
@@ -82,25 +90,37 @@ public class Main extends BasicGame {
         /** initialisation du premier niveau */
         this.level = new Level("src/map/mapTest.xml");
 
+        this.entityList = new ArrayList<>();
+
         /** envoie de la carte au joueur */
         this.player.setLevel(this.level);
         this.player.setPosition(64, 64);
+        this.entityList.add(this.player);
 
         this.monster1 = new Blob();
         this.monster1.setLevel(this.level);
         this.monster1.setPosition(300, 300);
         this.monster1.setPlayer(this.player);
+        this.entityList.add(this.monster1);
 
         this.monster2 = new Blob();
         this.monster2.setLevel(this.level);
         this.monster2.setPosition(320, 64);
         this.monster2.setPlayer(this.player);
+        this.entityList.add(this.monster2);
 
         this.monster3 = new Motha();
         this.monster3.setLevel(this.level);
         this.monster3.setPosition(0, 32);
         this.monster3.setPlayer(this.player);
         this.monster3.init();
+        this.entityList.add(this.monster3);
+
+        this.level.setEntityList(this.entityList);
+
+
+
+
 
         /** test musique => ça marche */
         //this.music = new Music("sound/music.ogg");
@@ -117,12 +137,13 @@ public class Main extends BasicGame {
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
 
+        this.scrollX = -this.player.posX + 320;
+        this.scrollY = -this.player.posY + 240;
+
         this.player.update(delta);
         this.monster1.update(delta);
         this.monster2.update(delta);
         this.monster3.update(delta);
-
-
     }
 
 
@@ -135,13 +156,18 @@ public class Main extends BasicGame {
     @Override
     public void render(GameContainer container, Graphics g) throws SlickException {
 
+        g.translate(this.scrollX, 0);
+
         this.level.render();
         this.level.renderFront();
+
         this.player.render(g);
+
         this.monster1.render(g);
         this.monster2.render(g);
         this.monster3.render(g);
 
+        this.player.inventory.render(g, this.scrollX);
     }
 
 
@@ -158,7 +184,7 @@ public class Main extends BasicGame {
             case 0:
                 this.player.getWeapon().setPressedMouseLeft();
                 if(this.player.inventory.isDisplayed){
-                    this.player.inventory.onClick(x, y);
+                    this.player.inventory.onClick(x - this.scrollX, y);
                 }
                 break;
             default:
@@ -180,7 +206,7 @@ public class Main extends BasicGame {
             case 0:
                 //this.player.getWeapon().setPressedMouseLeft();
                 if(this.player.inventory.isDisplayed && clickCount == 2){
-                    this.player.inventory.onDoubleClick(x, y);
+                    this.player.inventory.onDoubleClick(x - this.scrollX, y);
                 }
                 break;
             default:
@@ -240,6 +266,12 @@ public class Main extends BasicGame {
             case Input.KEY_E:
                 this.player.setPressedAction();
                 break;
+            case Input.KEY_1:
+                this.player.setPressedSkill1();
+                break;
+            case Input.KEY_2:
+                this.player.setPressedSkill2();
+                break;
             default:
                 break;
         }
@@ -288,7 +320,7 @@ public class Main extends BasicGame {
     @Override
     public void mouseMoved(int oldX, int oldY, int newX, int newY) {
 
-        this.player.setMouse(oldX, oldY, newX, newY);
+        this.player.setMouse(oldX - this.scrollX, oldY, newX - this.scrollX, newY);
     }
 
 
@@ -302,7 +334,7 @@ public class Main extends BasicGame {
     @Override
     public void mouseDragged(int oldX, int oldY, int newX, int newY) {
 
-        this.player.setMouse(oldX, oldY, newX, newY);
+        this.player.setMouse(oldX - 320 + this.player.posX, oldY, newX - 320 + this.player.posX, newY);
     }
 }
 

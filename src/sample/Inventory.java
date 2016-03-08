@@ -42,12 +42,14 @@ public class Inventory {
     private int PADDING = 5;
 
     /** position de l'inventaire */
-    private int posX = 150;
-    private int posY = 150;
+    private int posX = 480;
+    private int posY = 352;
 
     /** position de la selection */
     private int selectionPosX;
     private int selectionPosY;
+
+    private EntityPlayer player;
 
 
     /**
@@ -69,6 +71,7 @@ public class Inventory {
         this.isDisplayed = false;
         this.isSelected = false;
         this.itemList = new ArrayList<>();
+        this.player = player;
 
         initGrid();
     }
@@ -112,20 +115,20 @@ public class Inventory {
      * rendu de l'inventaire et des items qu'il contient
      * @param g : slick graphics
      */
-    public void render(Graphics g){
+    public void render(Graphics g, int scrollX){
 
         if(this.isDisplayed) {
 
             /** on affichage l'inventaire */
             //this.image.draw(this.posX, this.posY);
-            g.drawImage(this.image, this.posX, (float) this.posY);
+            g.drawImage(this.image, this.posX - scrollX, this.posY);
 
 
             /** on affichage les items */
             if(itemList.size() > 0) {
                 for (int i = 0; i < itemList.size(); i++){
                     itemList.get(i).thumbnail.draw(
-                            this.posX + OFFSET_X + ((32 + PADDING) * itemList.get(i).gridPosX),
+                            this.posX + OFFSET_X + ((32 + PADDING) * itemList.get(i).gridPosX) - scrollX,
                             this.posY + OFFSET_Y + ((32 + PADDING) * itemList.get(i).gridPosY)
                     );
                 }

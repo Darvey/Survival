@@ -41,6 +41,9 @@ public abstract class Entity {
     protected int prevPosY;
     protected int width;
     protected int height;
+    protected static final int OFFSET_BOT = 3;
+    protected static final int OFFSET_LEFT = 1;
+    protected static final int OFFSET_RIGHT = 1;
 
     /** position d'apparition sur la carte */
     protected int popX;
@@ -118,8 +121,12 @@ public abstract class Entity {
      * @return : true si collision
      */
     protected boolean collisionBot(){
-        //(this.level.getTile(this.posX + (this.width / 2), this.posY + this.height - 3).platform && this.isOnLadder);
-        return (this.level.getTile(this.posX + (this.width / 2), this.posY + this.height - 3).solid);
+
+        boolean collision = this.level.getTile(this.posX + (this.width / 2), this.posY + this.height - this.OFFSET_BOT).solid ||
+                this.level.getTile(this.posX + this.OFFSET_LEFT, this.posY + this.height - this.OFFSET_BOT).solid ||
+                this.level.getTile(this.posX + this.width - this.OFFSET_RIGHT, this.posY + this.height - this.OFFSET_BOT).solid;
+
+        return collision;
     }
 
 
@@ -139,8 +146,20 @@ public abstract class Entity {
      */
     protected boolean collisionLeft(){
 
-        return (this.level.getTile(this.posX, this.posY + (this.height / 2)).solid
-        && !this.level.getTile(this.posX, this.posY + (this.height / 2)).platform);
+        boolean collision =
+                this.level.getTile(this.posX, this.posY + (this.height / 2)).solid ||
+                        this.level.getTile(this.posX, this.posY).solid ||
+                        this.level.getTile(this.posX, this.posY + this.height - 6).solid
+                ;
+        if(
+                this.level.getTile(this.posX, this.posY + (this.height / 2)).platform ||
+                this.level.getTile(this.posX, this.posY).platform ||
+                this.level.getTile(this.posX, this.posY + this.height - 6).platform
+        ){
+            collision = false;
+        }
+
+        return collision;
     }
 
 
@@ -150,8 +169,20 @@ public abstract class Entity {
      */
     protected boolean collisionRight(){
 
-        return (this.level.getTile(this.posX + this.width, this.posY + (this.height / 2)).solid
-        && !this.level.getTile(this.posX + this.width, this.posY + (this.height / 2)).platform);
+        boolean collision =
+                this.level.getTile(this.posX + this.width, this.posY + (this.height / 2)).solid ||
+                this.level.getTile(this.posX + this.width, this.posY).solid ||
+                this.level.getTile(this.posX + this.width, this.posY + this.height - 6).solid
+        ;
+        if(
+                this.level.getTile(this.posX + this.width, this.posY + (this.height / 2)).platform ||
+                this.level.getTile(this.posX + this.width, this.posY).platform ||
+                this.level.getTile(this.posX + this.width, this.posY + this.height - 6).platform
+        ){
+            collision = false;
+        }
+
+        return collision;
     }
 
 

@@ -71,6 +71,10 @@ public abstract class Monster extends Entity {
             isHit = false;
             System.out.println("Name : "+this.name+" / PV : "+this.health+" / isDead? "+this.isDead);
         }
+
+        if(this.health <= 0){
+            this.isDead = true;
+        }
     }
 
 

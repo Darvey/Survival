@@ -157,6 +157,53 @@ Elles sont accessibles via l'arbre de talent (compétences de classes et de spé
 * ex : Pluie revigorante (Comp. de dévotion à l'élément eau) - Fait tomber une pluie qui soigne les alliés dans une zone autour du lanceur de 10pv chaque seconde.
 * ex : Projectiles enflammés (Comp. de dévotion à l'élément feu) - Pendant 4 secondes, les projectiles deviennent enflammés et infligent 5 dégats de feu supplémentaires.
 
+##Arbre des variables des compétences 
+
+###Active
+
+####Ciblage
+1) Non ciblé
+	a) Soi-même (Serrage de fesse : Prévient 25% des dégats pendant 5 secondes)
+	b) Autres (Orbe de choc : Inflige 10 dégats aux ennemis proches et les repoussent)		
+2) Ciblé
+	a) Sur entité (Soin : Soigne de 30pv le joueur ciblé, Foudre : Inflige 20 dégats au joueur ciblé)		
+	b) Sur position (Pose d'une tourelle de niveau I : Déploie une tourelle qui attaque automatiquement les ennemis proches.)
+	
+####Durée de l'effet
+1) Instantané
+2) Sur un temps donné
+
+####Durée de lancement
+1) Instantané
+2) Avec un temps donné
+
+####Zone
+1) De zone
+2) De cible
+
+####Type
+1) Soin : PV++
+2) Prévention : prévenir 25% des dégat
+3) Résistance à : résistance aux dégats contondants
+4) Dégat : infliger X dégats à 
+5) Création d'entité : création un homonculus, une tourelle
+6) Altération d'état d'une entité (ajout d'une caractéristique) : être invisible
+7) Altération d'état d'un item (ajout d'une caractéristique) : balle enflammé
+8) Buff (augmentation de caractéristique secondaire) : précision++
+9) Debuff (diminution de caractéristique secondaire) : vitesse--
+	
+
+Nom
+Description
+Cooldown
+Coût en mana
+Coût en vie
+Consommable associé
+		
+
+
+###Passive
+
 ##Arbre de talent
 
 DE FACON COMPLEXE : Au début, le joueur peut mettre des points dans des compétences d'un premier arbre de talent (1 point par niveau ?). Ces compétences sont classées par rang. Les 3 premiers niveaux, il peut mettre des points dans les compétences de rang 1 associées à sa classe. Et ce jusqu'au rang 3 (niveau 9). Au niveau 10, le joueur doit choisir une spécialisation qui lui ouvre un nouvel arbre de talent : l'arbre de spécialisation.
