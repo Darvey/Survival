@@ -137,8 +137,10 @@ public class Main extends BasicGame {
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
 
-        this.scrollX = -this.player.posX + 320;
-        this.scrollY = -this.player.posY + 240;
+        if(this.player.posX > 320 && this.player.posX < this.level.getWidthInPixel()-320 ) {
+            this.scrollX = -this.player.posX + 320;
+            this.scrollY = -this.player.posY + 240;
+        }
 
         this.player.update(delta);
         this.monster1.update(delta);
@@ -257,11 +259,7 @@ public class Main extends BasicGame {
                 this.player.setPressedJump();
                 break;
             case Input.KEY_I:
-                if(this.player.inventory.isDisplayed) {
-                    this.player.inventory.isDisplayed = false;
-                }else{
-                    this.player.inventory.isDisplayed = true;
-                }
+                this.player.inventory.isDisplayed = !this.player.inventory.isDisplayed;
                 break;
             case Input.KEY_E:
                 this.player.setPressedAction();
